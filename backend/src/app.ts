@@ -13,12 +13,12 @@ app.use(morgan('dev'));
 app.use('/api', userRouter);
 
 
-app.use((req, res, next) => {
+app.use((_req, _res, next) => {
   next(createHttpError(404, 'Endpoint not found'));
 });
 
 
-app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
+app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error(error);
   let errorMessage = 'An unknown error occurred';
   let statusCode = 500;
