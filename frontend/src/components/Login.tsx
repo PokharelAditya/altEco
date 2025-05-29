@@ -11,16 +11,17 @@ const Login: React.FC = () => {
     password:string
   }
   const [formData,setFormData] = useState<FormData>({email:'',password:''})
-  const {user,setUser} = useAuthContext()
+  const {user,setUser,loading} = useAuthContext()
 
   const navigate = useNavigate()
 
-  useEffect(()=>{
-    console.log(user)
-    if(user.isLoggedIn){
-      navigate('/')
-    }
-  },[])
+  if(loading){
+    return <div>Loading...</div>
+  }
+  if(user.isLoggedIn){
+    navigate('/')
+    return
+  }
 
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>):void => {
     const {name,value} = e.target
