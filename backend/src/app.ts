@@ -3,15 +3,18 @@ import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import createHttpError, { isHttpError } from 'http-errors';
 import userRouter from './routes/user';
+import loginRouter from './routes/login'
+import cookieParser from 'cookie-parser'
 
 const app = express();
 
 app.use(express.json());
 app.use(morgan('dev'));
 
+app.use(cookieParser())
 
 app.use('/api', userRouter);
-
+app.use('/api', loginRouter)
 
 app.use((_req, _res, next) => {
   next(createHttpError(404, 'Endpoint not found'));

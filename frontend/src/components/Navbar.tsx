@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { MdSettings } from "react-icons/md";
 import Logoo from "../assets/logo.png";
-
-interface NavbarProps {
-  isLoggedIn: boolean;
-}
+import { useAuthContext } from '../context/AuthContext'
 
 interface MainLink {
   to: string;
@@ -28,7 +25,7 @@ const dropdownLinks: DropdownLink[] = [
   { to: "/logout", text: "Logout", isRed: true },
 ];
 
-const Navbar: React.FC<NavbarProps> = ({ isLoggedIn }) => {
+const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
@@ -42,6 +39,8 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn }) => {
 
   const handleMenuToggle = () => setIsMenuOpen((prev) => !prev);
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+
+  const {user:{isLoggedIn}} = useAuthContext()
 
   return (
     <div>

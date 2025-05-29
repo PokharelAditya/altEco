@@ -1,14 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-
+import Login from './components/Login'
+import { AuthContextProvider } from './context/AuthContext'
+import Home from './components/Home'
+import Logout from './components/Logout'
 function App() {
   return (
-    <Router>
-      <Navbar isLoggedIn={true} />
-      <Routes>
-        <Route path="/" element={<h2 className="text-2xl text-blue-500">Hello World</h2>} />
-      </Routes>
-    </Router>
+    <AuthContextProvider>
+      <Router>
+        <Navbar/>
+        <Routes>
+        <Route path="/" element={<Home/>} />
+          <Route path ="/login" element={<Login/>}/>
+          <Route path = "/logout" element={<Logout/>}/>
+        </Routes>
+      </Router>
+    </AuthContextProvider>
   );
 }
 

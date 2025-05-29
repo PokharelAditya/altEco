@@ -1,3 +1,3 @@
-.env in the root with <br />
-DATABASE_URL= <br />
-PORT=6999 <br />
+.env in the root<br />
+PORT=6886<br />
+DATABASE_URL=
