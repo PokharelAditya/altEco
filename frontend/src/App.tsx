@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 function App() {
   return (
     <Router>
-      <Navbar isLoggedIn={true} />
+      <Navbar isLoggedIn={false} />
       <Routes>
         <Route path="/" element={<h2 className="text-2xl text-blue-500">Hello World</h2>} />
       </Routes>
