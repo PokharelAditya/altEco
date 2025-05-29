@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { signInWithPopup } from 'firebase/auth'
@@ -11,9 +11,16 @@ const Login: React.FC = () => {
     password:string
   }
   const [formData,setFormData] = useState<FormData>({email:'',password:''})
-  const {setUser} = useAuthContext()
+  const {user,setUser} = useAuthContext()
 
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    console.log(user)
+    if(user.isLoggedIn){
+      navigate('/')
+    }
+  },[])
 
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>):void => {
     const {name,value} = e.target
@@ -56,6 +63,7 @@ const Login: React.FC = () => {
       console.error(err)
     }
   }
+
 
   return <div className="flex w-full h-screen justify-center items-center">
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 border p-2">

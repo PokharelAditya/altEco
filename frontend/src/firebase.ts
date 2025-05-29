@@ -3,17 +3,12 @@ import { getAuth,GoogleAuthProvider } from 'firebase/auth'
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyBgRanBBWLyjS7P5F1kk-vQy6WLv7686FQ",
-
-  authDomain: "alteco-40a5e.firebaseapp.com",
-
-  projectId: "alteco-40a5e",
-
-  storageBucket: "alteco-40a5e.firebasestorage.app",
-
-  messagingSenderId: "283802003774",
-
-  appId: "1:283802003774:web:365e81b47b65243059646f"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECTID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDERID,
+  appId: import.meta.env.VITE_FIREBASE_APPID
 
 }
 

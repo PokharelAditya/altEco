@@ -1,4 +1,5 @@
 import { onAuthStateChanged } from 'firebase/auth'
+import type { Unsubscribe } from 'firebase/auth'
 import { auth } from '../firebase'
 import { createContext, useContext, useEffect, useState } from 'react'
 
@@ -28,6 +29,8 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
   const [loading,setLoading] = useState<boolean>(true)
 
   useEffect(()=>{
+    let unsubscribe:Unsubscribe
+    let count =0
     const checkAuth = async ():Promise<void> => {
       try{
         const response = await fetch('/api/auth') 
@@ -36,7 +39,16 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
           setUser({isLoggedIn:true,userId:data.userId,email:data.email,photoURL:''})
           setLoading(false)
         }else{
-          setUser({isLoggedIn:false,userId:'',email:'',photoURL:''})
+          count=1
+          unsubscribe = onAuthStateChanged(auth,currUser => {
+            setUser({
+              isLoggedIn:currUser?.email ? true : false,
+              userId:'',
+              email:currUser?.email || '',
+              photoURL:currUser?.photoURL || ''
+            })
+            setLoading(false)
+          })
         }
       }
       catch(err){
@@ -44,19 +56,8 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
       }
     }
     checkAuth()
-    if(!user.isLoggedIn){
-        const ss = onAuthStateChanged(auth,currUser => {
-          setUser({
-            isLoggedIn:currUser?.email ? true : false,
-            userId:'',
-            email:currUser?.email || '',
-            photoURL:currUser?.photoURL || ''
-          })
-          setLoading(false)
-        })
-        return ()=>ss()
-    }
-  },[])
+    if(count) return ()=>unsubscribe()
+  },[user.isLoggedIn])
 
 
   return <AuthContext.Provider value={{user,setUser,loading}}>
