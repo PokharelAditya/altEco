@@ -12,10 +12,10 @@ interface DropdownLink extends MainLink {
   isRed?: boolean;
 }
 
-const mainLinks: MainLink[] = [
+const mainLinks: (MainLink & { requiresLogin?: boolean })[] = [
   { to: "/", text: "Home" },
   { to: "/aboutus", text: "About Us" },
-  { to: "/search-product", text: "Search Product" },
+  { to: "/search-product", text: "Search Product",requiresLogin: true},
   { to: "/ecoscore-calculator", text: "EcoScore Calculator" },
 ];
 
@@ -89,7 +89,7 @@ const Navbar: React.FC = () => {
             id="navbar-default"
           >
             <ul className="font-medium flex flex-col md:flex-row md:space-x-6 rtl:space-x-reverse mt-4 md:mt-0">
-              {mainLinks.map((link) => (
+              {mainLinks.filter(link => !link.requiresLogin || isLoggedIn).map((link) => (
                 <li key={link.to}>
                   <NavLink
                     to={link.to}
@@ -107,6 +107,7 @@ const Navbar: React.FC = () => {
               ))}
 
               {isLoggedIn ? (
+                
                 <li className="relative inline-block h-11">
                   <button
                     onClick={toggleDropdown}
