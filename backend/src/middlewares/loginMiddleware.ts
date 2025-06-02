@@ -1,15 +1,27 @@
 import type {Response,NextFunction} from 'express'
-import { users } from '../util/users'
 import { generateAccessToken, generateRefreshToken } from '../util/generateToken'
 import { CustomRequest } from '../@types/express'
-const loginMiddleware = (req:CustomRequest,res:Response,next:NextFunction) => {
-  const {email,password} = req.body
-  
-  const findUser = users.find(user => user.email===email && user.password === password)
+import pool from '../database'
+import bcrypt from 'bcrypt'
 
-  if(!findUser){
+
+const loginMiddleware = async (req:CustomRequest,res:Response,next:NextFunction):Promise<void> => {
+  const {email,password} = req.body
+  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+  if(!existingUser){
     res.status(401).json({message:'user not found',login:false})
     return
+  }
+  const temp = existingUser.rows[0]
+  const userExists = bcrypt.compareSync(password,temp.password)
+  
+  if(!userExists){
+    res.status(401).json({message:'password does not match',login:false})
+  }
+
+  const findUser = {
+    userId:temp.id.toString(),
+    email:temp.email
   }
   const accessToken = generateAccessToken(findUser.userId,findUser.email)
   const refreshToken = generateRefreshToken(findUser.userId,findUser.email)

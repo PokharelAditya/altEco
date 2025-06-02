@@ -1,16 +1,37 @@
 import { useState } from 'react'
 import { Eye, EyeOff, User, Calendar, Mail, Lock, Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { signInWithPopup } from 'firebase/auth'
+import { googleProvider } from '../firebase'
+import { auth } from '../firebase'
+import { useAuthContext } from '../context/AuthContext'
 
 const SignUp = () => {
+
+  const {user,loading} = useAuthContext()
+  const navigate = useNavigate()
+
+  if(loading){
+  return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    )
+  }
+
+  if(user.isLoggedIn){
+    navigate('/')
+    return
+  }
+
   const [formData, setFormData] = useState({ 
     name: '', 
     email: '', 
     password: '',
+    confirmPassword:'',
     age: '', 
     gender: '' 
   })
-  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -71,8 +92,8 @@ const response = await fetch('/api/signup', {
     setError('')
     
     try {
-      console.log('Google login clicked')
-      alert('Google login functionality')
+      await signInWithPopup(auth,googleProvider)
+      navigate('/')
     } catch (err) {
       console.error(err)
       setError('Google sign-in failed. Please try again.')
