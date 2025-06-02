@@ -4,6 +4,7 @@ import Login from './components/Login'
 import { AuthContextProvider } from './context/AuthContext'
 import Home from './components/Home'
 import Logout from './components/Logout'
+import SignUp from './components/SignUp'
 function App() {
   return (
     <AuthContextProvider>
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<Home/>} />
           <Route path ="/login" element={<Login/>}/>
           <Route path = "/logout" element={<Logout/>}/>
+          <Route path = "/signup" element={<SignUp/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>
