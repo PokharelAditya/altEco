@@ -11,7 +11,7 @@ pool.connect()
       console.log(`Server running on port: ${port}`);
     });
   })
-  .catch((error) => {
+  .catch((error:unknown) => {
     console.error('Failed to connect to PostgreSQL:', error);
     process.exit(1);
   });
