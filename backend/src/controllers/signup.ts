@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import  pool from "../database"
+import { v4 as uuidv4 } from 'uuid'
 
 export const signupUser = async (req: Request, res: Response) => {
   const { name, email, password, age, gender } = req.body
@@ -14,11 +15,12 @@ export const signupUser = async (req: Request, res: Response) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
+    const userId = uuidv4()
 
     // Insert new user into the DB
     await pool.query(
-      'INSERT INTO users (name, email, password, age, gender) VALUES ($1, $2, $3, $4, $5)',
-      [name, email, hashedPassword, age, gender]
+      'INSERT INTO users (id, name, email, password, age, gender) VALUES ($1, $2, $3, $4, $5, $6)',
+      [userId, name, email, hashedPassword, age, gender]
     )
 
     res.status(201).json({ message: 'User registered successfully' })
