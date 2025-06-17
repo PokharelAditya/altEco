@@ -11,6 +11,21 @@ const SignUp = () => {
   const {user,loading} = useAuthContext()
   const navigate = useNavigate()
 
+  // All hooks must be called before any early returns
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    email: '', 
+    password: '',
+    confirmPassword:'',
+    dateOfBirth: '', 
+    gender: '' 
+  })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  // Early returns after all hooks
   if(loading){
   return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -23,19 +38,6 @@ const SignUp = () => {
     navigate('/')
     return
   }
-
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    email: '', 
-    password: '',
-    confirmPassword:'',
-    age: '', 
-    gender: '' 
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -65,7 +67,7 @@ const response = await fetch('/api/signup', {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        age: formData.age,
+        dateOfBirth: formData.dateOfBirth,
         gender: formData.gender
         }),
       })
@@ -108,6 +110,20 @@ const response = await fetch('/api/signup', {
   
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(prev => !prev)
+  }
+
+  // Get max date (13 years ago from today) for DOB validation
+  const getMaxDate = () => {
+    const today = new Date()
+    const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate())
+    return maxDate.toISOString().split('T')[0]
+  }
+
+  // Get min date (120 years ago from today) for DOB validation
+  const getMinDate = () => {
+    const today = new Date()
+    const minDate = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate())
+    return minDate.toISOString().split('T')[0]
   }
 
   return (
@@ -244,28 +260,27 @@ const response = await fetch('/api/signup', {
               </div>
             </div>
 
-            {/* Age and Gender Row */}
+            {/* Date of Birth and Gender Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Age Field */}
+              {/* Date of Birth Field */}
               <div>
-                <label htmlFor="age" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Age
+                <label htmlFor="dateOfBirth" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Date of Birth
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Calendar className="h-4 w-4 text-gray-400" />
                   </div>
                   <input
-                    id="age"
-                    name="age"
-                    type="number"
-                    min="13"
-                    max="120"
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    type="date"
                     required
-                    value={formData.age}
+                    min={getMinDate()}
+                    max={getMaxDate()}
+                    value={formData.dateOfBirth}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm placeholder-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                    placeholder="Your age"
                   />
                 </div>
               </div>
@@ -358,7 +373,7 @@ const response = await fetch('/api/signup', {
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Already have an account?{' '}
               <button
-                onClick={() => navigate('/signup')}
+                onClick={() => navigate('/login')}
                 className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300 transition-colors"
               >
                 Sign in here

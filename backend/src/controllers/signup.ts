@@ -4,7 +4,7 @@ import  pool from "../database"
 import { v4 as uuidv4 } from 'uuid'
 
 export const signupUser = async (req: Request, res: Response) => {
-  const { name, email, password, age, gender } = req.body
+  const { name, email, password, dateOfBirth, gender } = req.body
 
   try {
     // Check if user already exists
@@ -19,8 +19,8 @@ export const signupUser = async (req: Request, res: Response) => {
 
     // Insert new user into the DB
     await pool.query(
-      'INSERT INTO users (id, name, email, password, age, gender) VALUES ($1, $2, $3, $4, $5, $6)',
-      [userId, name, email, hashedPassword, age, gender]
+      'INSERT INTO users (id, name, email, hashed_password, DOB, gender) VALUES ($1, $2, $3, $4, $5, $6)',
+      [userId, name, email, hashedPassword, dateOfBirth, gender]
     )
 
     res.status(201).json({ message: 'User registered successfully' })
