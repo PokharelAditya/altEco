@@ -20,7 +20,7 @@ const loginMiddleware = async (req:CustomRequest,res:Response,next:NextFunction)
   }
 
   const findUser = {
-    userId:temp.id,
+    userId:temp.id.toString(),
     email:temp.email
   }
   const accessToken = generateAccessToken(findUser.userId,findUser.email)

@@ -12,10 +12,44 @@ export const authController:RequestHandler = async (req:CustomRequest,res:Respon
   if(req.findUser?.userId){
     const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [req.findUser?.email])
     const existingUserData = existingUser.rows[0]
-    res.status(200).json({userId:req.findUser?.userId,email:req.findUser?.email,login:true,displayName:existingUserData.name})
+    res.status(200).json(
+      {
+        userId:req.findUser?.userId,
+        email:req.findUser?.email,
+        login:true,
+        displayName:existingUserData.name,
+        gender:existingUserData.gender,
+        dob:existingUserData.dob,
+        createdAt:existingUserData.created_at,
+        photoURL:existingUserData.photo_url
+      })
     return
   }
   res.status(401).json({userId:'',email:'',login:false})
+}
+export const authControllerGoogle:RequestHandler = async(req:CustomRequest,res:Response):Promise<void> => {
+  
+  const {email} = req.body
+  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+  const existingUserData = existingUser.rows[0]
+  if(existingUserData){
+    res.status(200).json(
+      {
+        userId:existingUserData.id,
+        email:existingUserData.email,
+        login:true,
+        displayName:existingUserData.name,
+        gender:existingUserData.gender,
+        dob:existingUserData.dob,
+        createdAt:existingUserData.created_at,
+        photoURL:existingUserData.photo_url
+      })
+  }else{
+    res.status(200).json(
+      {
+        login:false,
+      })
+  }
 }
 
 export const logoutController:RequestHandler = (_req:CustomRequest,res:Response) => {

@@ -94,8 +94,23 @@ const response = await fetch('/api/signup', {
     setError('')
     
     try {
-      await signInWithPopup(auth,googleProvider)
-      navigate('/')
+      const result = await signInWithPopup(auth,googleProvider)
+      const response = await fetch('/api/check-account',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+        email: result.user.email,
+        })
+      })
+      const data = await response.json()
+      if(data.status){
+        navigate('/')
+      }else{
+        navigate('/signup-detail')
+      }
     } catch (err) {
       console.error(err)
       setError('Google sign-in failed. Please try again.')

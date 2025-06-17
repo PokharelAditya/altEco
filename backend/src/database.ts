@@ -16,6 +16,7 @@ const createUsersTable = async () => {
       hashed_password TEXT NOT NULL,
       DOB DATE NOT NULL,
       gender TEXT NOT NULL,
+      photo_url TEXT DEFAULT '',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `

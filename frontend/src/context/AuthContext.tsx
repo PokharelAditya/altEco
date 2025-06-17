@@ -7,7 +7,11 @@ type User = {
   isLoggedIn:boolean,
   userId:string,
   email:string,
-  photoURL:string
+  photoURL:string,
+  displayName:string,
+  gender:string,
+  createdAt:Date|string,
+  dob:Date|string
   //more to add
 }
 
@@ -25,7 +29,17 @@ export const useAuthContext = ():UserContext|null => {
 
 export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
 
-  const [user,setUser] = useState<User>({isLoggedIn:false,userId:'',email:'',photoURL:''})
+  const [user,setUser] = useState<User>(
+    {
+      isLoggedIn:false,
+      userId:'',
+      email:'',
+      photoURL:'',
+      displayName:'',
+      gender:'',
+      createdAt:'',
+      dob:''
+    })
   const [loading,setLoading] = useState<boolean>(true)
 
   useEffect(()=>{
@@ -36,17 +50,66 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
         const response = await fetch('/api/auth') 
         const data = await response.json()
         if(data.login){
-          setUser({isLoggedIn:true,userId:data.userId,email:data.email,photoURL:''})
-          setLoading(false)
-        }else{
-          count=1
-          unsubscribe = onAuthStateChanged(auth,currUser => {
-            setUser({
-              isLoggedIn:currUser?.email ? true : false,
-              userId:'',
-              email:currUser?.email || '',
-              photoURL:currUser?.photoURL || ''
+          setUser(
+            {
+              isLoggedIn:true,
+              userId:data.userId,
+              email:data.email,
+              photoURL:data.photoURL,
+              displayName:data.displayName,
+              gender:data.gender,
+              createdAt:data.createdAt,
+              dob:data.dob
             })
+        }
+        else{
+          count=1
+          unsubscribe = onAuthStateChanged(auth,async (currUser) => {
+            if(currUser?.email){
+              const response = await fetch('/api/auth/google',{
+                method:'POST',
+                headers:{
+                  'Content-type':'application/json'
+                },
+                body:JSON.stringify({email:currUser.email})
+              }) 
+              const data = await response.json()
+              if(data.login){
+                 setUser({
+                  isLoggedIn:true,
+                  userId:data.userId,
+                  email:data.email,
+                  photoURL:data.photoURL,
+                  displayName:data.displayName,
+                  gender:data.gender,
+                  createdAt:data.createdAt,
+                  dob:data.dob
+                })
+              }else{
+                setUser({
+                  isLoggedIn:false,
+                  userId:'',
+                  email:'',
+                  photoURL:'',
+                  displayName:'',
+                  gender:'',
+                  createdAt:'',
+                  dob:''
+                })
+              } 
+
+            }else{
+              setUser({
+                isLoggedIn:false,
+                userId:'',
+                email:'',
+                photoURL:'',
+                displayName:'',
+                gender:'',
+                createdAt:'',
+                dob:''
+              })
+            }
             setLoading(false)
           })
         }
