@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 import type {Response} from 'express'
 import { CustomRequest } from '../@types/express'
 import pool from '../database'
+import admin from '../firebase'
 
 export const loginController:RequestHandler = (req:CustomRequest,res:Response) => {
 
@@ -27,31 +28,6 @@ export const authController:RequestHandler = async (req:CustomRequest,res:Respon
   }
   res.status(401).json({userId:'',email:'',login:false})
 }
-export const authControllerGoogle:RequestHandler = async(req:CustomRequest,res:Response):Promise<void> => {
-  
-  const {email} = req.body
-  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-  const existingUserData = existingUser.rows[0]
-  if(existingUserData){
-    res.status(200).json(
-      {
-        userId:existingUserData.id,
-        email:existingUserData.email,
-        login:true,
-        displayName:existingUserData.name,
-        gender:existingUserData.gender,
-        dob:existingUserData.dob,
-        createdAt:existingUserData.created_at,
-        photoURL:existingUserData.photo_url
-      })
-  }else{
-    res.status(200).json(
-      {
-        login:false,
-      })
-  }
-}
-
 export const logoutController:RequestHandler = (_req:CustomRequest,res:Response) => {
   res.clearCookie('ACCESS_TOKEN')
   res.clearCookie('REFRESH_TOKEN')

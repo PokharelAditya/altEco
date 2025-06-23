@@ -47,7 +47,11 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
     let count =0
     const checkAuth = async ():Promise<void> => {
       try{
-        const response = await fetch('/api/auth') 
+        const response = await fetch('/api/auth',{
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}) // empty JSON body
+        }) 
         const data = await response.json()
         if(data.login){
           setUser(
@@ -66,12 +70,13 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
           count=1
           unsubscribe = onAuthStateChanged(auth,async (currUser) => {
             if(currUser?.email){
-              const response = await fetch('/api/auth/google',{
+              const token = await currUser.getIdToken()
+              const response = await fetch('/api/auth',{
                 method:'POST',
                 headers:{
                   'Content-type':'application/json'
                 },
-                body:JSON.stringify({email:currUser.email})
+                body:JSON.stringify({token})
               }) 
               const data = await response.json()
               if(data.login){

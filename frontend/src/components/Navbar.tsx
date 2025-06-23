@@ -170,7 +170,7 @@ const Navbar: React.FC = () => {
                         `h-11 flex items-center px-3 py-2.5 rounded-lg transition-colors ${
                           isActive
                             ? "text-green-700 bg-green-50/80 dark:bg-green-900/20 dark:text-green-400"
-                            : "text-gray-600 hover:bg-gray-50/50 dark:text-gray-300 dark:hover:bg-gray-800"
+                            : "text-gray-600 hover:bg-gray-50/50 dark:text-gray-300 dark:hover:bg-gray-600/50"
                         }`
                       }
                     >
@@ -184,7 +184,7 @@ const Navbar: React.FC = () => {
                         `h-11 flex items-center px-3 py-2.5 rounded-lg transition-colors ${
                           isActive
                             ? "bg-green-600/20 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                            : "bg-green-200 text-gray-600 hover:bg-green-600/20 dark:bg-green-400/20 dark:text-green-400"
+                            : "text-gray-600 hover:bg-gray-50/50 dark:text-gray-300 dark:hover:bg-gray-600/50"
                         }`
                       }
                     >

@@ -3,7 +3,7 @@ import { useAuthContext } from '../context/AuthContext'
 const Home = () => {
 
   const {user,loading} = useAuthContext()
-
+  
   if(loading){
     return <div>Loading...</div>
   }
