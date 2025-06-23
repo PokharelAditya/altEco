@@ -1,8 +1,6 @@
 import { RequestHandler } from 'express'
 import type {Response} from 'express'
 import { CustomRequest } from '../@types/express'
-import pool from '../database'
-import admin from '../firebase'
 import { getUserByEmail } from '../db/users'
 
 export const loginController:RequestHandler = (req:CustomRequest,res:Response) => {
