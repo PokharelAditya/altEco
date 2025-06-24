@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
-    "seed": "ts-node src/database.ts"
+    "seed": "ts-node src/db/setupDB.ts"
   },
   "keywords": [],
   "author": "",
