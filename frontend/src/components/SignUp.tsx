@@ -72,14 +72,12 @@ const response = await fetch('/api/signup', {
         }),
       })
       const data = await response.json()
-      console.log(data)
       if (!response.ok) {
         console.error('Error:', data);
         setError(data.error);
         return;
       }
   
-      console.log('Success:', data);
       navigate('/login');
     } catch (err) {
       console.error(err)

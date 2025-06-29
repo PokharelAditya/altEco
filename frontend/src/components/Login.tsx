@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { signInWithPopup } from 'firebase/auth'
@@ -59,10 +59,9 @@ const Login: React.FC = () => {
       const data = await response.json()
       
       if (data.login) {
-        setUser({ isLoggedIn: true, userId: data.userId, email: data.email })
         navigate('/')
+        setUser(prev=>({...prev,isLoggedIn:true}))
       } else {
-        setUser({ isLoggedIn: false, userId: '', email: '' })
         setError('Invalid email or password. Please try again.')
       }
     } catch (err) {
