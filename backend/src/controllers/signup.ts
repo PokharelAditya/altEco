@@ -2,10 +2,11 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import  pool from "../database"
 import { v4 as uuidv4 } from 'uuid'
+import sendMail from '../util/sendMail'
+import generateOTP from '../util/generateOTP'
 
 export const signupUser = async (req: Request, res: Response) => {
   const { name, email, password, dateOfBirth, gender } = req.body
-
   try {
     // Check if user already exists
     const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
@@ -59,5 +60,14 @@ export const checkAccount = async (req:Request,res:Response) => {
     res.status(404).json({status:false})
   }
 
+}
+export const sendMailController = async (req:Request,res:Response) => {
+  const {name,email} = req.body
+
+  const otp = generateOTP()
+  await sendMail(email,name,otp)
+
+  res.status(200).json({otp})
+  
 }
 

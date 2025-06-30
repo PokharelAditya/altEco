@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { Eye, EyeOff, User, Calendar, Mail, Lock, Users } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { Eye, EyeOff, User, Calendar, Mail, Lock, Users,X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { signInWithPopup } from 'firebase/auth'
 import { googleProvider } from '../firebase'
 import { auth } from '../firebase'
 import { useAuthContext } from '../context/AuthContext'
+import Modal from './Modal'
 
 const SignUp = () => {
 
@@ -24,6 +25,9 @@ const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isOTPModalOpen,setIsOTPModalOpen] = useState<boolean>(false)
+  const [OTP,setOTP] = useState<string>('')
+  const [backendOTP,setBackendOTP] = useState<string>('')
 
   // Early returns after all hooks
   if(loading){
@@ -38,24 +42,51 @@ const SignUp = () => {
     navigate('/')
     return
   }
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
     if (error) setError('')
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const sendOTP = async (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
       return
     }
-    
+    setIsLoading(true)
+    try{
+      const response = await fetch('/api/send-mail',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+        },
+        body:JSON.stringify({name:formData.name,email:formData.email})
+      })
+      const data = await response.json()
+      setBackendOTP(data.otp.toString())
+    }catch(err){
+      console.error(err)
+    }
+    setIsOTPModalOpen(true)
+  }
+
+  const checkOTP = async ():Promise<void> => {
+    if(backendOTP == OTP){
+      setIsOTPModalOpen(false)
+      setIsLoading(false)
+      await handleSubmit()
+    }
+    else{
+      setError('You entered the wrong OTP.')
+    }
+  }
+
+  const handleSubmit = async () => {
     setIsLoading(true)
     setError('')
-    console.log(formData)
     try {
 const response = await fetch('/api/signup', {
         method: 'POST',
@@ -161,7 +192,7 @@ const response = await fetch('/api/signup', {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={sendOTP} className="space-y-4">
             {/* Name Field */}
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -395,6 +426,36 @@ const response = await fetch('/api/signup', {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isOTPModalOpen}
+        onClose={() => setIsOTPModalOpen(false)}
+        title="One Time Password"
+      >
+        <div className="text-gray-200 mb-2">Enter the one time password sent to your Email.</div>
+        <input type="text" className="block w-full pl-3 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl
+          shadow-sm placeholder-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none
+          focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+        onChange={(e:React.ChangeEvent<HTMLInputElement>)=>setOTP(e.target.value)}
+        value={OTP}/>
+        {error && (
+            <div className="mt-2 mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+              <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
+            </div>
+          )}
+        <button
+                type="submit"
+                disabled={OTP.length != 6}
+                className={`mt-4 w-15 flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm
+                font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2
+                focus:ring-green-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed
+                transition-colors disabled:bg-gray-700 bg-green-600 hover:bg-green-700 cursor-pointer`}
+        onClick={checkOTP}
+        >
+          Enter
+        </button>
+      </Modal>
+    
     </div>
   )
 }
