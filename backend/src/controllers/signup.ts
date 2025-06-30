@@ -48,9 +48,12 @@ export const signupDetail = async (req:Request,res:Response) => {
 }
 
 export const checkAccount = async (req:Request,res:Response) => {
-  const {email} = req.body
+  const {email,photoURL} = req.body
   const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
   if(existingUser.rows[0].email === email){
+    if(!existingUser.rows[0].photo_url){
+      await pool.query(`UPDATE users SET photo_url=$1 WHERE email = $2`,[photoURL,email]) 
+    }
     res.status(200).json({status:true})
   }else{
     res.status(404).json({status:false})
