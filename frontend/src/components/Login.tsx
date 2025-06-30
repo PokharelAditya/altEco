@@ -86,6 +86,7 @@ const Login: React.FC = () => {
         credentials: 'include',
         body: JSON.stringify({
         email: result.user.email,
+        photoURL: result.user.photoURL
         })
       })
       const data = await response.json()
