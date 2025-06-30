@@ -30,5 +30,6 @@ export const authController:RequestHandler = async (req:CustomRequest,res:Respon
 export const logoutController:RequestHandler = (_req:CustomRequest,res:Response) => {
   res.clearCookie('ACCESS_TOKEN')
   res.clearCookie('REFRESH_TOKEN')
+  res.clearCookie('FIREBASE_TOKEN')
   res.sendStatus(200)
 }

@@ -40,7 +40,7 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
       createdAt:'',
       dob:''
     })
-  const [loading,setLoading] = useState<boolean>(true)
+  const [loading,setLoading] = useState<boolean>(false)
 
   useEffect(()=>{
     let unsubscribe:Unsubscribe
@@ -115,12 +115,14 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
                 dob:''
               })
             }
-            setLoading(false)
           })
         }
       }
       catch(err){
         console.error(err)
+      }
+      finally{
+        setLoading(false)
       }
     }
     checkAuth()
