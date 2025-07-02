@@ -7,6 +7,7 @@ import Logout from './components/Logout'
 import SignUp from './components/SignUp'
 import UserSignupData from "./components/UserSignupData"
 import UserPreference from "./components/UserPreference"
+import EditProfile from "./components/EditProfile"
 function App() {
   return (
     <AuthContextProvider>
@@ -19,6 +20,7 @@ function App() {
           <Route path = "/signup" element={<SignUp/>}/>
           <Route path="/signup-detail" element={<UserSignupData/>}/>
           <Route path="/set-preference" element={<UserPreference/>}/>
+          <Route path="/edit-profile" element={<EditProfile/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>
