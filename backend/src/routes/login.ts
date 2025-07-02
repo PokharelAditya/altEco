@@ -7,7 +7,7 @@ const router = Router()
 
 router.post('/login',loginMiddleware,loginController)
 
-router.get('/auth',authorizeJWT,authController)
+router.post('/auth',authorizeJWT,authController)
 
 router.get('/logout',logoutController)
 export default router

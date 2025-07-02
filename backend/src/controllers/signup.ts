@@ -2,10 +2,11 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import  pool from "../database"
 import { v4 as uuidv4 } from 'uuid'
+import sendMail from '../util/sendMail'
+import generateOTP from '../util/generateOTP'
 
 export const signupUser = async (req: Request, res: Response) => {
-  const { name, email, password, age, gender } = req.body
-
+  const { name, email, password, dateOfBirth, gender } = req.body
   try {
     // Check if user already exists
     const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
@@ -19,8 +20,8 @@ export const signupUser = async (req: Request, res: Response) => {
 
     // Insert new user into the DB
     await pool.query(
-      'INSERT INTO users (id, name, email, password, age, gender) VALUES ($1, $2, $3, $4, $5, $6)',
-      [userId, name, email, hashedPassword, age, gender]
+      'INSERT INTO users (id, name, email, hashed_password, DOB, gender) VALUES ($1, $2, $3, $4, $5, $6)',
+      [userId, name, email, hashedPassword, dateOfBirth, gender]
     )
 
     res.status(201).json({ message: 'User registered successfully' })
@@ -29,3 +30,44 @@ export const signupUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' })
   }
 }
+
+export const signupDetail = async (req:Request,res:Response) => {
+  const {email,displayName,photoURL,password,dob,gender} = req.body
+
+  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+  if(!existingUser.rows[0]){
+    const userId = uuidv4()
+    const hashedPassword = await bcrypt.hash(password, 10)
+    await pool.query(
+      'INSERT INTO users (id, name, email, hashed_password, DOB, gender, photo_url) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      [userId, displayName, email, hashedPassword, dob, gender,photoURL]
+    )
+    res.status(201).json({status:true})
+  }else{
+    res.status(400).json({status:false})
+  }
+}
+
+export const checkAccount = async (req:Request,res:Response) => {
+  const {email,photoURL} = req.body
+  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+  if(existingUser.rows[0].email === email){
+    if(!existingUser.rows[0].photo_url){
+      await pool.query(`UPDATE users SET photo_url=$1 WHERE email = $2`,[photoURL,email]) 
+    }
+    res.status(200).json({status:true})
+  }else{
+    res.status(404).json({status:false})
+  }
+
+}
+export const sendMailController = async (req:Request,res:Response) => {
+  const {name,email} = req.body
+
+  const otp = generateOTP()
+  await sendMail(email,name,otp)
+
+  res.status(200).json({otp})
+  
+}
+

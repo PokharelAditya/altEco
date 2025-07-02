@@ -16,7 +16,11 @@ const Logout = () => {
           isLoggedIn:false,
           userId:'',
           email:'',
-          photoURL:''
+          photoURL:'',
+          displayName:'',
+          gender:'',
+          createdAt:'',
+          dob:''
         })
 
         navigate('/login')
@@ -24,13 +28,6 @@ const Logout = () => {
       catch(err){
         console.error(err)
       }
-      setUser({
-        isLoggedIn:false,
-        userId:'',
-        email:'',
-        photoURL:''
-
-      })
     }
     handleLogout()
   },[])

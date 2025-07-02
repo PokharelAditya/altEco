@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { signInWithPopup } from 'firebase/auth'
@@ -59,10 +59,9 @@ const Login: React.FC = () => {
       const data = await response.json()
       
       if (data.login) {
-        setUser({ isLoggedIn: true, userId: data.userId, email: data.email })
         navigate('/')
+        setUser(prev=>({...prev,isLoggedIn:true}))
       } else {
-        setUser({ isLoggedIn: false, userId: '', email: '' })
         setError('Invalid email or password. Please try again.')
       }
     } catch (err) {
@@ -78,8 +77,24 @@ const Login: React.FC = () => {
     setError('')
     
     try {
-      await signInWithPopup(auth, googleProvider)
-      navigate('/')
+      const result = await signInWithPopup(auth,googleProvider)
+      const response = await fetch('/api/check-account',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+        email: result.user.email,
+        photoURL: result.user.photoURL
+        })
+      })
+      const data = await response.json()
+      if(data.status){
+        navigate('/')
+      }else{
+        navigate('/signup-detail')
+      }
     } catch (err) {
       console.error(err)
       setError('Google sign-in failed. Please try again.')

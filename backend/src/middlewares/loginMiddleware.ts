@@ -13,7 +13,7 @@ const loginMiddleware = async (req:CustomRequest,res:Response,next:NextFunction)
     return
   }
   const temp = existingUser.rows[0]
-  const userExists = bcrypt.compareSync(password,temp.password)
+  const userExists = bcrypt.compareSync(password,temp.hashed_password)
   
   if(!userExists){
     res.status(401).json({message:'password does not match',login:false})

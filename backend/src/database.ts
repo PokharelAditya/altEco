@@ -13,9 +13,10 @@ const createUsersTable = async () => {
       id UUID PRIMARY KEY,
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
-      age TEXT NOT NULL,
+      hashed_password TEXT NOT NULL,
+      DOB DATE NOT NULL,
       gender TEXT NOT NULL,
+      photo_url TEXT DEFAULT '',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `

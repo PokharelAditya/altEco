@@ -3,7 +3,7 @@ import { useAuthContext } from '../context/AuthContext'
 const Home = () => {
 
   const {user,loading} = useAuthContext()
-
+  
   if(loading){
     return <div>Loading...</div>
   }
@@ -11,10 +11,15 @@ const Home = () => {
 
   if(user.isLoggedIn){
     return <div>
-      hello
-      <img src={user.photoURL} alt="photo"
+      <img src={`${user.photoURL}`} alt="photo"
       className="h-12 w-12 rounded-full"/>
-      {user.email}
+
+      name: {user.displayName}<br/>
+      id: {user.userId}<br/>
+      email: {user.email}<br/>
+      gender: {user.gender}<br/>
+      dob: {user.dob}<br/>
+      joined: {user.createdAt}
     </div>
   }
   

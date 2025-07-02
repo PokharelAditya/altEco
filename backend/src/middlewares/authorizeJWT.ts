@@ -2,16 +2,35 @@ import type {Response,NextFunction} from 'express'
 import jwt,{JwtPayload} from 'jsonwebtoken'
 import { generateAccessToken } from '../util/generateToken'
 import { CustomRequest } from '../@types/express'
-
+import admin from '../firebase'
+import pool from '../database'
 
 interface UserPayload extends JwtPayload {
   userId: string
   email: string
 }
-export const authorizeJWT = (req:CustomRequest,res:Response,next:NextFunction) => {
+export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunction):Promise<void> => {
   const accessToken = req.cookies.ACCESS_TOKEN
   const refreshToken = req.cookies.REFRESH_TOKEN
+  let token = req.cookies.FIREBASE_TOKEN
+  if(!token){
+    token = req.body.token
+  }
+  if(token){
+    const decoded = await admin.auth().verifyIdToken(token)
+    if(decoded.email){
+      const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [decoded.email])
+      const userId = existingUser.rows[0].id
 
+      req.findUser = {
+        userId,
+        email:decoded.email
+      }
+      if(!req.cookies.FIREBASE_TOKEN) res.cookie('FIREBASE_TOKEN',token,{httpOnly:true})
+      next()
+      return
+    }
+  }
   if(!accessToken){
     res.status(401).json({message:'not authorized',authorized:false})
     return
@@ -48,4 +67,3 @@ export const authorizeJWT = (req:CustomRequest,res:Response,next:NextFunction) =
     }
   }
 }
-
