@@ -177,7 +177,7 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
         
         setTimeout(() => {
           onClose()
-        }, 1500)
+        }, 3000)
       } else {
         setError(result.message || 'Failed to update profile')
       }
