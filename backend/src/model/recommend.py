@@ -36,7 +36,8 @@ def recommend(input_tag_str):
     query_vector = vectorizer.transform([cleaned_input])
     cos_sim = cosine_similarity(query_vector, tfidf_matrix).flatten()
     top_indices = cos_sim.argsort()[-10:][::-1]
-    return df.iloc[top_indices][["product_name", "clean_tags"]].to_dict(orient="records")
+    return df.iloc[top_indices][["code","product_name", "clean_tags", "brands", "image_url"]].to_dict(orient="records")
+
 
 
 def extract_text_from_content(content_list):
@@ -91,8 +92,13 @@ if __name__ == "__main__":
         product_tags = product.get("clean_tags", "")
         product["description"] = generate_description(product_tags)
 
+    for product in recs:
+        for k, v in product.items():
+         if isinstance(v, float) and pd.isna(v):
+            product[k] = None
+
     output = {
-        "recommendations": recs
+         "recommendations": recs
     }
 
     print(json.dumps(output, ensure_ascii=False, indent=2))
