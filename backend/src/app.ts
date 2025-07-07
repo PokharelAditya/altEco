@@ -6,6 +6,7 @@ import userRouter from './routes/user';
 import loginRouter from './routes/login'
 import signupRouter from './routes/signup'
 import cookieParser from 'cookie-parser'
+import recommendRoute from './routes/recommend';
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(cookieParser())
 app.use('/api', userRouter);
 app.use('/api', loginRouter)
 app.use('/api', signupRouter)
-
+app.use('/api', recommendRoute);
 app.use((_req, _res, next) => {
   next(createHttpError(404, 'Endpoint not found'));
 });
