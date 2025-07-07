@@ -10,7 +10,7 @@ const Home = () => {
 
 
   if(user.isLoggedIn){
-    return <div>
+    return <div className="text-white">
       <img src={`${user.photoURL}`} alt="photo"
       className="h-12 w-12 rounded-full"/>
 

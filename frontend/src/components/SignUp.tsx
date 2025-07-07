@@ -57,7 +57,31 @@ const SignUp = () => {
       return
     }
     setIsLoading(true)
-    try{
+      setError('')
+  
+  try{
+    // First checking if email already exists
+    const checkResponse = await fetch('/api/check-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: formData.email })
+    })
+    
+    const checkData = await checkResponse.json()
+    
+    if (!checkResponse.ok) {
+      setError(checkData.error || 'Failed to verify email')
+      setIsLoading(false)
+      return
+    }
+    
+    if (checkData.exists) {
+      setError('Email is already in use.')
+      setIsLoading(false)
+      return
+    }
       const response = await fetch('/api/send-mail',{
         method:'POST',
         headers:{
@@ -83,6 +107,23 @@ const SignUp = () => {
       setError('You entered the wrong OTP.')
     }
   }
+    const checkUserPreferences = async () => {
+    try {
+      const response = await fetch(`/api/check-user-preferences`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      console.log(data)
+      return data.exists;
+    } catch (error) {
+      console.error('Error checking user preferences:', error);
+      return false;
+    }
+  };
 
   const handleSubmit = async () => {
     setIsLoading(true)
@@ -136,7 +177,15 @@ const response = await fetch('/api/signup', {
       })
       const data = await response.json()
       if(data.status){
+                {
+          const userPreferences = await checkUserPreferences();
+          if (!userPreferences){
+            navigate('/preferences')
+          }
+        else{
         navigate('/')
+        }
+      }
       }else{
         navigate('/signup-detail')
       }
@@ -432,27 +481,31 @@ const response = await fetch('/api/signup', {
         onClose={() => setIsOTPModalOpen(false)}
         title="One Time Password"
       >
-        <div className="text-gray-200 mb-2">Enter the one time password sent to your Email.</div>
-        <input type="text" className="block w-full pl-3 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl
-          shadow-sm placeholder-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none
-          focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-        onChange={(e:React.ChangeEvent<HTMLInputElement>)=>setOTP(e.target.value)}
-        value={OTP}/>
-        {error && (
-            <div className="mt-2 mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <div className="text-gray-600 dark:text-gray-300 mb-4">Enter the 6-digit verification code sent to your email address.</div>
+          <input 
+            type="text" 
+            maxLength={6}
+            placeholder="Enter 6-digit OTP"
+            className="block w-full pl-3 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm placeholder-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-center text-lg font-mono tracking-widest"
+            onChange={(e:React.ChangeEvent<HTMLInputElement>)=>setOTP(e.target.value)}
+            value={OTP}
+          />
+          {error && (
+            <div className="mt-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
               <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
             </div>
           )}
         <button
-                type="submit"
-                disabled={OTP.length != 6}
-                className={`mt-4 w-15 flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm
-                font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2
-                focus:ring-green-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed
-                transition-colors disabled:bg-gray-700 bg-green-600 hover:bg-green-700 cursor-pointer`}
-        onClick={checkOTP}
+          type="submit"
+          disabled={OTP.length !== 6}
+          className={`mt-6 w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 ${
+            OTP.length === 6 
+              ? 'bg-green-600 hover:bg-green-700 cursor-pointer' 
+              : 'bg-gray-400 cursor-not-allowed'
+          }`}
+          onClick={checkOTP}
         >
-          Enter
+          Verify OTP
         </button>
       </Modal>
     

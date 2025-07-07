@@ -8,6 +8,7 @@ import SignUp from "./components/SignUp";
 import UserSignupData from "./components/UserSignupData";
 import UserPreference from "./components/UserPreference";
 import SearchProduct from "./components/SearchProduct";
+import EditProfile from "./components/EditProfile"
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/signup-detail" element={<UserSignupData />} />
           <Route path="/set-preference" element={<UserPreference />} />
           <Route path="/search-product" element={<SearchProduct />} />
+          <Route path="/edit-profile" element={<EditProfile/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>

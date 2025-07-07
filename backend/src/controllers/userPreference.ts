@@ -1,129 +1,233 @@
-import type { Response, NextFunction } from 'express';
-import { CustomRequest } from '../@types/express';
-import { 
-  checkExistingPreferences, 
-  insertPreferences, 
-  updatePreferences,
-  getPreferencesByUserId,
-  deletePreferences 
-} from '../db/userPreference';
+import { Response } from 'express';
 import pool from '../database';
+import { CustomRequest } from '../@types/express';
 
-export const saveSustainabilityPreferences = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+interface UserPreferences {
+  animalEthics: string[];
+  certifications: string[];
+  productType: string[];
+  packaging: string[];
+  materialSafety: string[];
+  distancePreference: string[];
+  additiveAwareness: string[];
+}
+
+// Helper function to get or create attribute IDs
+const getOrCreateAttributeId = async (category: string, value: string): Promise<number> => {
+  const client = await pool.connect();
+  try {
+    // Check if attribute exists
+    const existingAttribute = await client.query(
+      'SELECT attribute_id FROM attributes WHERE category = $1 AND value = $2',
+      [category, value]
+    );
+
+    if (existingAttribute.rows.length > 0) {
+       return existingAttribute.rows[0].attribute_id;
+    }
+
+    // Create new attribute if it doesn't exist
+    const displayName = value.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const newAttribute = await client.query(
+      'INSERT INTO attributes (category, value, display_name) VALUES ($1, $2, $3) RETURNING attribute_id',
+      [category, value, displayName]
+    );
+
+    return newAttribute.rows[0].attribute_id;
+  } finally {
+    client.release();
+  }
+};
+
+export const setUserPreferences = async (req: CustomRequest, res: Response): Promise<void> => {
   const client = await pool.connect();
   
   try {
     const userId = req.findUser?.userId;
-    const preferences = req.body;
-    console.log(userId);
-    console.log(preferences)
+    const preferences: UserPreferences = req.body;
 
     if (!userId) {
       res.status(401).json({
         status: false,
         message: 'User not authenticated'
+      });
+      return;
+    }
+
+    // Check if preferences object exists and is not null
+    if (!preferences || typeof preferences !== 'object') {
+      res.status(400).json({
+        status: false,
+        message: 'Invalid preferences data'
+      });
+      return;
+    }
+
+    // Validate preferences structure
+    const expectedCategories = [
+      'animalEthics',
+      'certifications', 
+      'productType',
+      'packaging',
+      'materialSafety',
+      'distancePreference',
+      'additiveAwareness'
+    ];
+
+    const invalidCategories = Object.keys(preferences).filter(
+      key => !expectedCategories.includes(key)
+    );
+
+    if (invalidCategories.length > 0) {
+      res.status(400).json({
+        status: false,
+        message: `Invalid preference categories: ${invalidCategories.join(', ')}`
       });
       return;
     }
 
     await client.query('BEGIN');
 
-    // Check if user already has preferences
-    const exists = await checkExistingPreferences(userId);
-    let result;
+    // Clear existing preferences for this user
+    await client.query(
+      'DELETE FROM user_preferences WHERE user_id = $1',
+      [userId]
+    );
 
-    if (exists) {
-      // Update existing preferences
-      result = await updatePreferences(userId, preferences);
-    } else {
-      // Insert new preferences
-      result = await insertPreferences(userId, preferences);
+    // Process each preference category
+    for (const [category, values] of Object.entries(preferences)) {
+      if (Array.isArray(values) && values.length > 0) {
+        for (const value of values) {
+          if (typeof value === 'string' && value.trim()) {
+            const attributeId = await getOrCreateAttributeId(category, value);
+            
+            // Insert user preference
+            await client.query(
+              'INSERT INTO user_preferences (user_id, attribute_id) VALUES ($1, $2)',
+              [userId, attributeId]
+            );
+          }
+        }
+      }
     }
-    
+
     await client.query('COMMIT');
 
-    res.status(200).json({
+    res.json({
       status: true,
-      message: 'Sustainability preferences saved successfully',
-      data: result
+      message: 'Preferences saved successfully',
+      data: {
+        userId,
+        preferencesCount: Object.values(preferences).flat().length
+      }
     });
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Error saving sustainability preferences:', error);
+    console.error('Error saving user preferences:', error);
     res.status(500).json({
       status: false,
-      message: 'Failed to save sustainability preferences',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Internal server error'
+      message: 'Internal server error while saving preferences'
     });
   } finally {
     client.release();
   }
 };
 
-export const getUserPreferences = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const getUserPreferences = async (req: CustomRequest, res: Response): Promise<void> => {
+  const client = await pool.connect();
+  
   try {
     const userId = req.findUser?.userId;
-
+    
     if (!userId) {
       res.status(401).json({
         status: false,
-        message: 'User not authenticated'
+        message: 'User not found or not authenticated'
       });
       return;
     }
 
-    const preferences = await getPreferencesByUserId(userId);
-
-    if (preferences.length === 0) {
-      res.status(404).json({
-        status: false,
-        message: 'No sustainability preferences found'
-      });
-      return;
-    }
-
+    const query = `
+      SELECT 
+        a.category,
+        a.value,
+        a.display_name,
+        up.created_at as preference_created_at
+      FROM user_preferences up
+      JOIN attributes a ON up.attribute_id = a.attribute_id
+      WHERE up.user_id = $1
+      ORDER BY a.category, a.value
+    `;
+    
+    const result = await client.query(query, [userId]);
+    
+    // Initialize preferences with empty arrays
+    const preferences: UserPreferences = {
+      animalEthics: [],
+      certifications: [],
+      productType: [],
+      packaging: [],
+      materialSafety: [],
+      distancePreference: [],
+      additiveAwareness: []
+    };
+    
+    // Group preferences by category
+    result.rows.forEach((row: any) => {
+      const category = row.category as keyof UserPreferences;
+      if (preferences[category]) {
+        preferences[category].push(row.value);
+      }
+    });
+    
     res.status(200).json({
       status: true,
-      message: 'Sustainability preferences retrieved successfully',
-      data: preferences[0]
+      message: 'Preferences retrieved successfully',
+      data: preferences
     });
-
+    
   } catch (error) {
-    console.error('Error retrieving sustainability preferences:', error);
+    console.error('Error in getUserPreferences:', error);
     res.status(500).json({
       status: false,
-      message: 'Failed to retrieve sustainability preferences',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Internal server error'
+      message: 'Failed to retrieve preferences',
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
+  } finally {
+    client.release();
   }
 };
 
-export const removeUserPreferences = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const checkUserPreferences = async (req: CustomRequest, res: Response): Promise<void> => {
   try {
     const userId = req.findUser?.userId;
 
+    // Validate userId
     if (!userId) {
       res.status(401).json({
-        status: false,
+        success: false,
         message: 'User not authenticated'
       });
       return;
     }
 
-    await deletePreferences(userId);
+    const result = await pool.query('SELECT user_id FROM user_preferences WHERE user_id = $1', [userId]);
+    const exists = result.rows.length > 0;
 
     res.status(200).json({
-      status: true,
-      message: 'Sustainability preferences deleted successfully'
+      success: true,
+      exists: exists,
+      message: exists ? 'User found in preferences' : 'User not found in preferences'
     });
-
+    return;
   } catch (error) {
-    console.error('Error deleting sustainability preferences:', error);
+    console.error('Error checking user preferences:', error);
     res.status(500).json({
-      status: false,
-      message: 'Failed to delete sustainability preferences',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Internal server error'
+      success: false,
+      exists: false,
+      message: 'Internal server error'
     });
+    return;
   }
 };

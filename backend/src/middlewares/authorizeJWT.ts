@@ -12,12 +12,21 @@ interface UserPayload extends JwtPayload {
 export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunction):Promise<void> => {
   const accessToken = req.cookies.ACCESS_TOKEN
   const refreshToken = req.cookies.REFRESH_TOKEN
-  let token = req.cookies.FIREBASE_TOKEN
-  if(!token){
+  let token
+  if(!accessToken){
+    token = req.cookies.FIREBASE_TOKEN
+  }
+  if(!token && !accessToken){
     token = req.body.token
   }
   if(token){
-    const decoded = await admin.auth().verifyIdToken(token)
+    let decoded
+    try{
+      decoded = await admin.auth().verifyIdToken(token)
+    }catch(err){
+      res.status(401).json({message:'not authorized',authorized:false})
+      return
+    }
     if(decoded.email){
       const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [decoded.email])
       const userId = existingUser.rows[0].id

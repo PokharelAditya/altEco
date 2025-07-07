@@ -71,3 +71,39 @@ export const sendMailController = async (req:Request,res:Response) => {
   
 }
 
+export const checkEmail = async (req:Request, res:Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ error: 'Email is required' });
+      return
+    }
+
+    // Check if user already exists with this email
+    const query = 'SELECT id FROM users WHERE email = $1';
+    const result = await pool.query(query, [email]);
+
+    if (result.rows.length > 0) {
+       res.status(200).json({ 
+        exists: true, 
+        message: 'Email is already registered' 
+      });
+      return
+    }
+
+     res.status(200).json({ 
+      exists: false, 
+      message: 'Email is available' 
+    });
+    return
+
+  } catch (error) {
+    console.error('Check email error:', error);
+     res.status(500).json({ 
+      error: 'Internal server error' 
+    });
+  }
+  return
+};
+
