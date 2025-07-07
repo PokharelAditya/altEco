@@ -17,7 +17,13 @@ export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunct
     token = req.body.token
   }
   if(token){
-    const decoded = await admin.auth().verifyIdToken(token)
+    let decoded
+    try{
+      decoded = await admin.auth().verifyIdToken(token)
+    }catch(err){
+      res.status(401).json({message:'not authorized',authorized:false})
+      return
+    }
     if(decoded.email){
       const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [decoded.email])
       const userId = existingUser.rows[0].id
