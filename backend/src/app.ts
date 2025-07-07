@@ -8,6 +8,7 @@ import signupRouter from './routes/signup'
 import userPreferenceRouter from './routes/userPreference'
 import editProfileRouter from './routes/editProfile'
 import cookieParser from 'cookie-parser'
+import recommendRoute from './routes/recommend';
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(cookieParser())
 app.use('/api', userRouter);
 app.use('/api', loginRouter)
 app.use('/api', signupRouter)
-app.use('/api', userPreferenceRouter)
+app.use('/api', recommendRoute);app.use('/api', userPreferenceRouter)
 app.use('/api', editProfileRouter)
 
 app.use((_req, _res, next) => {
