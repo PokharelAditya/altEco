@@ -19,7 +19,7 @@ function App() {
           <Route path = "/logout" element={<Logout/>}/>
           <Route path = "/signup" element={<SignUp/>}/>
           <Route path="/signup-detail" element={<UserSignupData/>}/>
-          <Route path="/set-preference" element={<UserPreference/>}/>
+          <Route path="/preferences" element={<UserPreference/>}/>
           <Route path="/edit-profile" element={<EditProfile/>}/>
         </Routes>
       </Router>

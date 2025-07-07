@@ -1,38 +1,35 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import { 
   Leaf, 
   Recycle, 
-  Globe, 
   Heart, 
   MapPin, 
   CheckCircle, 
   Package, 
-  BookOpen, 
   ShoppingBag,
   Save,
-  ArrowRight
+  ArrowRight,
+  AlertTriangle
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const UserPreference = () => {
   const [preferences, setPreferences] = useState({
-    materialSafety: [],
-    wasteImpact: [],
-    carbonImpact: [],
     animalEthics: [],
-    sourcing: [],
     certifications: [],
-    productTypes: [],
-    distancePreference: '',
+    productType: [],
     packaging: [],
-    educationEngagement: false
+    materialSafety: [],
+    distancePreference: [],
+    additiveAwareness: []
   });
-  const {user,loading} = useAuthContext()
-
+  
+  const { user, loading } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-
+  const [fetchingPreferences, setFetchingPreferences] = useState(true); // Add loading state for fetch
+  const navigate = useNavigate();
   const handleMultiSelect = (category, value) => {
     setPreferences(prev => ({
       ...prev,
@@ -42,19 +39,45 @@ const UserPreference = () => {
     }));
   };
 
-  const handleSingleSelect = (category, value) => {
-    setPreferences(prev => ({
-      ...prev,
-      [category]: value
-    }));
-  };
-
-  const handleToggle = (category) => {
-    setPreferences(prev => ({
-      ...prev,
-      [category]: !prev[category]
-    }));
-  };
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      if (!user) return; // Wait for user to be available
+      
+      setFetchingPreferences(true);
+      try {
+        const response = await fetch('/api/get-preferences', {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        const data = await response.json();
+        
+        if (data.status && data.data) {
+          // Ensure all categories exist in the response data
+          const fetchedPreferences = {
+            animalEthics: data.data.animalEthics || [],
+            certifications: data.data.certifications || [],
+            productType: data.data.productType || [],
+            packaging: data.data.packaging || [],
+            materialSafety: data.data.materialSafety || [],
+            distancePreference: data.data.distancePreference || [],
+            additiveAwareness: data.data.additiveAwareness || []
+          };
+          
+          setPreferences(fetchedPreferences);
+          // console.log('Fetched preferences:', fetchedPreferences);
+        } else {
+          // console.log('No preferences found or error:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching preferences:', error);
+      } finally {
+        setFetchingPreferences(false);
+      }
+    };
+    
+    fetchPreferences();
+  }, [user]); // Add user as dependency
 
   const handleSubmit = async (e) => {
     if (e) {
@@ -64,7 +87,7 @@ const UserPreference = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('/api/sustainability-preferences', {
+      const response = await fetch('/api/set-preferences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,10 +96,11 @@ const UserPreference = () => {
       });
       
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       if (data.status) {
         setSaved(true);
-        console.log('Preferences saved successfully:', data);
+        // console.log('Preferences saved successfully:', data);
+        navigate('/');
         setTimeout(() => setSaved(false), 3000);
       } else {
         throw new Error(data.message || 'Failed to save preferences');
@@ -121,6 +145,18 @@ const UserPreference = () => {
     </button>
   );
 
+  // Show loading spinner while fetching preferences
+  if (fetchingPreferences) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+          <span className="text-gray-600 dark:text-gray-400">Loading preferences...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
@@ -151,66 +187,6 @@ const UserPreference = () => {
         )}
 
         <div className="space-y-6">
-          {/* Material Safety */}
-          <PreferenceSection 
-            title="Material Safety" 
-            icon={Leaf}
-            description="What materials do you prefer to avoid or prioritize?"
-          >
-            <div className="flex flex-wrap gap-3">
-              {['Plastic-free', 'Biodegradable', 'Non-toxic', 'BPA-free', 'Phthalate-free'].map(option => (
-                <MultiSelectButton
-                  key={option}
-                  value={option}
-                  selected={preferences.materialSafety.includes(option)}
-                  onClick={(value) => handleMultiSelect('materialSafety', value)}
-                >
-                  {option}
-                </MultiSelectButton>
-              ))}
-            </div>
-          </PreferenceSection>
-
-          {/* Waste Impact */}
-          <PreferenceSection 
-            title="Waste Impact" 
-            icon={Recycle}
-            description="How do you prefer products to handle end-of-life disposal?"
-          >
-            <div className="flex flex-wrap gap-3">
-              {['Recyclable', 'Compostable', 'Refillable', 'Reusable', 'Zero-waste'].map(option => (
-                <MultiSelectButton
-                  key={option}
-                  value={option}
-                  selected={preferences.wasteImpact.includes(option)}
-                  onClick={(value) => handleMultiSelect('wasteImpact', value)}
-                >
-                  {option}
-                </MultiSelectButton>
-              ))}
-            </div>
-          </PreferenceSection>
-
-          {/* Carbon Impact */}
-          <PreferenceSection 
-            title="Carbon Impact" 
-            icon={Globe}
-            description="What carbon footprint considerations matter to you?"
-          >
-            <div className="flex flex-wrap gap-3">
-              {['Low carbon footprint', 'Carbon-neutral', 'Carbon-negative', 'Renewable energy made'].map(option => (
-                <MultiSelectButton
-                  key={option}
-                  value={option}
-                  selected={preferences.carbonImpact.includes(option)}
-                  onClick={(value) => handleMultiSelect('carbonImpact', value)}
-                >
-                  {option}
-                </MultiSelectButton>
-              ))}
-            </div>
-          </PreferenceSection>
-
           {/* Animal Ethics */}
           <PreferenceSection 
             title="Animal Ethics" 
@@ -218,34 +194,14 @@ const UserPreference = () => {
             description="What are your preferences regarding animal welfare?"
           >
             <div className="flex flex-wrap gap-3">
-              {['Cruelty-free', 'Vegan', 'Not tested on animals', 'Ethically sourced animal products'].map(option => (
+              {['vegan'].map(option => (
                 <MultiSelectButton
                   key={option}
                   value={option}
                   selected={preferences.animalEthics.includes(option)}
                   onClick={(value) => handleMultiSelect('animalEthics', value)}
                 >
-                  {option}
-                </MultiSelectButton>
-              ))}
-            </div>
-          </PreferenceSection>
-
-          {/* Sourcing */}
-          <PreferenceSection 
-            title="Sourcing" 
-            icon={MapPin}
-            description="How do you prefer products to be sourced?"
-          >
-            <div className="flex flex-wrap gap-3">
-              {['Locally made', 'Ethically sourced', 'Fair trade', 'Small business', 'Women-owned'].map(option => (
-                <MultiSelectButton
-                  key={option}
-                  value={option}
-                  selected={preferences.sourcing.includes(option)}
-                  onClick={(value) => handleMultiSelect('sourcing', value)}
-                >
-                  {option}
+                  {option.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </MultiSelectButton>
               ))}
             </div>
@@ -258,65 +214,35 @@ const UserPreference = () => {
             description="Which certifications do you trust and value?"
           >
             <div className="flex flex-wrap gap-3">
-              {['USDA Organic', 'GOTS', 'FSC', 'B-Corp', 'Cradle to Cradle', 'Energy Star'].map(option => (
+              {['fsc', 'usda-organic', 'fair-trade'].map(option => (
                 <MultiSelectButton
                   key={option}
                   value={option}
                   selected={preferences.certifications.includes(option)}
                   onClick={(value) => handleMultiSelect('certifications', value)}
                 >
-                  {option}
+                  {option.replace(/-/g, ' ').toUpperCase()}
                 </MultiSelectButton>
               ))}
             </div>
           </PreferenceSection>
 
-          {/* Product Types */}
+          {/* Product Type */}
           <PreferenceSection 
-            title="Product Types" 
+            title="Product Type" 
             icon={ShoppingBag}
             description="What types of products are you most interested in?"
           >
             <div className="flex flex-wrap gap-3">
-              {['Food', 'Clothes', 'Tech', 'Home', 'Skincare', 'Cleaning', 'Baby products'].map(option => (
+              {['plant-based', 'dairy', 'canned', 'gluten-free'].map(option => (
                 <MultiSelectButton
                   key={option}
                   value={option}
-                  selected={preferences.productTypes.includes(option)}
-                  onClick={(value) => handleMultiSelect('productTypes', value)}
+                  selected={preferences.productType.includes(option)}
+                  onClick={(value) => handleMultiSelect('productType', value)}
                 >
-                  {option}
+                  {option.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </MultiSelectButton>
-              ))}
-            </div>
-          </PreferenceSection>
-
-          {/* Distance Preference */}
-          <PreferenceSection 
-            title="Distance Preference" 
-            icon={MapPin}
-            description="How far are you willing to source products from?"
-          >
-            <div className="space-y-3">
-              {[
-                { value: 'local', label: 'Local (within 50 miles)' },
-                { value: 'regional', label: 'Regional (within 200 miles)' },
-                { value: 'national', label: 'National (within country)' },
-                { value: 'global-offset', label: 'Global (with carbon offset)' },
-                { value: 'global', label: 'Global (no restrictions)' }
-              ].map(option => (
-                <div key={option.value} className="flex items-center cursor-pointer" onClick={() => handleSingleSelect('distancePreference', option.value)}>
-                  <div className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
-                    preferences.distancePreference === option.value 
-                      ? 'border-green-600 bg-green-600' 
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}>
-                    {preferences.distancePreference === option.value && (
-                      <div className="w-2 h-2 rounded-full bg-white"></div>
-                    )}
-                  </div>
-                  <span className="text-gray-700 dark:text-gray-300">{option.label}</span>
-                </div>
               ))}
             </div>
           </PreferenceSection>
@@ -328,38 +254,76 @@ const UserPreference = () => {
             description="What packaging preferences do you have?"
           >
             <div className="flex flex-wrap gap-3">
-              {['Minimal packaging', 'Plastic-free packaging', 'Recycled packaging', 'Reusable packaging'].map(option => (
+              {['recyclable', 'compostable'].map(option => (
                 <MultiSelectButton
                   key={option}
                   value={option}
                   selected={preferences.packaging.includes(option)}
                   onClick={(value) => handleMultiSelect('packaging', value)}
                 >
-                  {option}
+                  {option.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </MultiSelectButton>
               ))}
             </div>
           </PreferenceSection>
 
-          {/* Education Engagement */}
+          {/* Material Safety */}
           <PreferenceSection 
-            title="Education & Engagement" 
-            icon={BookOpen}
-            description="Would you like to receive educational content about sustainability?"
+            title="Material Safety" 
+            icon={Leaf}
+            description="What materials do you prefer to avoid or prioritize?"
           >
-            <div className="flex items-center cursor-pointer" onClick={() => handleToggle('educationEngagement')}>
-              <div className={`w-4 h-4 rounded border-2 mr-3 flex items-center justify-center ${
-                preferences.educationEngagement 
-                  ? 'border-green-600 bg-green-600' 
-                  : 'border-gray-300 dark:border-gray-600'
-              }`}>
-                {preferences.educationEngagement && (
-                  <CheckCircle className="w-3 h-3 text-white" />
-                )}
-              </div>
-              <span className="text-gray-700 dark:text-gray-300">
-                Yes, show me tips and articles matching my preferences
-              </span>
+            <div className="flex flex-wrap gap-3">
+              {['biodegradable', 'plastic-free'].map(option => (
+                <MultiSelectButton
+                  key={option}
+                  value={option}
+                  selected={preferences.materialSafety.includes(option)}
+                  onClick={(value) => handleMultiSelect('materialSafety', value)}
+                >
+                  {option.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </MultiSelectButton>
+              ))}
+            </div>
+          </PreferenceSection>
+
+          {/* Distance Preference */}
+          <PreferenceSection 
+            title="Distance Preference" 
+            icon={MapPin}
+            description="How far are you willing to source products from?"
+          >
+            <div className="flex flex-wrap gap-3">
+              {['local', 'regional', 'global'].map(option => (
+                <MultiSelectButton
+                  key={option}
+                  value={option}
+                  selected={preferences.distancePreference.includes(option)}
+                  onClick={(value) => handleMultiSelect('distancePreference', value)}
+                >
+                  {option.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </MultiSelectButton>
+              ))}
+            </div>
+          </PreferenceSection>
+
+          {/* Additive Awareness */}
+          <PreferenceSection 
+            title="Additive Awareness" 
+            icon={AlertTriangle}
+            description="Which additives do you prefer to avoid or include?"
+          >
+            <div className="flex flex-wrap gap-3">
+              {['avoid-artificial-preservatives', 'avoid-colorants', 'avoid-antioxidants', 'avoid-stabilizers'].map(option => (
+                <MultiSelectButton
+                  key={option}
+                  value={option}
+                  selected={preferences.additiveAwareness.includes(option)}
+                  onClick={(value) => handleMultiSelect('additiveAwareness', value)}
+                >
+                  {option.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </MultiSelectButton>
+              ))}
             </div>
           </PreferenceSection>
 

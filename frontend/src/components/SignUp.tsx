@@ -107,6 +107,23 @@ const SignUp = () => {
       setError('You entered the wrong OTP.')
     }
   }
+    const checkUserPreferences = async () => {
+    try {
+      const response = await fetch(`/api/check-user-preferences`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      console.log(data)
+      return data.exists;
+    } catch (error) {
+      console.error('Error checking user preferences:', error);
+      return false;
+    }
+  };
 
   const handleSubmit = async () => {
     setIsLoading(true)
@@ -160,7 +177,15 @@ const response = await fetch('/api/signup', {
       })
       const data = await response.json()
       if(data.status){
+                {
+          const userPreferences = await checkUserPreferences();
+          if (!userPreferences){
+            navigate('/preferences')
+          }
+        else{
         navigate('/')
+        }
+      }
       }else{
         navigate('/signup-detail')
       }
@@ -475,7 +500,7 @@ const response = await fetch('/api/signup', {
           disabled={OTP.length !== 6}
           className={`mt-6 w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 ${
             OTP.length === 6 
-              ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' 
+              ? 'bg-green-600 hover:bg-green-700 cursor-pointer' 
               : 'bg-gray-400 cursor-not-allowed'
           }`}
           onClick={checkOTP}

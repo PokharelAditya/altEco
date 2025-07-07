@@ -20,7 +20,8 @@ app.use(cookieParser())
 app.use('/api', userRouter);
 app.use('/api', loginRouter)
 app.use('/api', signupRouter)
-app.use('/api', recommendRoute);app.use('/api', userPreferenceRouter)
+app.use('/api', recommendRoute);
+app.use('/api', userPreferenceRouter)
 app.use('/api', editProfileRouter)
 
 app.use((_req, _res, next) => {

@@ -39,6 +39,24 @@ const Login: React.FC = () => {
     if (error) setError('') // Clear error when user starts typing
   }
 
+  const checkUserPreferences = async () => {
+    try {
+      const response = await fetch(`/api/check-user-preferences`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+                credentials: 'include'
+      });
+      
+      const data = await response.json();
+      return data.exists;
+    } catch (error) {
+      console.error('Error checking user preferences:', error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     setIsLoading(true)
@@ -59,8 +77,14 @@ const Login: React.FC = () => {
       const data = await response.json()
       
       if (data.login) {
+        const userPreferences = await checkUserPreferences();
+        if (userPreferences) {
         navigate('/')
         setUser(prev=>({...prev,isLoggedIn:true}))
+        }
+        else {
+          navigate('/preferences')
+          }
       } else {
         setError('Invalid email or password. Please try again.')
       }
@@ -91,7 +115,16 @@ const Login: React.FC = () => {
       })
       const data = await response.json()
       if(data.status){
-        navigate('/')
+        {
+          const userPreferences = await checkUserPreferences();
+          if (userPreferences){
+            navigate('/')
+          }
+        else{
+        navigate('/preferences')
+        }
+      }
+
       }else{
         navigate('/signup-detail')
       }
