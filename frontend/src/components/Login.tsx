@@ -77,11 +77,12 @@ const Login: React.FC = () => {
       const data = await response.json()
       
       if (data.login) {
+        setUser(prev=>({...prev,isLoggedIn:true}))
         const userPreferences = await checkUserPreferences();
+        console.log(userPreferences)
         if (userPreferences) {
         navigate('/')
-        setUser(prev=>({...prev,isLoggedIn:true}))
-        }
+                }
         else {
           navigate('/preferences')
           }

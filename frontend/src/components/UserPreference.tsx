@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import { 
   Leaf, 
-  Recycle, 
   Heart, 
   MapPin, 
   CheckCircle, 
   Package, 
   ShoppingBag,
   Save,
-  ArrowRight,
   AlertTriangle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +23,7 @@ const UserPreference = () => {
     additiveAwareness: []
   });
   
-  const { user, loading } = useAuthContext();
+  const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [fetchingPreferences, setFetchingPreferences] = useState(true); // Add loading state for fetch
@@ -343,7 +341,6 @@ const UserPreference = () => {
                 <>
                   <Save className="w-5 h-5 mr-2" />
                   Save Preferences
-                  <ArrowRight className="w-5 h-5 ml-2" />
                 </>
               )}
             </button>

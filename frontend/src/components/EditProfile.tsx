@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
-import { User, Edit3 } from 'lucide-react'
+import { User, Edit3,Save } from 'lucide-react'
 import EditFieldModal from './subcomponents/EditFieldModal'
 // import { useNavigate } from 'react-router-dom'
-
+import { Link } from 'react-router-dom'
 const EditProfile = () => {
   const { user, setUser } = useAuthContext()
 //   const navigate= useNavigate();
@@ -117,7 +117,7 @@ const EditProfile = () => {
                 <img 
                   src={user.photoURL} 
                   alt="Profile" 
-                  className="w-24 h-24 rounded-full border-4 border-blue-500"
+                  className="w-24 h-24 rounded-full border-4 border-green-600"
                 />
               ) : (
                 <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center">
@@ -134,7 +134,7 @@ const EditProfile = () => {
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Email Address</p>
                 <p className="text-lg text-gray-900 dark:text-white">{user?.email}</p>
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500 px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded">
+              <div className="text-xs text-gray-400 dark:text-gray-500 px-2 py-1">
                 Cannot be changed
               </div>
             </div>
@@ -208,6 +208,18 @@ const EditProfile = () => {
               </button>
             </div>
           </div>
+
+          {/*update preferences*/} 
+
+
+<div className="pt-6">
+  <Link to={'/preferences'}
+    className="flex items-center justify-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-900 transition-all duration-300"
+  >
+    <Save className="w-5 h-5 mr-2" />
+    Update Preferences
+  </Link>
+</div>
 
           {/* Account Info */}
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">

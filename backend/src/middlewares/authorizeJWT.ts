@@ -12,8 +12,11 @@ interface UserPayload extends JwtPayload {
 export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunction):Promise<void> => {
   const accessToken = req.cookies.ACCESS_TOKEN
   const refreshToken = req.cookies.REFRESH_TOKEN
-  let token = req.cookies.FIREBASE_TOKEN
-  if(!token){
+  let token
+  if(!accessToken){
+    token = req.cookies.FIREBASE_TOKEN
+  }
+  if(!token && !accessToken){
     token = req.body.token
   }
   if(token){
