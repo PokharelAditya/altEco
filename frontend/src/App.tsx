@@ -6,9 +6,10 @@ import { AuthContextProvider } from './context/AuthContext'
 import Logout from './components/Logout'
 import SignUp from './components/SignUp'
 import UserSignupData from "./components/UserSignupData"
+import UserPreference from "./components/UserPreference"
+import EditProfile from "./components/EditProfile"
 import LandingPage from "./components/LandingPage";
-import AboutUsBlog from "./components/AboutUs";
-
+import AboutUsBlog from "./components/AboutUs"
 function App() {
   return (
     <AuthContextProvider>
@@ -21,7 +22,8 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path = "/aboutus" element = {<AboutUsBlog/>}/>
           <Route path="/signup-detail" element={<UserSignupData/>}/>
-          {/* <Route path="/home" element={<LandingPage/>}/> */}
+          <Route path="/preferences" element={<UserPreference/>}/>
+          <Route path="/edit-profile" element={<EditProfile/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>

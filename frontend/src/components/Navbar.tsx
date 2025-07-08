@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
 
   return (
     <div>
-      <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 dark:bg-gray-900/95 max-w-[100vw]">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 dark:bg-gray-900/95">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-6">
           <a
             href="/"
@@ -184,7 +184,7 @@ const Navbar: React.FC = () => {
                         `h-11 flex items-center px-3 py-2.5 rounded-lg transition-colors ${
                           isActive
                             ? "bg-green-600/20 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                            : "text-gray-600 hover:bg-gray-50/50 dark:text-gray-300 dark:hover:bg-gray-600/50"
+                            : " text-gray-600 hover:bg-green-600/20 border dark:border-gray-300/60 dark:text-gray-300"
                         }`
                       }
                     >
@@ -197,6 +197,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </nav>
+      <div className="h-[88px]"></div>
     </div>
   );
 };

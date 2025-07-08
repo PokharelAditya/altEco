@@ -30,19 +30,20 @@ export const useAuthContext = (): UserContext => {
   return context
 }
 
-export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User>({
-    isLoggedIn: false,
-    userId: '',
-    email: '',
-    photoURL: '',
-    displayName: '',
-    gender: '',
-    createdAt: '',
-    dob: ''
-  })
-  
-  const [loading, setLoading] = useState<boolean>(true)
+export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
+
+  const [user,setUser] = useState<User>(
+    {
+      isLoggedIn:false,
+      userId:'',
+      email:'',
+      photoURL:'',
+      displayName:'',
+      gender:'',
+      createdAt:'',
+      dob:''
+    })
+  const [loading,setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | undefined
@@ -156,42 +157,22 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
                 dob: ''
               })
             }
-          } catch (error) {
-            console.error('Error in Firebase auth flow:', error)
-            setUserLoggedOut()
-          }
-        } else {
-          setUserLoggedOut()
+          })
         }
+      }
+      catch(err){
+        console.error(err)
+      }
+      finally{
         setLoading(false)
-      })
-    }
-
-    const setUserLoggedOut = () => {
-      setUser({
-        isLoggedIn: false,
-        userId: '',
-        email: '',
-        photoURL: '',
-        displayName: '',
-        gender: '',
-        createdAt: '',
-        dob: ''
-      })
-    }
-
-    checkAuth()
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe()
       }
     }
-  }, [])
+    checkAuth()
+    if(count) return ()=>unsubscribe()
+  },[user.isLoggedIn])
 
-  return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
-      {children}
-    </AuthContext.Provider>
-  )
+
+  return <AuthContext.Provider value={{user,setUser,loading}}>
+    {children}
+  </AuthContext.Provider>
 }

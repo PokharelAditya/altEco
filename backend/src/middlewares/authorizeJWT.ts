@@ -12,18 +12,30 @@ interface UserPayload extends JwtPayload {
 export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunction):Promise<void> => {
   const accessToken = req.cookies.ACCESS_TOKEN
   const refreshToken = req.cookies.REFRESH_TOKEN
-  const {token} = req.body
+  let token = req.cookies.FIREBASE_TOKEN
+  if(!token){
+    token = req.body.token
+  }
   if(token){
-    const decoded = await admin.auth().verifyIdToken(token)
-    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [decoded.email])
-    const userId = existingUser.rows[0].id
-
-    req.findUser = {
-      userId,
-      email:decoded.email || ''
+    let decoded
+    try{
+      decoded = await admin.auth().verifyIdToken(token)
+    }catch(err){
+      res.status(401).json({message:'not authorized',authorized:false})
+      return
     }
-    next()
-    return
+    if(decoded.email){
+      const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [decoded.email])
+      const userId = existingUser.rows[0].id
+
+      req.findUser = {
+        userId,
+        email:decoded.email
+      }
+      if(!req.cookies.FIREBASE_TOKEN) res.cookie('FIREBASE_TOKEN',token,{httpOnly:true})
+      next()
+      return
+    }
   }
   if(!accessToken){
     res.status(401).json({message:'not authorized',authorized:false})
@@ -61,4 +73,3 @@ export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunct
     }
   }
 }
-

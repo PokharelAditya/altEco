@@ -97,7 +97,7 @@ const UserSignupData = () => {
       const data = await response.json()
       if(data.status){
         setUser(prev => ({...prev,isLoggedIn:true}))
-        navigate('/')
+        navigate('/preferences')
       } else {
         setError('Signup failed. Please try again.')
         navigate('/signup')
