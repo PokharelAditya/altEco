@@ -24,7 +24,8 @@ const UserPreference = () => {
     distancePreference: [],
     additiveAwareness: []
   });
-  
+
+
   const { user, loading } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -51,6 +52,7 @@ const UserPreference = () => {
           }
         });
         const data = await response.json();
+        console.log(data)
         
         if (data.status && data.data) {
           // Ensure all categories exist in the response data
