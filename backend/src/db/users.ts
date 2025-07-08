@@ -12,4 +12,10 @@ async function createNewUser(userId:string, name:string, email:string, hashedPas
       )
 }
 
-export { getUserByEmail , createNewUser}
+async function setUserPhotoUrl(photo_url: string, email: string) {
+    await pool.query(
+        `UPDATE users SET photo_url=$1 WHERE email = $2`,[photo_url,email]
+    )
+}
+
+export { getUserByEmail , createNewUser, setUserPhotoUrl}

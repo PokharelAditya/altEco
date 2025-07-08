@@ -1,12 +1,9 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid'
-<<<<<<< HEAD
-import { getUserByEmail, createNewUser } from '../db/users'
-=======
+import { getUserByEmail, createNewUser, setUserPhotoUrl } from '../db/users'
 import sendMail from '../util/sendMail'
 import generateOTP from '../util/generateOTP'
->>>>>>> origin/slayer
 
 export const signupUser = async (req: Request, res: Response) => {
   const { name, email, password, dateOfBirth, gender } = req.body
@@ -46,26 +43,16 @@ export const signupDetail = async (req: Request, res: Response) => {
   }
 }
 
-<<<<<<< HEAD
-export const checkAccount = async (req: Request, res: Response) => {
-  const { email } = req.body
-  const existingUser = await getUserByEmail(email)
-  if (existingUser[0].email === email) {
-    res.status(200).json({ status: true })
-  } else {
-    res.status(404).json({ status: false })
-=======
 export const checkAccount = async (req:Request,res:Response) => {
   const {email,photoURL} = req.body
-  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-  if(existingUser.rows[0].email === email){
-    if(!existingUser.rows[0].photo_url){
-      await pool.query(`UPDATE users SET photo_url=$1 WHERE email = $2`,[photoURL,email]) 
+  const existingUser = await getUserByEmail(email)
+  if(existingUser[0].email === email){
+    if(!existingUser[0].photo_url){
+      await setUserPhotoUrl(email, photoURL)
     }
     res.status(200).json({status:true})
   }else{
     res.status(404).json({status:false})
->>>>>>> origin/slayer
   }
 
 }
@@ -89,10 +76,9 @@ export const checkEmail = async (req:Request, res:Response) => {
     }
 
     // Check if user already exists with this email
-    const query = 'SELECT id FROM users WHERE email = $1';
-    const result = await pool.query(query, [email]);
+    const result = await getUserByEmail(email)
 
-    if (result.rows.length > 0) {
+    if (result.length > 0) {
        res.status(200).json({ 
         exists: true, 
         message: 'Email is already registered' 

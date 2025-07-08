@@ -1,11 +1,7 @@
 import { RequestHandler } from 'express'
 import type {Response} from 'express'
 import { CustomRequest } from '../@types/express'
-<<<<<<< HEAD
 import { getUserByEmail } from '../db/users'
-=======
-import pool from '../database'
->>>>>>> origin/slayer
 
 export const loginController:RequestHandler = (_req:CustomRequest,res:Response) => {
 
