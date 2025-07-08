@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import pool from '../database';
+import pool from '../db/setupDB';
 import { CustomRequest } from '../@types/express';
 
 interface UserPreferences {

@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS product_certification (
+    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    certification_id UUID NOT NULL,
+    PRIMARY KEY (product_id, certification_id)
+);
+
+
+
+CREATE TABLE IF NOT EXISTS product_tags (
+    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    tag_id UUID NOT NULL,
+    PRIMARY KEY (product_id, tag_id)
+);
+
+

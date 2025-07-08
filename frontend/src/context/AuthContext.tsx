@@ -31,26 +31,38 @@ export const useAuthContext = (): UserContext => {
 }
 
 export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
+  const [user, setUser] = useState<User>({
+    isLoggedIn: false,
+    userId: '',
+    email: '',
+    photoURL: '',
+    displayName: '',
+    gender: '',
+    createdAt: '',
+    dob: ''
+  })
+  const [loading, setLoading] = useState<boolean>(true)
 
-  const [user,setUser] = useState<User>(
-    {
-      isLoggedIn:false,
-      userId:'',
-      email:'',
-      photoURL:'',
-      displayName:'',
-      gender:'',
-      createdAt:'',
-      dob:''
+  // Helper to reset user state
+  const setUserLoggedOut = () => {
+    setUser({
+      isLoggedIn: false,
+      userId: '',
+      email: '',
+      photoURL: '',
+      displayName: '',
+      gender: '',
+      createdAt: '',
+      dob: ''
     })
-  const [loading,setLoading] = useState<boolean>(false)
+  }
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | undefined
-    
+
     const checkAuth = async (): Promise<void> => {
+      setLoading(true)
       try {
-        // Check if API endpoint exists and returns valid JSON
         const response = await fetch('/api/auth', {
           method: 'POST',
           headers: { 
@@ -60,29 +72,19 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
           credentials: 'include',
           body: JSON.stringify({})
         })
-        
-        // Check if response is ok and has content
-        if (!response.ok) {
-          console.warn(`API returned ${response.status}: ${response.statusText}`)
-          throw new Error(`HTTP ${response.status}`)
-        }
 
-        // Check if response has content
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
         const text = await response.text()
-        if (!text || text.trim() === '') {
-          console.warn('API returned empty response')
-          throw new Error('Empty response from server')
-        }
+        if (!text || text.trim() === '') throw new Error('Empty response from server')
 
-        // Try to parse JSON
         let data
         try {
           data = JSON.parse(text)
-        } catch (parseError) {
-          console.error('Failed to parse JSON response:', text)
+        } catch {
           throw new Error('Invalid JSON response from server')
         }
-        
+
         if (data.login) {
           setUser({
             isLoggedIn: true,
@@ -96,12 +98,9 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
           })
           setLoading(false)
         } else {
-          // Fallback to Firebase auth check
           handleFirebaseAuth()
         }
-      } catch (err) {
-        console.error('Auth API check failed:', err)
-        // Fallback to Firebase auth check when API fails
+      } catch {
         handleFirebaseAuth()
       }
     }
@@ -111,8 +110,6 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
         if (currUser?.email) {
           try {
             const token = await currUser.getIdToken()
-            
-            // Try API call with token
             const response = await fetch('/api/auth', {
               method: 'POST',
               headers: {
@@ -145,7 +142,6 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
                 setUserLoggedOut()
               }
             } else {
-              // API failed, but user has Firebase auth - set basic info
               setUser({
                 isLoggedIn: true,
                 userId: currUser.uid,
@@ -157,22 +153,28 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
                 dob: ''
               })
             }
-          })
+          } catch {
+            setUserLoggedOut()
+          } finally {
+            setLoading(false)
+          }
+        } else {
+          setUserLoggedOut()
+          setLoading(false)
         }
-      }
-      catch(err){
-        console.error(err)
-      }
-      finally{
-        setLoading(false)
-      }
+      })
     }
+
     checkAuth()
-    if(count) return ()=>unsubscribe()
-  },[user.isLoggedIn])
 
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
+  }, [])
 
-  return <AuthContext.Provider value={{user,setUser,loading}}>
-    {children}
-  </AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, setUser, loading }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }

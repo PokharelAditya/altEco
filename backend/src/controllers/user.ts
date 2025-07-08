@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import pool from "../database";
+import pool from "../db/setupDB";
 
 export const getUser :RequestHandler = async (_req,res,next) => {
   try {
