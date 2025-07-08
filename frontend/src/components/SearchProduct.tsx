@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import BarcodeScanner from "./subcomponents/BarcodeScanner";
 import PromptInput from "./subcomponents/PromptInput";
+import { useAuthContext } from "../context/AuthContext"; 
 
 const SearchProduct: React.FC = () => {
+
+  const {user} = useAuthContext()
+
   const [method, setMethod] = useState<string>("prompt");
 
   type option = {
@@ -58,6 +62,19 @@ const SearchProduct: React.FC = () => {
     },
   ];
 
+  let input: {
+    userId: string,
+    type?: string,
+    data?: string
+  } = { 
+  userId: user.userId
+    };
+
+  const handleSubmit = (type: string, data:string):void => {
+    input.type = type
+    input.data = data
+  }
+
   return (
     <div className="flex-col mx-4 my-8 bg-gray-50 dark:bg-gray-900">
       <div className="flex my-4 max-w-2xl mx-auto shadow-lg rounded-full">
@@ -74,7 +91,7 @@ const SearchProduct: React.FC = () => {
           </button>
         ))}
       </div>
-      {method === "barcode" ? <BarcodeScanner /> : <PromptInput />}
+      {method === "barcode" ? <BarcodeScanner onScan={handleSubmit} /> : <PromptInput onSubmit={handleSubmit}/>}
     </div>
   );
 };

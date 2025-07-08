@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 
-const BarcodeScanner: React.FC = () => {
+interface BarcodeScannerProps {
+  onScan: (type: string, data: string) => void;
+}
+
+const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
   const [code, setCode] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -9,26 +13,41 @@ const BarcodeScanner: React.FC = () => {
     if (!code) {
       const codeReader = new BrowserMultiFormatReader();
 
-      codeReader.decodeFromVideoDevice(
+      /* const promise = */ codeReader.decodeFromVideoDevice(
         undefined,
         videoRef.current!,
         (result, _, controls) => {
           if (result) {
             setCode(result.getText());
             controls.stop();
+            // const video = videoRef.current;
+            // const stream = video?.srcObject as MediaStream;
+            // stream.getTracks().forEach((track) => track.stop());
+            // if (video) {
+            //   video.srcObject = null;
+            //   video.removeAttribute("src");
+            //   video.load();
+            // }
+            // promise.then((controlPromise) => {controlPromise.stop()})
           }
         },
       );
     }
   }, [code]);
 
+  const handleSubmit = (): void => {
+    if (code.trim()) {
+      onScan("barcode", code.trim());
+    }
+  };
+
   return (
     <>
-      <div className="pt-8">
-        {code === "" ? (
+      <div className="flex py-8 justify-center">
+        {code==="" ? (
           <video
             ref={videoRef}
-            className="w-full max-h-[70svh] rounded-2xl object-cover"
+            className="w-full max-w-2xl max-h-[70svh] rounded-2xl object-cover"
           />
         ) : (
           <div className="flex-col">
@@ -45,7 +64,10 @@ const BarcodeScanner: React.FC = () => {
               >
                 Cancel
               </button>
-              <button className="flex items-center gap-2 mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 hover:shadow-md cursor-pointer transition-all duration-300">
+              <button
+                onClick={() => handleSubmit()}
+                className="flex items-center gap-2 mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 hover:shadow-md cursor-pointer transition-all duration-300"
+              >
                 <svg
                   width="20"
                   height="20"
