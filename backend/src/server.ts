@@ -1,6 +1,6 @@
-import app from "./app";
-import env from "./util/ValidateEnv";
-import pool from "./database";
+import app from './app';
+import env from './util/ValidateEnv';
+import pool from '../src/db/setupDB';
 
 const port = env.PORT || 6666;
 

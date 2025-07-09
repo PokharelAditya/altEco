@@ -3,7 +3,7 @@ import jwt,{JwtPayload} from 'jsonwebtoken'
 import { generateAccessToken } from '../util/generateToken'
 import { CustomRequest } from '../@types/express'
 import admin from '../firebase'
-import pool from '../database'
+import pool from '../db/setupDB'
 
 interface UserPayload extends JwtPayload {
   userId: string

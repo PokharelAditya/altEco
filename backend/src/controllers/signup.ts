@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
-import  pool from "../database"
 import { v4 as uuidv4 } from 'uuid'
+import { getUserByEmail, createNewUser, setUserPhotoUrl } from '../db/users'
 import sendMail from '../util/sendMail'
 import generateOTP from '../util/generateOTP'
 
@@ -9,9 +9,10 @@ export const signupUser = async (req: Request, res: Response) => {
   const { name, email, password, dateOfBirth, gender } = req.body
   try {
     // Check if user already exists
-    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-    if (existingUser.rows.length > 0) {
-    res.status(400).json({ error: 'Email already in use' })
+    const existingUser = await getUserByEmail(email)
+    if (existingUser.length > 0) {
+      res.status(400).json({ error: 'Email already in use' })
+      return
     }
 
     // Hash the password
@@ -19,10 +20,7 @@ export const signupUser = async (req: Request, res: Response) => {
     const userId = uuidv4()
 
     // Insert new user into the DB
-    await pool.query(
-      'INSERT INTO users (id, name, email, hashed_password, DOB, gender) VALUES ($1, $2, $3, $4, $5, $6)',
-      [userId, name, email, hashedPassword, dateOfBirth, gender]
-    )
+    await createNewUser(userId, name, email, hashedPassword, dateOfBirth, gender, '')
 
     res.status(201).json({ message: 'User registered successfully' })
   } catch (err) {
@@ -31,29 +29,26 @@ export const signupUser = async (req: Request, res: Response) => {
   }
 }
 
-export const signupDetail = async (req:Request,res:Response) => {
-  const {email,displayName,photoURL,password,dob,gender} = req.body
+export const signupDetail = async (req: Request, res: Response) => {
+  const { email, displayName, photoURL, password, dob, gender } = req.body
 
-  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-  if(!existingUser.rows[0]){
+  const existingUser = await getUserByEmail(email)
+  if (!existingUser[0]) {
     const userId = uuidv4()
     const hashedPassword = await bcrypt.hash(password, 10)
-    await pool.query(
-      'INSERT INTO users (id, name, email, hashed_password, DOB, gender, photo_url) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-      [userId, displayName, email, hashedPassword, dob, gender,photoURL]
-    )
-    res.status(201).json({status:true})
-  }else{
-    res.status(400).json({status:false})
+    await createNewUser(userId, displayName, email, hashedPassword, dob, gender, photoURL)
+    res.status(201).json({ status: true })
+  } else {
+    res.status(400).json({ status: false })
   }
 }
 
 export const checkAccount = async (req:Request,res:Response) => {
   const {email,photoURL} = req.body
-  const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-  if(existingUser.rows[0].email === email){
-    if(!existingUser.rows[0].photo_url){
-      await pool.query(`UPDATE users SET photo_url=$1 WHERE email = $2`,[photoURL,email]) 
+  const existingUser = await getUserByEmail(email)
+  if(existingUser[0].email === email){
+    if(!existingUser[0].photo_url){
+      await setUserPhotoUrl(email, photoURL)
     }
     res.status(200).json({status:true})
   }else{
@@ -81,10 +76,9 @@ export const checkEmail = async (req:Request, res:Response) => {
     }
 
     // Check if user already exists with this email
-    const query = 'SELECT id FROM users WHERE email = $1';
-    const result = await pool.query(query, [email]);
+    const result = await getUserByEmail(email)
 
-    if (result.rows.length > 0) {
+    if (result.length > 0) {
        res.status(200).json({ 
         exists: true, 
         message: 'Email is already registered' 

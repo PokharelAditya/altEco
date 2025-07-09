@@ -1,7 +1,7 @@
 import type {Response,NextFunction} from 'express'
 import { generateAccessToken, generateRefreshToken } from '../util/generateToken'
 import { CustomRequest } from '../@types/express'
-import pool from '../database'
+import pool from '../db/setupDB'
 import bcrypt from 'bcrypt'
 
 

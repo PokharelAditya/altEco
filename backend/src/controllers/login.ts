@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import type {Response} from 'express'
 import { CustomRequest } from '../@types/express'
-import pool from '../database'
+import { getUserByEmail } from '../db/users'
 
 export const loginController:RequestHandler = (_req:CustomRequest,res:Response) => {
 
@@ -10,8 +10,8 @@ export const loginController:RequestHandler = (_req:CustomRequest,res:Response) 
 
 export const authController:RequestHandler = async (req:CustomRequest,res:Response):Promise<void> => {
   if(req.findUser?.userId){
-    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [req.findUser?.email])
-    const existingUserData = existingUser.rows[0]
+    const existingUser = await getUserByEmail(req.findUser?.email)
+    const existingUserData = existingUser[0]
     res.status(200).json(
       {
         userId:req.findUser?.userId,

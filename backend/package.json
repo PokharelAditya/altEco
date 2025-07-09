@@ -6,7 +6,8 @@
     "start": "nodemon src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint 'src/**/*.ts'",
-    "lint:fix": "eslint 'src/**/*.ts' --fix"
+    "lint:fix": "eslint 'src/**/*.ts' --fix",
+    "seed": "ts-node src/db/setupDB.ts"
   },
   "keywords": [],
   "author": "",
