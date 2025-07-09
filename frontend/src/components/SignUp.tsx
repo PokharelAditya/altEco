@@ -39,7 +39,7 @@ const SignUp = () => {
   }
 
   if(user.isLoggedIn){
-    navigate('/')
+    navigate('/home')
     return
   }
   
@@ -183,7 +183,7 @@ const response = await fetch('/api/signup', {
             navigate('/preferences')
           }
         else{
-        navigate('/')
+        navigate('/home')
         }
       }
       }else{
