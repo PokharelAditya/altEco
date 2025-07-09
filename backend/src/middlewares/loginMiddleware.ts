@@ -8,7 +8,8 @@ import bcrypt from 'bcrypt'
 const loginMiddleware = async (req:CustomRequest,res:Response,next:NextFunction):Promise<void> => {
   const {email,password} = req.body
   const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-  if(existingUser.rows.length == 0){
+  console.log(existingUser.rows.length == 0)
+  if(existingUser.rows.length == 0){ // if(!existingUser) is always true, so the if condition is invalid. The query returns an object.
     res.status(401).json({message:'user not found',login:false})
     return
   }
