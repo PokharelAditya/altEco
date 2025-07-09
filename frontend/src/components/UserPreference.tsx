@@ -22,8 +22,9 @@ const UserPreference = () => {
     distancePreference: [],
     additiveAwareness: []
   });
-  
-  const { user } = useAuthContext();
+
+
+  const { user, loading } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [fetchingPreferences, setFetchingPreferences] = useState(true); // Add loading state for fetch
@@ -49,6 +50,7 @@ const UserPreference = () => {
           }
         });
         const data = await response.json();
+        console.log(data)
         
         if (data.status && data.data) {
           // Ensure all categories exist in the response data
@@ -98,7 +100,7 @@ const UserPreference = () => {
       if (data.status) {
         setSaved(true);
         // console.log('Preferences saved successfully:', data);
-        navigate('/');
+        navigate('/home');
         setTimeout(() => setSaved(false), 3000);
       } else {
         throw new Error(data.message || 'Failed to save preferences');

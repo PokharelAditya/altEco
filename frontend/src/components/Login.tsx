@@ -29,7 +29,7 @@ const Login: React.FC = () => {
   }
 
   if (user.isLoggedIn) {
-    navigate('/')
+    navigate('/home')
     return null
   }
 
@@ -81,7 +81,7 @@ const Login: React.FC = () => {
         const userPreferences = await checkUserPreferences();
         console.log(userPreferences)
         if (userPreferences) {
-        navigate('/')
+        navigate('/home')
                 }
         else {
           navigate('/preferences')
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
         {
           const userPreferences = await checkUserPreferences();
           if (userPreferences){
-            navigate('/')
+            navigate('/home')
           }
         else{
         navigate('/preferences')

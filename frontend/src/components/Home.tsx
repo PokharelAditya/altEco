@@ -1,4 +1,5 @@
 import { useAuthContext } from '../context/AuthContext'
+import {User } from 'lucide-react'
 
 const Home = () => {
 
@@ -11,9 +12,17 @@ const Home = () => {
 
   if(user.isLoggedIn){
     return <div className="text-white">
-      <img src={`${user.photoURL}`} alt="photo"
-      className="h-12 w-12 rounded-full"/>
-
+      {user?.photoURL ? (
+                <img 
+                  src={user.photoURL} 
+                  alt="Profile" 
+                  className="h-12 w-12 rounded-full"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center">
+                  <User className="w-12 h-12 text-white" />
+                </div>
+              )}
       name: {user.displayName}<br/>
       id: {user.userId}<br/>
       email: {user.email}<br/>

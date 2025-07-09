@@ -13,7 +13,7 @@ interface DropdownLink extends MainLink {
 }
 
 const mainLinks: (MainLink & { requiresLogin?: boolean })[] = [
-  { to: "/", text: "Home" },
+  { to: "/home", text: "Home" },
   { to: "/aboutus", text: "About Us" },
   { to: "/search-product", text: "Search Product",requiresLogin: true},
   { to: "/ecoscore-calculator", text: "EcoScore Calculator" },
@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 dark:bg-gray-900/95">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-6">
           <a
-            href="/"
+            href="/home"
             className="flex items-center space-x-3 rtl:space-x-reverse group"
           >
             <img

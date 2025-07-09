@@ -75,4 +75,4 @@ export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunct
       return
     }
   }
-}
+};
