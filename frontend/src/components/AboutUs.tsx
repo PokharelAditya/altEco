@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaCalendarAlt, FaUser, FaClock, FaHeart, FaLeaf, FaRecycle, FaGlobe, FaChevronDown, FaChevronUp, FaExclamationTriangle } from 'react-icons/fa'
 import { MdShare, MdBookmark, MdNature, MdWarning } from 'react-icons/md'
-
+import { useAuthContext } from '../context/AuthContext'
 const EcoFriendlyBlog: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false)
   const [readingTime, setReadingTime] = useState<number>(0)
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null)
   const navigate = useNavigate()
-
+  const {user} = useAuthContext()
   useEffect(() => {
     setIsVisible(true)
     // Calculate reading time (average 200 words per minute)
@@ -317,6 +317,8 @@ const EcoFriendlyBlog: React.FC = () => {
           </section>
 
           {/* Call to Action */}
+          {
+          !user.isLoggedIn &&
           <section className="text-center bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-lg mb-12">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Ready to Make Sustainable Shopping Simple?
@@ -331,6 +333,7 @@ const EcoFriendlyBlog: React.FC = () => {
               Join Our Mission
             </button>
           </section>
+          }
         </div>
 
         {/* FAQ Section */}
