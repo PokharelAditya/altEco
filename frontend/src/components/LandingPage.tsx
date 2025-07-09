@@ -2,29 +2,25 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaArrowRight,
-  FaShieldAlt,
-  FaRocket,
-  FaUsers,
   FaStar,
   FaCheck,
 } from "react-icons/fa";
 import { MdSecurity, MdSpeed, MdDevices } from "react-icons/md";
+import { Link } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
 
 const LandingPage: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const {user} = useAuthContext();
   const navigate = useNavigate();
-
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  const handleGetStarted = () => {
-    navigate("/signup");
-  };
-
-  const handleLogin = () => {
-    navigate("/login");
-  };
+  if(user.isLoggedIn){
+    navigate('/home')
+    return
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -51,19 +47,19 @@ const LandingPage: React.FC = () => {
               functionality in one revolutionary platform
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button
-                onClick={handleGetStarted}
+              <Link
+                to='/signup'
                 className="group bg-green-600 hover:bg-green-700 text-white font-medium py-4 px-8 rounded-lg transition-all duration-300 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 Get Started Today
                 <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button
-                onClick={handleLogin}
+              </Link>
+              <Link
+              to = "/login"
                 className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-green-600 dark:hover:border-green-400 font-medium py-4 px-8 rounded-lg transition-all duration-300 hover:shadow-lg"
               >
                 Sign In
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -314,12 +310,12 @@ const LandingPage: React.FC = () => {
             launch
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={handleGetStarted}
+            <Link
+            to = '/signup'
               className="bg-green-600 hover:bg-green-700 text-white font-medium py-4 px-8 rounded-lg transition-all duration-300"
             >
               Join Early Access
-            </button>
+            </Link>
             <button className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-green-600 font-medium py-4 px-8 rounded-lg transition-all duration-300">
               Learn More
             </button>

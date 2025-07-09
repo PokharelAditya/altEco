@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { User, Edit3,Save } from 'lucide-react'
 import EditFieldModal from './subcomponents/EditFieldModal'
+import { formatGender, formatDate, convertDateToString } from '../utils/EditProfile'
 // import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 const EditProfile = () => {
@@ -15,39 +16,7 @@ const EditProfile = () => {
 
   const [editMode, setEditMode] = useState<EditMode>(null)
 
-  const formatGender = (gender: string) => {
-    switch (gender) {
-      case 'male': return 'Male'
-      case 'female': return 'Female'
-      case 'other': return 'Other'
-      case 'prefer-not-to-say': return 'Prefer not to say'
-      default: return 'Not specified'
-    }
-  }
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'Not specified'
-    
-    try {
-      const date = new Date(dateString)
-      
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        return 'Invalid date'
-      }
-      
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    } catch (error) {
-      console.error('Error formatting date for display:', error)
-      return 'Invalid date'
-    }
-  }
-
-  const getCurrentValue = () => {
+    const getCurrentValue = () => {
     switch (editMode) {
       case 'name': return user?.displayName || ''
       case 'gender': return user?.gender || ''
@@ -224,7 +193,7 @@ const EditProfile = () => {
           {/* Account Info */}
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Account created: {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+              Account created: {user?.createdAt ? convertDateToString(new Date(user.createdAt).toLocaleDateString()) : 'N/A'}
             </p>
           </div>
         </div>
