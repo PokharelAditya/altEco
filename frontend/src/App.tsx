@@ -11,6 +11,8 @@ import EditProfile from "./components/EditProfile"
 import LandingPage from "./components/LandingPage";
 import SearchProduct from "./components/SearchProduct";
 import AboutUsBlog from "./components/AboutUs"
+import ProductsPage from "./components/ProductsPage"
+import ProductCard from "./components/ProductCard"
 
 function App() {
   return (
@@ -28,6 +30,7 @@ function App() {
           <Route path="/preferences" element={<UserPreference/>}/>
           <Route path="/search-product" element={<SearchProduct />} />
           <Route path="/edit-profile" element={<EditProfile/>}/>
+          <Route path="/products" element={<ProductsPage/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>
