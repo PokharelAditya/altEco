@@ -8,9 +8,11 @@ import {
   Package, 
   ShoppingBag,
   Save,
-  AlertTriangle
+  AlertTriangle,
+  ArrowLeft,
+  Settings
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 const UserPreference = () => {
   const [preferences, setPreferences] = useState({
@@ -23,12 +25,16 @@ const UserPreference = () => {
     additiveAwareness: []
   });
 
-
   const { user, loading } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [fetchingPreferences, setFetchingPreferences] = useState(true); // Add loading state for fetch
+  const [fetchingPreferences, setFetchingPreferences] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if user came from settings page
+  const cameFromSettings = location.state?.from === 'settings';
+
   const handleMultiSelect = (category, value) => {
     setPreferences(prev => ({
       ...prev,
@@ -40,7 +46,7 @@ const UserPreference = () => {
 
   useEffect(() => {
     const fetchPreferences = async () => {
-      if (!user) return; // Wait for user to be available
+      if (!user) return;
       
       setFetchingPreferences(true);
       try {
@@ -53,7 +59,6 @@ const UserPreference = () => {
         console.log(data)
         
         if (data.status && data.data) {
-          // Ensure all categories exist in the response data
           const fetchedPreferences = {
             animalEthics: data.data.animalEthics || [],
             certifications: data.data.certifications || [],
@@ -77,7 +82,7 @@ const UserPreference = () => {
     };
     
     fetchPreferences();
-  }, [user]); // Add user as dependency
+  }, [user]);
 
   const handleSubmit = async (e) => {
     if (e) {
@@ -100,7 +105,14 @@ const UserPreference = () => {
       if (data.status) {
         setSaved(true);
         // console.log('Preferences saved successfully:', data);
-        navigate('/home');
+        
+        // Navigate based on where user came from
+        if (cameFromSettings) {
+          navigate('/settings');
+        } else {
+          navigate('/home');
+        }
+        
         setTimeout(() => setSaved(false), 3000);
       } else {
         throw new Error(data.message || 'Failed to save preferences');
@@ -160,6 +172,19 @@ const UserPreference = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Back Button - Show only if user came from settings */}
+        {cameFromSettings && (
+          <div className="mb-6">
+            <Link 
+              to="/settings"
+              className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Settings
+            </Link>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-2xl mb-4">

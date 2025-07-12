@@ -11,6 +11,8 @@ import EditProfile from "./components/EditProfile"
 import LandingPage from "./components/LandingPage";
 import SearchProduct from "./components/SearchProduct";
 import AboutUsBlog from "./components/AboutUs"
+import Dashboard from "./components/Dashboard";
+import Settings from "./components/Settings";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
           <Route path="/preferences" element={<UserPreference/>}/>
           <Route path="/search-product" element={<SearchProduct />} />
           <Route path="/edit-profile" element={<EditProfile/>}/>
+          <Route path="/dashboard" element={<Dashboard/>}/>
+          <Route path="/settings" element={<Settings/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>

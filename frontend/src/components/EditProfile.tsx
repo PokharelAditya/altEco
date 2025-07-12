@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
-import { User, Edit3,Save } from 'lucide-react'
+import { User, Edit3, Save, ArrowLeft } from 'lucide-react'
 import EditFieldModal from './subcomponents/EditFieldModal'
 import { formatGender, formatDate, convertDateToString } from '../utils/EditProfile'
 // import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+
 const EditProfile = () => {
   const { user, setUser } = useAuthContext()
 //   const navigate= useNavigate();
@@ -67,6 +68,17 @@ const EditProfile = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-2xl mx-auto">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link 
+            to="/settings"
+            className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Settings
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -179,16 +191,14 @@ const EditProfile = () => {
           </div>
 
           {/*update preferences*/} 
-
-
-<div className="pt-6">
-  <Link to={'/preferences'}
-    className="flex items-center justify-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-900 transition-all duration-300"
-  >
-    <Save className="w-5 h-5 mr-2" />
-    Update Preferences
-  </Link>
-</div>
+          <div className="pt-6">
+            <Link to={'/preferences'}
+              className="flex items-center justify-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-900 transition-all duration-300"
+            >
+              <Save className="w-5 h-5 mr-2" />
+              Update Preferences
+            </Link>
+          </div>
 
           {/* Account Info */}
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
