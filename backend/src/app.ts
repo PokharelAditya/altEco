@@ -10,6 +10,7 @@ import eco_scoreRouter from './routes/eco_score'
 import editProfileRouter from './routes/editProfile'
 import cookieParser from 'cookie-parser'
 import recommendRouter from './routes/recommend';
+import getProductsRouter from './routes/getProducts'
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api', editProfileRouter)
 
 app.use('/api', recommendRouter);
 app.use('/api', eco_scoreRouter);
+app.use('/api',getProductsRouter)
 app.use((_req, _res, next) => {
   next(createHttpError(404, 'Endpoint not found'));
 });
