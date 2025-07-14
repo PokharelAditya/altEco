@@ -13,6 +13,7 @@ import SearchProduct from "./components/SearchProduct";
 import AboutUsBlog from "./components/AboutUs"
 import ProductsPage from "./components/ProductsPage"
 import ProductCard from "./components/ProductCard"
+import EcoScoreCalculator from "./components/EcoScoreCalculator";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/search-product" element={<SearchProduct />} />
           <Route path="/edit-profile" element={<EditProfile/>}/>
           <Route path="/products" element={<ProductsPage/>}/>
+          <Route path="/eco-score-calculator" element={<EcoScoreCalculator/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>
