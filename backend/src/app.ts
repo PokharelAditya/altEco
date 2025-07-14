@@ -30,8 +30,6 @@ app.use("/api", searchProductRouter);
 app.use("/api", recommendRouter);
 app.use("/api", eco_scoreRouter);
 
-app.use('/api', recommendRouter);
-app.use('/api', eco_scoreRouter);
 app.use('/api',getProductsRouter)
 app.use("/api", productRouter);
 app.use((_req, _res, next) => {
