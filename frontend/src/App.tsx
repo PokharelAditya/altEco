@@ -13,6 +13,7 @@ import SearchProduct from "./components/SearchProduct";
 import AboutUsBlog from "./components/AboutUs"
 import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
+import EcoScoreCalculator from "./components/EcoScoreCalculator";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/edit-profile" element={<EditProfile/>}/>
           <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/settings" element={<Settings/>}/>
+          <Route path="/eco-score-calculator" element={<EcoScoreCalculator/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>
