@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BarcodeScanner from "./subcomponents/BarcodeScanner";
 import PromptInput from "./subcomponents/PromptInput";
-import { useAuthContext } from "../context/AuthContext"; 
+import { useAuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const SearchProduct: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
 
-  const {user} = useAuthContext()
+  useEffect(() => {
+    if (!user.isLoggedIn) {
+      navigate("/");
+    }
+    console.log(user.isLoggedIn)
+  }, []);
 
   const [method, setMethod] = useState<string>("prompt");
 
@@ -57,36 +65,44 @@ const SearchProduct: React.FC = () => {
   ];
 
   let input: {
-    userId: string,
-    type?: string,
-    data?: string
-  } = { 
-  userId: user.userId
-    };
+    userId: string;
+    type?: string;
+    data?: string;
+  } = {
+    userId: user.userId,
+  };
 
-  const handleSubmit = (type: string, data:string):void => {
-    input.type = type
-    input.data = data
-  }
+  const handleSubmit = (type: string, data: string): void => {
+    input.type = type;
+    input.data = data;
+  };
 
   return (
-    <div className="flex-col mx-4 my-8">
-      <div className="flex my-4 max-w-2xl mx-auto shadow-lg rounded-full">
-        {options.map((o, index) => (
-          <button
-            key={index}
-            className={`flex gap-4 w-full py-4 items-center justify-center text-sm font-medium transition-all duration-300
+    <>
+      {user.isLoggedIn && (
+        <div className="flex-col mx-4 my-8">
+          <div className="flex my-4 max-w-2xl mx-auto shadow-lg rounded-full">
+            {options.map((o, index) => (
+              <button
+                key={index}
+                className={`flex gap-4 w-full py-4 items-center justify-center text-sm font-medium transition-all duration-300
               ${o.method === method ? "bg-green-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer"}
               ${index === 0 ? "rounded-l-full" : "rounded-r-full"}`}
-            onClick={() => setMethod(o.method)}
-          >
-            {o.icon}
-            <span>{o.label}</span>
-          </button>
-        ))}
-      </div>
-      {method === "barcode" ? <BarcodeScanner onScan={handleSubmit} /> : <PromptInput onSubmit={handleSubmit}/>}
-    </div>
+                onClick={() => setMethod(o.method)}
+              >
+                {o.icon}
+                <span>{o.label}</span>
+              </button>
+            ))}
+          </div>
+          {method === "barcode" ? (
+            <BarcodeScanner onScan={handleSubmit} />
+          ) : (
+            <PromptInput onSubmit={handleSubmit} />
+          )}
+        </div>
+      )}
+    </>
   );
 };
 

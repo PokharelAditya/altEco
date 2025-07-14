@@ -1,7 +1,17 @@
 import { useState } from "react";
 
-const PromptInput: React.FC = () => {
+interface promptProps {
+  onSubmit: (type: string, data: string) => void;
+}
+
+const PromptInput: React.FC<promptProps> = ({ onSubmit }) => {
   const [prompt, setPrompt] = useState<string>("");
+
+  const handleSubmit = ():void => {
+    if(prompt.trim()) {
+      onSubmit("prompt", prompt.trim())
+    }
+  }
   return (
     <>
       <div className="flex-col mx-auto pt-4 max-w-4xl">
@@ -24,6 +34,7 @@ const PromptInput: React.FC = () => {
           <button
             disabled={prompt === ""}
             className="flex disabled:bg-gray-500 dark:disabled:bg-gray-700 items-center gap-2 mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 hover:shadow-md not-disabled:cursor-pointer transition-all duration-300"
+            onClick={() => handleSubmit()}
           >
             <svg
               width="20"
