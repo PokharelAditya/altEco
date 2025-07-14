@@ -9,6 +9,7 @@ import UserSignupData from "./components/UserSignupData";
 import UserPreference from "./components/UserPreference";
 import SearchProduct from "./components/SearchProduct";
 import EditProfile from "./components/EditProfile"
+import EcoScoreCalculator from "./components/EcoScoreCalculator";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/set-preference" element={<UserPreference />} />
           <Route path="/search-product" element={<SearchProduct />} />
           <Route path="/edit-profile" element={<EditProfile/>}/>
+          <Route path="/eco-score-calculator" element={<EcoScoreCalculator/>}/>
         </Routes>
       </Router>
     </AuthContextProvider>

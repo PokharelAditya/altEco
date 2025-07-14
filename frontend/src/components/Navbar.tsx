@@ -16,7 +16,7 @@ const mainLinks: (MainLink & { requiresLogin?: boolean })[] = [
   { to: "/", text: "Home" },
   { to: "/aboutus", text: "About Us" },
   { to: "/search-product", text: "Search Product",requiresLogin: true},
-  { to: "/ecoscore-calculator", text: "EcoScore Calculator" },
+  { to: "/eco-score-calculator", text: "EcoScore Calculator" },
 ];
 
 const dropdownLinks: DropdownLink[] = [
