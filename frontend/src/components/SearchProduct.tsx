@@ -3,17 +3,21 @@ import BarcodeScanner from "./subcomponents/BarcodeScanner";
 import PromptInput from "./subcomponents/PromptInput";
 import { useAuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../css/height.css";
+import "../css/grow.css";
 
 const SearchProduct: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const { user, loading } = useAuthContext();
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
+    if (!loading && !user.isLoggedIn) {
       navigate("/");
     }
-  }, []);
+  }, [loading]);
 
+  const [searchStatus, setSearchStatus] = useState<boolean>(false);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [method, setMethod] = useState<string>("prompt");
 
   type option = {
@@ -72,6 +76,8 @@ const SearchProduct: React.FC = () => {
   };
 
   const handleSubmit = async (type: string, data: string) => {
+    setLoadingProducts(() => true);
+
     input.type = type;
     input.data = data;
 
@@ -92,6 +98,8 @@ const SearchProduct: React.FC = () => {
         console.error("Error searching products: ", data);
       } else {
         console.log("Response: ", data);
+        setLoadingProducts(() => false);
+        setSearchStatus(() => true);
       }
     } catch (error) {
       console.error("Error searching products: ", error);
@@ -100,29 +108,44 @@ const SearchProduct: React.FC = () => {
 
   return (
     <>
-      {user.isLoggedIn && (
-        <div className="flex-col mx-4 my-8">
-          <div className="flex my-4 max-w-2xl mx-auto shadow-lg rounded-full">
-            {options.map((o, index) => (
-              <button
-                key={index}
-                className={`flex gap-4 w-full py-4 items-center justify-center text-sm font-medium transition-all duration-300
-              ${o.method === method ? "bg-green-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer"}
-              ${index === 0 ? "rounded-l-full" : "rounded-r-full"}`}
-                onClick={() => setMethod(o.method)}
-              >
-                {o.icon}
-                <span>{o.label}</span>
-              </button>
+      {user.isLoggedIn &&
+        (loadingProducts ? (
+          <div className="flex justify-center items-center gap-3 w-full height-below-navbar">
+            {[1, 2, 3].map((x, i) => (
+              <div
+                key={i}
+                className={`w-3 h-10 bg-green-600 rounded-full bar-grow-${x}`}
+              />
             ))}
           </div>
-          {method === "barcode" ? (
-            <BarcodeScanner onScan={handleSubmit} />
-          ) : (
-            <PromptInput onSubmit={handleSubmit} />
-          )}
-        </div>
-      )}
+        ) : searchStatus ? (
+          <div>
+            <h1>search page</h1>
+            Search Page
+          </div>
+        ) : (
+          <div className="flex-col mx-4 my-8">
+            <div className="flex my-4 max-w-2xl mx-auto shadow-lg rounded-full">
+              {options.map((o, index) => (
+                <button
+                  key={index}
+                  className={`flex gap-4 w-full py-4 items-center justify-center text-sm font-medium transition-all duration-300
+              ${o.method === method ? "bg-green-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer"}
+              ${index === 0 ? "rounded-l-full" : "rounded-r-full"}`}
+                  onClick={() => setMethod(o.method)}
+                >
+                  {o.icon}
+                  <span>{o.label}</span>
+                </button>
+              ))}
+            </div>
+            {method === "barcode" ? (
+              <BarcodeScanner onScan={handleSubmit} />
+            ) : (
+              <PromptInput onSubmit={handleSubmit} />
+            )}
+          </div>
+        ))}
     </>
   );
 };
