@@ -21,7 +21,7 @@ def clean_tags(raw_tags: str) -> str:
 
 
 BASE_DIR = os.path.dirname(__file__)
-csv_path = os.path.join(BASE_DIR, "cleaned_data.csv")
+csv_path = os.path.join(BASE_DIR, "data_with_eco_score.csv")
 df = pd.read_csv(csv_path)
 
 df["tags"] = df["tags"].astype(str)
@@ -36,7 +36,7 @@ def recommend(input_tag_str):
     query_vector = vectorizer.transform([cleaned_input])
     cos_sim = cosine_similarity(query_vector, tfidf_matrix).flatten()
     top_indices = cos_sim.argsort()[-10:][::-1]
-    return df.iloc[top_indices][["code","product_name", "clean_tags", "brands", "image_url"]].to_dict(orient="records")
+    return df.iloc[top_indices][["code","product_name", "clean_tags", "brands", "image_url","eco_score"]].to_dict(orient="records")
 
 
 

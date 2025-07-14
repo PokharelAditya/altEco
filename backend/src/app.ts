@@ -6,9 +6,10 @@ import userRouter from './routes/user';
 import loginRouter from './routes/login'
 import signupRouter from './routes/signup'
 import userPreferenceRouter from './routes/userPreference'
+import eco_scoreRouter from './routes/eco_score'
 import editProfileRouter from './routes/editProfile'
 import cookieParser from 'cookie-parser'
-import recommendRoute from './routes/recommend';
+import recommendRouter from './routes/recommend';
 
 const app = express();
 
@@ -23,7 +24,8 @@ app.use('/api', signupRouter)
 app.use('/api', userPreferenceRouter)
 app.use('/api', editProfileRouter)
 
-app.use('/api', recommendRoute);
+app.use('/api', recommendRouter);
+app.use('/api', eco_scoreRouter);
 app.use((_req, _res, next) => {
   next(createHttpError(404, 'Endpoint not found'));
 });
