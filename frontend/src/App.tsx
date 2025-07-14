@@ -10,7 +10,7 @@ import UserPreference from "./components/UserPreference"
 import EditProfile from "./components/EditProfile"
 import LandingPage from "./components/LandingPage";
 import SearchProduct from "./components/SearchProduct";
-import AboutUsBlog from "./components/AboutUs"
+import AboutUsBlog from "./components/AboutUs";
 import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
 import EcoScoreCalculator from "./components/EcoScoreCalculator";
@@ -21,19 +21,26 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-        <Route path="/" element={<LandingPage/>} />
-          <Route path ="/login" element={<Login/>}/>
-          <Route path ="/home" element={<Home/>}/>
-          <Route path = "/logout" element={<Logout/>}/>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path = "/aboutus" element = {<AboutUsBlog/>}/>
-          <Route path="/signup-detail" element={<UserSignupData/>}/>
-          <Route path="/preferences" element={<UserPreference/>}/>
+          <Route path="/aboutus" element={<AboutUsBlog />} />
+          <Route path="/signup-detail" element={<UserSignupData />} />
+          <Route path="/preferences" element={<UserPreference />} />
           <Route path="/search-product" element={<SearchProduct />} />
           <Route path="/edit-profile" element={<EditProfile/>}/>
           <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/settings" element={<Settings/>}/>
           <Route path="/eco-score-calculator" element={<EcoScoreCalculator/>}/>
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route
+            path="/eco-score-calculator"
+            element={<EcoScoreCalculator />}
+          />
         </Routes>
       </Router>
     </AuthContextProvider>
