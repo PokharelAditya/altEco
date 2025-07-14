@@ -12,7 +12,6 @@ const SearchProduct: React.FC = () => {
     if (!user.isLoggedIn) {
       navigate("/");
     }
-    console.log(user.isLoggedIn)
   }, []);
 
   const [method, setMethod] = useState<string>("prompt");
@@ -72,9 +71,31 @@ const SearchProduct: React.FC = () => {
     userId: user.userId,
   };
 
-  const handleSubmit = (type: string, data: string): void => {
+  const handleSubmit = async (type: string, data: string) => {
     input.type = type;
     input.data = data;
+
+    try {
+      const response = await fetch("/api/search-product", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Error searching products: ", data);
+      } else {
+        console.log("Response: ", data);
+      }
+    } catch (error) {
+      console.error("Error searching products: ", error);
+    }
   };
 
   return (
