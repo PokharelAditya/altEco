@@ -19,15 +19,14 @@ app.use(morgan("dev"));
 
 app.use(cookieParser());
 
-app.use("/api", userRouter);
-app.use("/api", loginRouter);
-app.use("/api", signupRouter);
-app.use("/api", userPreferenceRouter);
-app.use("/api", editProfileRouter);
-
-app.use("/api", recommendRouter);
-app.use("/api", eco_scoreRouter);
-app.use("/api", productRouter);
+app.use('/api', userRouter);
+app.use('/api', loginRouter)
+app.use('/api', signupRouter)
+app.use('/api', userPreferenceRouter)
+app.use('/api', editProfileRouter)
+app.use('/api', productRouter)
+app.use('/api', recommendRouter);
+app.use('/api', eco_scoreRouter);
 app.use((_req, _res, next) => {
   next(createHttpError(404, "Endpoint not found"));
 });
