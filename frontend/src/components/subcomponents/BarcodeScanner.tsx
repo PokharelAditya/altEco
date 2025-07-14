@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
+import "../../css/scanner.css";
 
 interface BarcodeScannerProps {
   onScan: (type: string, data: string) => void;
@@ -10,6 +11,15 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    navigator.permissions
+      .query({ name: "camera" as PermissionName })
+      .then((result) => {
+        if (result.state === "denied") {
+          // Show your message here
+          console.warn("Camera access denied");
+        }
+      });
+
     if (!code) {
       const codeReader = new BrowserMultiFormatReader();
 
@@ -44,11 +54,15 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
   return (
     <>
       <div className="flex py-8 justify-center">
-        {code==="" ? (
-          <video
-            ref={videoRef}
-            className="w-full max-w-2xl max-h-[70svh] rounded-2xl object-cover"
-          />
+        {code === "" ? (
+          <div className="relative rounded-2xl">
+            <video
+              ref={videoRef}
+              className="w-full max-w-2xl max-h-[70svh] rounded-2xl object-cover"
+            />
+            <div className="absolute inset-0 border-4 dark:border-2 border-green-600 dark:border-green-600 pointer-events-none rounded-2xl" />
+            <div className="absolute inset-4 h-1 bg-red-600 opacity-80 pointer-events-none scanline-animation rounded-full" />
+          </div>
         ) : (
           <div className="flex-col">
             <div className="flex-col text-center">
@@ -59,7 +73,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
             </div>
             <div className="flex mt-4 gap-4 w-full justify-center">
               <button
-                className="flex items-center gap-2 mt-4 px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-md hover:shadow-md cursor-pointer transition-all duration-300"
+                className="flex items-center gap-2 mt-4 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md hover:shadow-md cursor-pointer transition-all duration-300"
                 onClick={() => setCode("")}
               >
                 Cancel
@@ -74,9 +88,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  className="stroke-2 stroke-current"
                 >
                   <path d="m21 21-4.34-4.34" />
                   <circle cx="11" cy="11" r="8" />
