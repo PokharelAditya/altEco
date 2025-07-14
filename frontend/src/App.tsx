@@ -14,6 +14,8 @@ import AboutUsBlog from "./components/AboutUs";
 import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
 import EcoScoreCalculator from "./components/EcoScoreCalculator";
+import ProductsPage from "./components/ProductsPage";
+import ProductCard from "./components/ProductCard";
 
 function App() {
   return (
@@ -41,6 +43,7 @@ function App() {
             path="/eco-score-calculator"
             element={<EcoScoreCalculator />}
           />
+          <Route path="/products" element={<ProductsPage />} />
         </Routes>
       </Router>
     </AuthContextProvider>
