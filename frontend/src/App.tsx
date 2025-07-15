@@ -36,6 +36,14 @@ function App() {
           <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/settings" element={<Settings/>}/>
           <Route path="/eco-score-calculator" element={<EcoScoreCalculator/>}/>
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route
+            path="/eco-score-calculator"
+            element={<EcoScoreCalculator />}
+          />
+          <Route path="/products" element={<ProductsPage />} />
         </Routes>
       </Router>
     </AuthContextProvider>
