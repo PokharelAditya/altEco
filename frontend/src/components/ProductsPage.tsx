@@ -15,7 +15,7 @@ const ProductsPage = () => {
       
       setIsLoading(true);
       try {
-        const response = await fetch('/api/get-products', {
+        const response = await fetch('/api/get-sample-products', {
           headers: {
             'Content-Type': 'application/json',
           }
@@ -51,12 +51,12 @@ const ProductsPage = () => {
         {isLoading ? (
           <div className="loading">
             <div className="spinner"></div>
-            <p>Loading sustainable products...</p>
+            <p>Setting up recommendations...</p>
           </div>
         ) : (
           <div className="products-grid">
             {products.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.product_id} product={product} />
             ))}
           </div>
         )}

@@ -1,5 +1,6 @@
 import { useAuthContext } from '../context/AuthContext'
 import {User } from 'lucide-react'
+import ProductsPage from './ProductsPage'
 
 const Home = () => {
 
@@ -12,7 +13,7 @@ const Home = () => {
 
   if(user.isLoggedIn){
     return <div className="text-white">
-      {user?.photoURL ? (
+      {/*{user?.photoURL ? (
                 <img 
                   src={user.photoURL} 
                   alt="Profile" 
@@ -28,7 +29,8 @@ const Home = () => {
       email: {user.email}<br/>
       gender: {user.gender}<br/>
       dob: {user.dob}<br/>
-      joined: {user.createdAt}
+      joined: {user.createdAt}*/}
+      <ProductsPage/>
     </div>
   }
   
