@@ -12,9 +12,9 @@ export const ecoscoreController = (req: Request, res: Response) => {
    res.json({ ecoScore });
 }
 const rms = (tags:string[],TagWeights:Record<string,number>):number => {
-   let rms = tags.reduce((sum, tag) => sum + (TagWeights[tag]**2 || 0), 0)
-    rms = Math.sqrt(rms)
-    return rms
+  let rms = tags.reduce((sum, tag) => sum + (TagWeights[tag]**2 || 0), 0)
+  rms = Math.sqrt(rms)
+  return rms
 }
 
 const calculateEcoScore = (tagString: string): number => {
@@ -48,12 +48,11 @@ const calculateEcoScore = (tagString: string): number => {
     "additive": 3,
     "sachet": 2
   };
-
   let posScore = tags.reduce((sum, tag) => sum + (positiveTagWeights[tag] || 0), 0);
   if(posScore!=0)posScore = posScore/rms(tags,positiveTagWeights)
   let negScore = tags.reduce((sum, tag) => sum + (negativeTagWeights[tag] || 0), 0);
   if(negScore!=0) negScore = negScore/rms(tags,negativeTagWeights)
-  const rawScore = 50 + (posScore - negScore) * 10;
+  const rawScore = 50 + Math.atan((posScore - negScore)) * 100/Math.PI;
 
   // return Math.max(0, Math.min(100, rawScore));
   return rawScore>50 ? Math.ceil(rawScore) : Math.floor(rawScore)
