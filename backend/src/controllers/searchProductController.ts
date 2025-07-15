@@ -45,7 +45,7 @@ const searchProductController = async (
             else{
                return res
               .status(200)
-              .json({ message: "Product not found" });
+              .json({ message: "Product not found", products: [] });
             }
           },
         );
@@ -54,7 +54,7 @@ const searchProductController = async (
       tags = data;
     } else {
       res.status(400).json({
-        message: "Input method is invalid",
+        message: "Input method is invalid", products: []
       });
     }
 

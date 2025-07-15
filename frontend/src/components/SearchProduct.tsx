@@ -5,6 +5,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../css/height.css";
 import "../css/grow.css";
+import ProductCard from "./ProductCard";
 
 const SearchProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -16,9 +17,20 @@ const SearchProduct: React.FC = () => {
     }
   }, [loading]);
 
+  // type product = {
+  //   code: string;
+  //   product_name: string;
+  //   clean_tags: string;
+  //   description: string;
+  //   brands: string;
+  //   image_url: string;
+  //   eco_score: string;
+  // };
+
   const [searchStatus, setSearchStatus] = useState<boolean>(false);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [method, setMethod] = useState<string>("prompt");
+  const [products, setProducts] = useState([]);
 
   type option = {
     label: string;
@@ -97,7 +109,8 @@ const SearchProduct: React.FC = () => {
       if (!response.ok) {
         console.error("Error searching products: ", data);
       } else {
-        console.log("Response: ", data);
+        // console.log("Response: ", data);
+        setProducts(() => data.products);
         setLoadingProducts(() => false);
         setSearchStatus(() => true);
       }
@@ -120,8 +133,35 @@ const SearchProduct: React.FC = () => {
           </div>
         ) : searchStatus ? (
           <div>
-            <h1>search page</h1>
-            Search Page
+            <div className="products-page">
+              <div className="products-header">
+                <h1>Sustainable Products</h1>
+                <p>
+                  Discover eco-friendly alternatives that make a positive impact
+                </p>
+              </div>
+
+              <div className="products-main">
+                <div className="products-info">
+                  <span className="results-count">
+                    {products.length} sustainable products available
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="products-grid">
+              {products.map((product, i) => (
+                <ProductCard key={i} product={product} />
+              ))}
+            </div>
+
+            {products.length === 0 && (
+              <div className="no-results">
+                <h3>No products available</h3>
+                <p>Check back soon for new sustainable products!</p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex-col mx-4 my-8">
