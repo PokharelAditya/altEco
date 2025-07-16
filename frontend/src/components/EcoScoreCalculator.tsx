@@ -100,31 +100,53 @@ const EcoScoreCalculator = () => {
         />
       </div>
 
+      {[...positiveTags, ...negativeTags].filter(tag => !selectedTags.includes(tag)).length > 0 &&
       <div className="mb-6">
         <h2 className="text-base font-medium mb-3">Select Product Tags</h2>
         <div className="flex flex-wrap gap-2">
-          {[...positiveTags, ...negativeTags].map((tag) => {
-            const selected = selectedTags.includes(tag);
-            const isPositive = positiveTags.includes(tag);
 
-            return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => toggleTag(tag)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium ${
-                  selected
-                    ? isPositive
-                      ? "bg-green-500 text-white border-green-600"
-                      : "bg-red-500 text-white border-red-600"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
-              >
-                {formatTag(tag)}
-              </button>
-            );
-          })}
+          {/* {[...positiveTags, ...negativeTags].map((tag) => { */}
+          {/*   const selected = selectedTags.includes(tag); */}
+          {/*   const isPositive = positiveTags.includes(tag); */}
+          {/**/}
+          {/*   return ( */}
+          {/*     <button */}
+          {/*       key={tag} */}
+          {/*       type="button" */}
+          {/*       onClick={() => toggleTag(tag)} */}
+          {/*       className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium ${ */}
+          {/*         selected */}
+          {/*           ? isPositive */}
+          {/*             ? "bg-green-500 text-white border-green-600" */}
+          {/*             : "bg-red-500 text-white border-red-600" */}
+          {/*           : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700" */}
+          {/*       }`} */}
+          {/*     > */}
+          {/*       {formatTag(tag)} */}
+          {/*     </button> */}
+          {/*   ); */}
+          {/* })} */}
+        
+            {[...positiveTags, ...negativeTags]
+              .filter(tag => !selectedTags.includes(tag))
+              .map((tag) => {
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleTag(tag)}
+                    className="text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                  >
+                    {formatTag(tag)}
+                  </button>
+              );
+            })}
+
         </div>
+      </div>}
+
+      <div>
+        
       </div>
 
       <div className="text-center">
