@@ -41,7 +41,6 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   // Helper function to format date for input
   const formatDateForInput = (dateString: string) => {
@@ -77,7 +76,6 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setError("");
-      setSuccess("");
 
       switch (editType) {
         case "name":
@@ -116,7 +114,6 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError("");
-    if (success) setSuccess("");
   };
 
   const getMaxDate = () => {
@@ -164,7 +161,6 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
 
     setIsLoading(true);
     setError("");
-    setSuccess("");
 
     try {
       let updateData = {};
@@ -192,13 +188,6 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
       const result = await onUpdate(updateData);
 
       if (result.success) {
-        setSuccess(
-          `${editType === "name" ? "Name" : editType === "dob" ? "Date of birth" : editType === "gender" ? "Gender" : "Password"} updated successfully!`,
-        );
-
-        setTimeout(() => {
-          onClose();
-        }, 3000);
       } else {
         setError(result.message || "Failed to update profile");
       }
@@ -225,7 +214,6 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
 
   const handleClose = () => {
     setError("");
-    setSuccess("");
     setShowCurrentPassword(false);
     setShowNewPassword(false);
     setShowConfirmPassword(false);
@@ -263,14 +251,6 @@ const EditFieldModal: React.FC<EditFieldModalProps> = ({
             <X className="h-6 w-6" />
           </button>
         </div>
-
-        {success && (
-          <div className="mb-4 p-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-            <p className="text-sm text-green-600 dark:text-green-400 font-medium">
-              {success}
-            </p>
-          </div>
-        )}
 
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">

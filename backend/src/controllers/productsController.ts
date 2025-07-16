@@ -7,8 +7,8 @@ export const getProducts = async (req: CustomRequest, res: Response) => {
     const products = await fetchProducts(req.findUser?.userId ||'')
     res.json(products);
   } catch (err) {
-    res.status(500).json(err)
     console.error(err);
+    res.status(500).json(err)
   }
 }
 
