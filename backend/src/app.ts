@@ -13,6 +13,7 @@ import recommendRouter from './routes/recommend';
 import getProductsRouter from './routes/getProducts'
 import productRouter from "./routes/products";
 import searchProductRouter from "./routes/searchProduct";
+import productInfoRouter from "./routes/product"
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api", eco_scoreRouter);
 
 app.use('/api',getProductsRouter)
 app.use("/api", productRouter);
+app.use("/api", productInfoRouter)
 app.use((_req, _res, next) => {
   next(createHttpError(404, "Endpoint not found"));
 });

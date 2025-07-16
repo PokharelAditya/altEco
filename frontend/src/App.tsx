@@ -44,6 +44,7 @@ function App() {
             element={<EcoScoreCalculator />}
           />
           <Route path="/products" element={<ProductsPage />} />
+          <Route path = "/product/:id" element ={<div>Product Page</div>} />
         </Routes>
       </Router>
     </AuthContextProvider>

@@ -1,5 +1,6 @@
 // src/components/ProductCard.jsx
 import '../css/products-card.css';
+import {Link} from 'react-router-dom'
 
 const ProductCard = ({ product }) => {
   console.log(product)
@@ -23,7 +24,7 @@ const ProductCard = ({ product }) => {
   const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
 
   return (
-    <div className="product-card">
+    <Link to={`/product/${product.product_id}` } className="product-card" >
       <div className="product-image-container">
         <img 
           src={product.image_url || fallbackImageUrl} 
@@ -47,7 +48,7 @@ const ProductCard = ({ product }) => {
           <div className="product-category">{product.category || 'Uncategorized'}</div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
