@@ -1,11 +1,11 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import { fetchProducts } from "../db/products";
+import { CustomRequest } from '../@types/express'
 
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (req: CustomRequest, res: Response) => {
   try {
-    const products = await fetchProducts();
+    const products = await fetchProducts(req.findUser?.userId ||'')
     res.json(products);
-    console.log(products);
   } catch (err) {
     console.error(err);
     res.status(500).json(err)
