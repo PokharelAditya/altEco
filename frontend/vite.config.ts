@@ -10,8 +10,8 @@ export default defineConfig({
       "/api": "http://localhost:4000",
     },
     allowedHosts: [
-      // Changed this using ngrok for https 
-      "601b-2400-1a00-b060-b9b4-7bb8-9e4-95ab-80a0.ngrok-free.app"
+      // Changed this using ngrok for https
+      "e9691f2da530.ngrok-free.app",
     ],
   },
   plugins: [react(), tailwindcss()],
