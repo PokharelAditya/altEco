@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ScoreColor from "../utils/ScoreColor";
 
 const positiveTags = [
   "en:green-dot",
@@ -99,31 +100,53 @@ const EcoScoreCalculator = () => {
         />
       </div>
 
+      {[...positiveTags, ...negativeTags].filter(tag => !selectedTags.includes(tag)).length > 0 &&
       <div className="mb-6">
         <h2 className="text-base font-medium mb-3">Select Product Tags</h2>
         <div className="flex flex-wrap gap-2">
-          {[...positiveTags, ...negativeTags].map((tag) => {
-            const selected = selectedTags.includes(tag);
-            const isPositive = positiveTags.includes(tag);
 
-            return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => toggleTag(tag)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium ${
-                  selected
-                    ? isPositive
-                      ? "bg-green-500 text-white border-green-600"
-                      : "bg-red-500 text-white border-red-600"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
-              >
-                {formatTag(tag)}
-              </button>
-            );
-          })}
+          {/* {[...positiveTags, ...negativeTags].map((tag) => { */}
+          {/*   const selected = selectedTags.includes(tag); */}
+          {/*   const isPositive = positiveTags.includes(tag); */}
+          {/**/}
+          {/*   return ( */}
+          {/*     <button */}
+          {/*       key={tag} */}
+          {/*       type="button" */}
+          {/*       onClick={() => toggleTag(tag)} */}
+          {/*       className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium ${ */}
+          {/*         selected */}
+          {/*           ? isPositive */}
+          {/*             ? "bg-green-500 text-white border-green-600" */}
+          {/*             : "bg-red-500 text-white border-red-600" */}
+          {/*           : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700" */}
+          {/*       }`} */}
+          {/*     > */}
+          {/*       {formatTag(tag)} */}
+          {/*     </button> */}
+          {/*   ); */}
+          {/* })} */}
+        
+            {[...positiveTags, ...negativeTags]
+              .filter(tag => !selectedTags.includes(tag))
+              .map((tag) => {
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleTag(tag)}
+                    className="text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                  >
+                    {formatTag(tag)}
+                  </button>
+              );
+            })}
+
         </div>
+      </div>}
+
+      <div>
+        
       </div>
 
       <div className="text-center">
@@ -137,9 +160,14 @@ const EcoScoreCalculator = () => {
       </div>
 
       {ecoScore !== null && (
-        <div className="mt-10 text-center bg-green-50 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded-xl p-6">
+        <div className={`mt-10 text-center text-white dark:text-gray-200 border-2 rounded-xl p-6`}
+        style={{ 
+            backgroundColor: ScoreColor(ecoScore, 0.6), 
+            borderColor: ScoreColor(ecoScore)
+          }}
+        >
           <p className="text-lg font-semibold mb-1">Eco Score</p>
-          <p className="text-5xl font-bold text-green-600 dark:text-green-300">{ecoScore} / 100</p>
+          <p className="text-5xl font-bold">{ecoScore} / 100</p>
         </div>
       )}
     </div>
