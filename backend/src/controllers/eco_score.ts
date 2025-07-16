@@ -30,31 +30,53 @@ const calculateEcoScore = (tags: tag[]): number => {
   // const tags = tagString.toLowerCase().replace(/,/g, ' ').split(/\s+/);
   
   const positiveTagWeights: Record<string, number> = {
-    "en:green-dot": 3,
-    "plant-based": 3,
-    "en:organic": 4,
-    "en:eu-organic": 4,
-    "bio": 4,
-    "natural": 2,
-    "organic": 3,
-    "recyclable": 3,
-    "sans": 1,
-    "vert": 1
+    // "en:green-dot": 3,
+    // "plant-based": 3,
+    // "en:organic": 4,
+    // "en:eu-organic": 4,
+    // "bio": 4,
+    // "natural": 2,
+    // "organic": 3,
+    // "recyclable": 3,
+    // "sans": 1,
+    // "vert": 1
+    "en:green-dot": 0.4,
+    "plant-based": 0.4,
+    "en:organic": 0.5,
+    "en:eu-organic": 0.5,
+    "bio": 0.5,
+    "natural": 0.3,
+    "organic": 0.4,
+    "recyclable": 0.4,
+    "sans": 0.2,
+    "vert": 0.2
   };
 
   const negativeTagWeights: Record<string, number> = {
-    "plastique": 5,
-    "plastic": 5,
-    "acid": 2,
-    "acide": 2,
-    "citric": 1,
-    "e330": 1,
-    "sodium": 1,
-    "carton": 1,
-    "arôme": 2,
-    "arômes": 2,
-    "additive": 3,
-    "sachet": 2
+    // "plastique": 5,
+    // "plastic": 5,
+    // "acid": 2,
+    // "acide": 2,
+    // "citric": 1,
+    // "e330": 1,
+    // "sodium": 1,
+    // "carton": 1,
+    // "arôme": 2,
+    // "arômes": 2,
+    // "additive": 3,
+    // "sachet": 2
+    "plastique": 0.6,
+    "plastic": 0.6,
+    "acid": 0.4,
+    "acide": 0.3,
+    "citric": 0.2,
+    "e330": 0.2,
+    "sodium": 0.2,
+    "carton": 0.2,
+    "arôme": 0.4,
+    "arômes": 0.3,
+    "additive": 0.5,
+    "sachet": 0.3
   };
 
   // let posScore = tags.reduce((sum, tag) => sum + (positiveTagWeights[tag] || 0), 0);
@@ -69,6 +91,8 @@ const calculateEcoScore = (tags: tag[]): number => {
   let posScore = tags.reduce((sum, tag) => sum + (positiveTagWeights[tag.name] || 0) * (tag.value || 100)/100, 0)
   let negScore = tags.reduce((sum, tag) => sum + (negativeTagWeights[tag.name] || 0) * (tag.value || 100)/100, 0)
  
+  // let p = tags.reduce((count, tag) => positiveTagWeights[tag.name] ? count+1 : count, 0) / 10
+  // let n = tags.reduce((count, tag) => negativeTagWeights[tag.name] ? count+1 : count, 0) / 10
 
   const score = 50 + (100/Math.PI) * Math.atan(posScore - negScore)
   return score > 50 ? Math.ceil(score) : Math.floor(score)
