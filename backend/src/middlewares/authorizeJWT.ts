@@ -24,6 +24,7 @@ export const authorizeJWT = async (req:CustomRequest,res:Response,next:NextFunct
     try{
       decoded = await admin.auth().verifyIdToken(token)
     }catch(err){
+      res.clearCookie('FIREBASE_TOKEN')
       res.status(401).json({message:'not authorized',authorized:false})
       return
     }
