@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ScoreColor from "../utils/ScoreColor";
 
 const positiveTags = [
   "en:green-dot",
@@ -137,9 +138,14 @@ const EcoScoreCalculator = () => {
       </div>
 
       {ecoScore !== null && (
-        <div className="mt-10 text-center bg-green-50 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded-xl p-6">
+        <div className={`mt-10 text-center text-white dark:text-gray-200 border-2 rounded-xl p-6`}
+        style={{ 
+            backgroundColor: ScoreColor(ecoScore, 0.6), 
+            borderColor: ScoreColor(ecoScore)
+          }}
+        >
           <p className="text-lg font-semibold mb-1">Eco Score</p>
-          <p className="text-5xl font-bold text-green-600 dark:text-green-300">{ecoScore} / 100</p>
+          <p className="text-5xl font-bold">{ecoScore} / 100</p>
         </div>
       )}
     </div>
