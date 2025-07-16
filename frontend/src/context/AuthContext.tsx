@@ -40,7 +40,7 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
       createdAt:'',
       dob:''
     })
-  const [loading,setLoading] = useState<boolean>(false)
+  const [loading,setLoading] = useState<boolean>(true)
 
   useEffect(()=>{
     let unsubscribe:Unsubscribe

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { MdSettings } from "react-icons/md";
 import Logoo from "../assets/logo.png";
-import { useAuthContext } from '../context/AuthContext'
+import { useAuthContext } from "../context/AuthContext";
 
 interface MainLink {
   to: string;
@@ -15,7 +15,7 @@ interface DropdownLink extends MainLink {
 const mainLinks: (MainLink & { requiresLogin?: boolean })[] = [
   { to: "/home", text: "Home" },
   { to: "/aboutus", text: "About Us" },
-  { to: "/search-product", text: "Search Product",requiresLogin: true},
+  { to: "/search-product", text: "Search Product", requiresLogin: true },
   { to: "/eco-score-calculator", text: "EcoScore Calculator" },
 ];
 
@@ -40,7 +40,9 @@ const Navbar: React.FC = () => {
   const handleMenuToggle = () => setIsMenuOpen((prev) => !prev);
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
-  const {user:{isLoggedIn}} = useAuthContext()
+  const {
+    user: { isLoggedIn },
+  } = useAuthContext();
 
   return (
     <div>
@@ -89,25 +91,26 @@ const Navbar: React.FC = () => {
             id="navbar-default"
           >
             <ul className="font-medium flex flex-col md:flex-row md:space-x-6 rtl:space-x-reverse mt-4 md:mt-0">
-              {mainLinks.filter(link => !link.requiresLogin || isLoggedIn).map((link) => (
-                <li key={link.to}>
-                  <NavLink
-                    to={link.to}
-                    className={({ isActive }) =>
-                      `h-11 flex items-center px-3 py-2.5 rounded-lg transition-colors ${
-                        isActive
-                          ? "text-green-700 bg-green-50/80 dark:bg-green-900/20 dark:text-green-400"
-                          : "text-gray-600 hover:bg-gray-50/50 dark:text-gray-300 dark:hover:bg-gray-600/50"
-                      }`
-                    }
-                  >
-                    {link.text}
-                  </NavLink>
-                </li>
-              ))}
+              {mainLinks
+                .filter((link) => !link.requiresLogin || isLoggedIn)
+                .map((link) => (
+                  <li key={link.to}>
+                    <NavLink
+                      to={link.to}
+                      className={({ isActive }) =>
+                        `h-11 flex items-center px-3 py-2.5 rounded-lg transition-colors ${
+                          isActive
+                            ? "text-green-700 bg-green-50/80 dark:bg-green-900/20 dark:text-green-400"
+                            : "text-gray-600 hover:bg-gray-50/50 dark:text-gray-300 dark:hover:bg-gray-600/50"
+                        }`
+                      }
+                    >
+                      {link.text}
+                    </NavLink>
+                  </li>
+                ))}
 
               {isLoggedIn ? (
-                
                 <li className="relative inline-block h-11">
                   <button
                     onClick={toggleDropdown}
@@ -203,3 +206,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

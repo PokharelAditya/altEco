@@ -21,6 +21,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
+    "@types/node": "^24.0.13",
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.15.2",
     "@typescript-eslint/eslint-plugin": "^8.32.0",

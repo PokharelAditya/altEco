@@ -1,5 +1,4 @@
 // src/components/ProductCard.jsx
-import React from 'react';
 import '../css/products-card.css';
 
 const ProductCard = ({ product }) => {
@@ -32,14 +31,14 @@ const ProductCard = ({ product }) => {
           className="product-image"
           onError={(e) => {e.target.src = fallbackImageUrl}}
         />
-        <div className="eco-score-badge" style={{ backgroundColor: getEcoScoreColor(product.ecoscore) }}>
-          {formatEcoScore(product.ecoscore)}/10
+        <div className="eco-score-badge" style={{ backgroundColor: getEcoScoreColor(product.ecoscore/10 || product.eco_score/10) }}>
+          {formatEcoScore(product.ecoscore/10 || product.eco_score/10)}/10
         </div>
       </div>
 
       <div className="product-info">
-        <div className="product-brand">{product.brand || 'Unknown Brand'}</div>
-        <h3 className="product-name">{product.name || 'Product Name Not Available'}</h3>
+        <div className="product-brand">{product.brand || product.brands|| 'Unknown Brand'}</div>
+        <h3 className="product-name">{product.name || product.product_name || 'Product Name Not Available'}</h3>
         <p className="product-description">
           {product.description || 'No description available for this product.'}
         </p>

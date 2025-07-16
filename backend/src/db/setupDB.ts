@@ -66,11 +66,12 @@ CREATE TABLE IF NOT EXISTS user_preferences (
 const createProductTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS product (
-    product_id UUID PRIMARY KEY,
+    product_id VARCHAR(30) PRIMARY KEY,
     name VARCHAR(100) NOT NULL, 
-    description VARCHAR(255) NOT NULL, 
+    description VARCHAR(1500) NOT NULL, 
     brand VARCHAR(100),
-    origin VARCHAR(100),
+    clean_tags VARCHAR(1000),
+    image_url VARCHAR(100),
     ecoscore INTEGER
 );`;
   try {
@@ -85,7 +86,7 @@ const createUserInteractionTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS user_interaction (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     duration INTEGER,
     viewed BOOLEAN,
     rating INTEGER,
@@ -103,7 +104,7 @@ const createUserInteractionTable = async () => {
 const createProductSustainabilityTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS product_sustainability (
-    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     attribute_id INTEGER NOT NULL REFERENCES attributes(attribute_id) ON DELETE CASCADE,
     PRIMARY KEY (product_id, attribute_id)
 );
@@ -120,7 +121,7 @@ const createFavoritesTable = async () => {
   const query = `
 CREATE TABLE IF NOT EXISTS favorites (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, product_id)
 );
@@ -138,7 +139,7 @@ const createReviewLaterTable = async () => {
   const query = `
 CREATE TABLE IF NOT EXISTS review_later (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, product_id)
 );
@@ -156,7 +157,7 @@ const createExclusionListTable = async () => {
   const query = `
 CREATE TABLE IF NOT EXISTS exclusion_list (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, product_id)
 );
@@ -173,7 +174,7 @@ CREATE TABLE IF NOT EXISTS exclusion_list (
 const createProductCertificationTable = async () => {
   const query = `
 CREATE TABLE IF NOT EXISTS product_certification (
-    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     certification_id UUID NOT NULL,
     PRIMARY KEY (product_id, certification_id)
 );
@@ -191,7 +192,7 @@ const createProductTagsTable = async () => {
   const query = `
 
   CREATE TABLE IF NOT EXISTS product_tags (
-    product_id UUID NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
+    product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     tag_id UUID NOT NULL,
     PRIMARY KEY (product_id, tag_id)
 );
