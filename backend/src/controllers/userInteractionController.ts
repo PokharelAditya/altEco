@@ -2,11 +2,12 @@ import {Response } from "express";
 import { CustomRequest } from "../@types/express";
 import { getUserByEmail } from "../db/users";
 import { fetchProduct } from "../db/products";
-
+import { setUserInteraction } from "../db/userInteraction";
 
 export const recordUserInteraction = async (req: CustomRequest, res: Response): Promise<void> => {
     const userId = req.findUser?.userId
     const userEmail = req.findUser?.email
+    const {duration} = req.body
 
     try {
         if (!userId || !userEmail) {
@@ -19,17 +20,21 @@ export const recordUserInteraction = async (req: CustomRequest, res: Response): 
     
         const product_id = req.params.id
         const product = await fetchProduct(product_id)
-
         const user = await getUserByEmail(userEmail)
 
+        await setUserInteraction(userId, product_id, Math.floor(duration)) // DB QUERY
+
+
+        //SEE IN NETWORK TAB FOR POST REQUEST
         res.json({
             status: true,
             message: 'Product information retrieved successfully',
             user_data: user,
             product_data: product,
             action: "viewed",
-            timestamp: new Date().toISOString()
+            duration,
         })
+        
     }
     catch (err) {
         console.error('Error fetching product and/or user information', err)

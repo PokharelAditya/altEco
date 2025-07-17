@@ -1,4 +1,3 @@
-// src/pages/ProductsPage.jsx
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useAuthContext } from '../context/AuthContext';
@@ -21,7 +20,6 @@ const ProductsPage = () => {
           }
         });
         const data = await response.json();
-        console.log(data);
         setProducts(data);
         
       } catch (error) {

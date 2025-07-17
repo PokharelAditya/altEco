@@ -3,7 +3,7 @@ import '../css/products-card.css';
 import {Link} from 'react-router-dom'
 
 const ProductCard = ({ product }) => {
-  console.log(product)
+  // console.log(product)
 
   const formatEcoScore = (score) => {
     if (score == null || score == undefined || isNaN(Number(score)))
