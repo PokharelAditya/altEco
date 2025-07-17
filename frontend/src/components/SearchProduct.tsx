@@ -79,19 +79,18 @@ const SearchProduct: React.FC = () => {
     },
   ];
 
-  let input: {
-    userId: string;
+  type Input = {
     type?: string;
     data?: string;
-  } = {
-    userId: user.userId,
   };
 
   const handleSubmit = async (type: string, data: string) => {
     setLoadingProducts(() => true);
 
-    input.type = type;
-    input.data = data;
+    const input: Input = {
+      type: type,
+      data: data,
+    };
 
     try {
       const response = await fetch("/api/search-product", {

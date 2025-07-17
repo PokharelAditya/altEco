@@ -1,11 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import { CustomRequest } from "../@types/express";
 
 const searchProductMiddleware = (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
 ): void => {
-  const { userId, type, data } = req.body.input;
+  const userId = req.findUser?.userId;
+  const { type, data } = req.body.input;
 
   if (!userId) {
     res

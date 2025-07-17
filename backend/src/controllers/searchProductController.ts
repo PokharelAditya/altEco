@@ -1,15 +1,16 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import pool from "../db/setupDB";
 import path from "path";
 import { execFile, ExecFileException } from "child_process";
-import { error } from "console";
+import { CustomRequest } from "../@types/express";
 
 const searchProductController = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
 ): Promise<void> => {
   try {
-    const { userId, type, data } = req.body.input;
+    const userId = req.findUser?.userId;
+    const { type, data } = req.body.input;
 
     let tags: string = "";
 
@@ -41,11 +42,10 @@ const searchProductController = async (
 
             if (found === true) {
               tags = product.tags;
-            }
-            else{
-               return res
-              .status(200)
-              .json({ message: "Product not found", products: [] });
+            } else {
+              return res
+                .status(200)
+                .json({ message: "Product not found", products: [] });
             }
           },
         );
@@ -54,7 +54,8 @@ const searchProductController = async (
       tags = data;
     } else {
       res.status(400).json({
-        message: "Input method is invalid", products: []
+        message: "Input method is invalid",
+        products: [],
       });
     }
 

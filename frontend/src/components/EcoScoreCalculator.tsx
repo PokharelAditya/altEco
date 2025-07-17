@@ -47,12 +47,17 @@ const formatTag = (tag: string) => {
 };
 
 const EcoScoreCalculator = () => {
+  type tag = {
+    name: string,
+    value: any
+  }
+
   const [productName, setProductName] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<tag[]>([]);
   const [ecoScore, setEcoScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const toggleTag = (tag: string) => {
+  const toggleTag = (tag: tag) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
@@ -71,7 +76,7 @@ const EcoScoreCalculator = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          tags: selectedTags.join(" "),
+          tags: selectedTags
         }),
       });
 
@@ -100,7 +105,7 @@ const EcoScoreCalculator = () => {
         />
       </div>
 
-      {[...positiveTags, ...negativeTags].filter(tag => !selectedTags.includes(tag)).length > 0 &&
+      {[...positiveTags, ...negativeTags].filter(tag => !selectedTags.map(tag => tag.name).includes(tag)).length > 0 &&
       <div className="mb-6">
         <h2 className="text-base font-medium mb-3">Select Product Tags</h2>
         <div className="flex flex-wrap gap-2">
@@ -128,26 +133,80 @@ const EcoScoreCalculator = () => {
           {/* })} */}
         
             {[...positiveTags, ...negativeTags]
-              .filter(tag => !selectedTags.includes(tag))
+              .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
               .map((tag) => {
                 return (
                   <button
                     key={tag}
                     type="button"
-                    onClick={() => toggleTag(tag)}
+                    onClick={() => toggleTag({ name: tag, value: null })}
                     className="text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                   >
-                    {formatTag(tag)}
+                    <span>{formatTag(tag)}</span>
                   </button>
               );
             })}
 
         </div>
       </div>}
+      
+      {selectedTags.length > 0 &&
+      <div className="mb-6">
+        <h2 className="text-base font-medium mb-3">Please specify tag contribution in terms of percentage for better results:</h2>
+        <div className="flex flex-col gap-4">
+            {selectedTags.map((tag, i) => {
+             
+              const isPositive = positiveTags.includes(tag.name)
 
-      <div>
-        
+              return (
+              <div key={i} className="flex items-center gap-4">
+                <button
+                  onClick={() => toggleTag(tag)}
+                  className={`flex justify-center items-center gap-2 text-sm px-3 py-1.5 rounded-full border transition-all duration-150 cursor-pointer
+                    ${isPositive
+                    ? "bg-green-700 hover:bg-green-500 text-white border-green-800"
+                    : "bg-red-700 hover:bg-red-500 text-white border-red-800"}`}
+                >
+                  <span>
+                    {formatTag(tag.name)}
+                  </span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" className="fill-none stroke-2 stroke-white">
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                </button> 
+
+                {tag.value === null && 
+                <button
+                  className="ml-auto"
+                  onClick={() => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: 100 } : p))}
+                >
+                  Add
+                </button>}
+
+                {tag.value === null || 
+                <div className="ml-auto">
+                  <input
+                    className=""
+                    type = "number"
+                    min = {0}
+                    max = {100}
+                    value = {tag.value}
+                    onChange = {(e) => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: e.target.value } : p))}
+                  />
+                  <button
+                    className=""
+                    onClick={() => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: null } : p))}
+                  >
+                    Remove
+                  </button>
+                </div>}
+
+              </div>)
+            })}
+        </div>
       </div>
+      }
 
       <div className="text-center">
         <button

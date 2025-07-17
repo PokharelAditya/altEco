@@ -1,60 +1,100 @@
 import { Request, Response } from 'express';
 
+type tag = {
+  name: string,
+  value: any
+}
 
 export const ecoscoreController = (req: Request, res: Response) => {
   const { tags } = req.body;
-
-  if (typeof tags !== 'string') {
+  
+  if (typeof tags !== "object") {
      res.status(400).json({ error: "Missing or invalid 'tags' in request body." });
   }
 
   const ecoScore = calculateEcoScore(tags);
    res.json({ ecoScore });
 }
-const rms = (tags:string[],TagWeights:Record<string,number>):number => {
-  let rms = tags.reduce((sum, tag) => sum + (TagWeights[tag]**2 || 0), 0)
-  rms = Math.sqrt(rms)
-  return rms
-}
 
-const calculateEcoScore = (tagString: string): number => {
-  if (!tagString.trim()) return 50;
+// const rms = (tags:tag[], TagWeights:Record<string,number>):number => {
+//   let rms = tags.map(tag => tag.name).reduce((sum, tag) => sum + (TagWeights[tag]**2 || 0), 0)
+//   rms = Math.sqrt(rms)
+//   return rms
+// }
 
-  const tags = tagString.toLowerCase().replace(/,/g, ' ').split(/\s+/);
+const calculateEcoScore = (tags: tag[]): number => {
+  
+  if(!tags.length) return 50;
+  // if (!tagString.trim()) return 50;
+
+  // const tags = tagString.toLowerCase().replace(/,/g, ' ').split(/\s+/);
+  
   const positiveTagWeights: Record<string, number> = {
-    "en:green-dot": 3,
-    "plant-based": 3,
-    "en:organic": 4,
-    "en:eu-organic": 4,
-    "bio": 4,
-    "natural": 2,
-    "organic": 3,
-    "recyclable": 3,
-    "sans": 1,
-    "vert": 1
+    // "en:green-dot": 3,
+    // "plant-based": 3,
+    // "en:organic": 4,
+    // "en:eu-organic": 4,
+    // "bio": 4,
+    // "natural": 2,
+    // "organic": 3,
+    // "recyclable": 3,
+    // "sans": 1,
+    // "vert": 1
+    "en:green-dot": 0.4,
+    "plant-based": 0.4,
+    "en:organic": 0.5,
+    "en:eu-organic": 0.5,
+    "bio": 0.5,
+    "natural": 0.3,
+    "organic": 0.4,
+    "recyclable": 0.4,
+    "sans": 0.2,
+    "vert": 0.2
   };
 
   const negativeTagWeights: Record<string, number> = {
-    "plastique": 5,
-    "plastic": 5,
-    "acid": 2,
-    "acide": 2,
-    "citric": 1,
-    "e330": 1,
-    "sodium": 1,
-    "carton": 1,
-    "arôme": 2,
-    "arômes": 2,
-    "additive": 3,
-    "sachet": 2
+    // "plastique": 5,
+    // "plastic": 5,
+    // "acid": 2,
+    // "acide": 2,
+    // "citric": 1,
+    // "e330": 1,
+    // "sodium": 1,
+    // "carton": 1,
+    // "arôme": 2,
+    // "arômes": 2,
+    // "additive": 3,
+    // "sachet": 2
+    "plastique": 0.6,
+    "plastic": 0.6,
+    "acid": 0.4,
+    "acide": 0.3,
+    "citric": 0.2,
+    "e330": 0.2,
+    "sodium": 0.2,
+    "carton": 0.2,
+    "arôme": 0.4,
+    "arômes": 0.3,
+    "additive": 0.5,
+    "sachet": 0.3
   };
-  let posScore = tags.reduce((sum, tag) => sum + (positiveTagWeights[tag] || 0), 0);
-  if(posScore!=0)posScore = posScore/rms(tags,positiveTagWeights)
-  let negScore = tags.reduce((sum, tag) => sum + (negativeTagWeights[tag] || 0), 0);
-  if(negScore!=0) negScore = negScore/rms(tags,negativeTagWeights)
-  const rawScore = 50 + Math.atan((posScore - negScore)) * 100/Math.PI;
+
+  // let posScore = tags.reduce((sum, tag) => sum + (positiveTagWeights[tag] || 0), 0);
+  // if(posScore!=0) posScore = posScore/rms(tags,positiveTagWeights)
+  // let negScore = tags.reduce((sum, tag) => sum + (negativeTagWeights[tag] || 0), 0);
+  // if(negScore!=0) negScore = negScore/rms(tags,negativeTagWeights)
+  // const rawScore = 50 + Math.atan((posScore - negScore)) * 100/Math.PI;
 
   // return Math.max(0, Math.min(100, rawScore));
-  return rawScore>50 ? Math.ceil(rawScore) : Math.floor(rawScore)
+  // return rawScore>50 ? Math.ceil(rawScore) : Math.floor(rawScore)
+
+  let posScore = tags.reduce((sum, tag) => sum + (positiveTagWeights[tag.name] || 0) * (tag.value || 100)/100, 0)
+  let negScore = tags.reduce((sum, tag) => sum + (negativeTagWeights[tag.name] || 0) * (tag.value || 100)/100, 0)
+ 
+  // let p = tags.reduce((count, tag) => positiveTagWeights[tag.name] ? count+1 : count, 0) / 10
+  // let n = tags.reduce((count, tag) => negativeTagWeights[tag.name] ? count+1 : count, 0) / 10
+
+  const score = 50 + (100/Math.PI) * Math.atan(posScore - negScore)
+  return Math.floor(score);
 };
 
