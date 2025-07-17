@@ -140,3 +140,6 @@ backend/config/firebase-private-key.json
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+#linux guy haha
+backend/venv/

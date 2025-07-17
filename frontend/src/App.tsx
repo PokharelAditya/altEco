@@ -15,7 +15,7 @@ import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
 import EcoScoreCalculator from "./components/EcoScoreCalculator";
 import ProductsPage from "./components/ProductsPage";
-import ProductCard from "./components/ProductCard";
+import ProductPage from "./components/ProductPage";
 
 function App() {
   return (
@@ -44,6 +44,7 @@ function App() {
             element={<EcoScoreCalculator />}
           />
           <Route path="/products" element={<ProductsPage />} />
+          <Route path = "/product/:id" element ={<ProductPage/>} />
         </Routes>
       </Router>
     </AuthContextProvider>
