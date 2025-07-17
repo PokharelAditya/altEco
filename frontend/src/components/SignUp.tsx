@@ -117,7 +117,7 @@ const SignUp = () => {
       });
       
       const data = await response.json();
-      console.log(data)
+      // console.log(data)
       return data.exists;
     } catch (error) {
       console.error('Error checking user preferences:', error);

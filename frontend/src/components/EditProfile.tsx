@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
-import { User, Edit3, Save, ArrowLeft } from 'lucide-react'
+import { User, Edit3, Save, ArrowLeft, CheckCircle } from 'lucide-react'
 import EditFieldModal from './subcomponents/EditFieldModal'
 import { formatGender, formatDate, convertDateToString } from '../utils/EditProfile'
 // import { useNavigate } from 'react-router-dom'
@@ -16,6 +16,9 @@ const EditProfile = () => {
   type EditMode = 'name' | 'gender' | 'dob' | 'password' | null
 
   const [editMode, setEditMode] = useState<EditMode>(null)
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
 
     const getCurrentValue = () => {
     switch (editMode) {
@@ -47,6 +50,14 @@ const EditProfile = () => {
             ...updateData
           }))
         }
+  const labelMap = {
+    name: 'Name',
+    gender: 'Gender',
+    dob: 'Date of Birth',
+    password: 'Password'
+  };
+  setSuccessMessage(`${labelMap[editMode!]} updated successfully!`);
+  setShowSuccessPopup(true);
 
         return { success: true }
       } else {
@@ -219,7 +230,34 @@ const EditProfile = () => {
           onUpdate={handleUpdate}
           user={user}
         />
+        
       )}
+      {showSuccessPopup && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] p-4">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 transform">
+      <div className="text-center">
+        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+          <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          Success!
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+          {successMessage}
+        </p>
+        <button
+          onClick={() => {setShowSuccessPopup(false);
+             closeEditMode();}
+            }
+          className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }

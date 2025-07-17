@@ -34,8 +34,8 @@ export const formatGender = (gender: string) => {
     const month = date.split('/')[0];
     const year = date.split('/')[2];
     let monthInString : string;
-    console.log(month)
-    console.log(year)
+    // console.log(month)
+    // console.log(year)
     switch (month) {
         case "1":
             monthInString = "January";
