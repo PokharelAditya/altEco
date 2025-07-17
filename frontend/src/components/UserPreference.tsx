@@ -82,7 +82,7 @@ const UserPreference = () => {
     };
     
     fetchPreferences();
-  }, [user]);
+  }, [user.isLoggedIn]);
 
   const handleSubmit = async (e) => {
     if (e) {

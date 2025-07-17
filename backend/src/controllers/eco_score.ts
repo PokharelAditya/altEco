@@ -95,6 +95,6 @@ const calculateEcoScore = (tags: tag[]): number => {
   // let n = tags.reduce((count, tag) => negativeTagWeights[tag.name] ? count+1 : count, 0) / 10
 
   const score = 50 + (100/Math.PI) * Math.atan(posScore - negScore)
-  return score > 50 ? Math.ceil(score) : Math.floor(score)
+  return Math.floor(score);
 };
 
