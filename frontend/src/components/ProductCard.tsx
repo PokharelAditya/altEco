@@ -334,20 +334,12 @@ const ProductCard = ({ product, initialFavorited = false, initialReviewLater = f
             <div className="flex items-center gap-2">
               {isFavorited && (
                 <div className="flex items-center gap-1 text-red-500">
-                  <Heart className="w-3 h-3 fill-current" />
-                  <span className="text-xs">Favorited</span>
+                  <Heart className="fill-current" size={18} />
                 </div>
               )}
               {isReviewLater && (
                 <div className="flex items-center gap-1 text-blue-500">
-                  <Clock className="w-3 h-3" />
-                  <span className="text-xs">Review Later</span>
-                </div>
-              )}
-              {isNotInterested && (
-                <div className="flex items-center gap-1 text-gray-500">
-                  <X className="w-3 h-3" />
-                  <span className="text-xs">Not Interested</span>
+                  <Clock size={18} />
                 </div>
               )}
             </div>
