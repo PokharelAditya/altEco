@@ -34,7 +34,7 @@ const Home = () => {
     </div>
   }
   
-  return <div>Login first</div>
+  return <div className="dark:text-white m-2">Login first</div>
 
 }
 

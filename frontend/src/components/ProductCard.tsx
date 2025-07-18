@@ -75,13 +75,76 @@ const ProductCard = ({ product, userId, initialFavorited = false, initialReviewL
     }
   }
 
-  const addToReviewLater = async () => {
+  const addToReviewLater = async (productId:string) => {
+    try {
+      const response = await fetch(`/api/review-later`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: productId
+        })
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add to review later')
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 
-  const removeFromReviewLater = async () => {
+  const removeFromReviewLater = async (productId:string):Promise<void> => {
+    try {
+      const response = await fetch(`/api/review-later`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: productId
+        })
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to remove from review later')
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Error removing from review later:', error)
+      throw error
+    }
   }
 
-  const addToNotInterested = async () => {
+  const addToNotInterested = async (productId:string):Promise<void> => {
+    try {
+      const response = await fetch(`/api/not-interested`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: productId
+        })
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add to not interested')
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Error adding into not interested:', error)
+      throw error
+    }
   }
 
 
@@ -109,6 +172,28 @@ const ProductCard = ({ product, userId, initialFavorited = false, initialReviewL
       setIsLoadingFavorite(false)
     }
   }
+  const handleReviewLater = async (e:React.MouseEvent):Promise<void> => {
+    e.preventDefault()
+    e.stopPropagation()
+   if (isLoadingReviewLater) return
+    
+    setIsLoadingReviewLater(true) 
+    try {
+      if (isReviewLater) {
+        await removeFromReviewLater(product.product_id)
+        setIsReviewLater(false)
+      } else {
+        await addToReviewLater(product.product_id)
+        setIsReviewLater(true)
+      }
+    } catch (error) {
+      // Revert state on error
+      console.error('Failed to update review later status:', error)
+      // You might want to show a toast notification here
+    } finally {
+      setIsLoadingReviewLater(false)
+    } 
+  }
 
   const handleNotInterestedClick = async (e) => {
     e.preventDefault()
@@ -132,9 +217,9 @@ const ProductCard = ({ product, userId, initialFavorited = false, initialReviewL
 
   return (
     <Link to={`/product/${product.product_id}`} className="block group">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 h-full flex flex-col">
+      <div className=" bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 h-full flex flex-col">
         {/* Product Image Container */}
-        <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+        <div className="relative group h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
           <img 
             src={product.image_url || fallbackImageUrl} 
             alt={product.name || 'Product image'} 
@@ -151,7 +236,7 @@ const ProductCard = ({ product, userId, initialFavorited = false, initialReviewL
           </div>
 
           {/* Action Buttons */}
-          <div className="absolute top-3 right-3 flex flex-col gap-2">
+          <div className="absolute top-3 right-3 hidden group-hover:flex flex-col gap-2">
             {/* Favorite Button */}
             <button
               onClick={handleFavoriteClick}
@@ -172,6 +257,7 @@ const ProductCard = ({ product, userId, initialFavorited = false, initialReviewL
 
             {/* Review Later Button */}
             <button
+              onClick={handleReviewLater}
               disabled={isLoadingReviewLater}
               className={`p-2 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed ${
                 isReviewLater 
