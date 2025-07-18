@@ -1,6 +1,15 @@
 import {Link} from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Heart, Clock, X } from 'lucide-react'
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, userId, initialFavorited = false, initialReviewLater = false, initialNotInterested = false }) => {
+  const [isFavorited, setIsFavorited] = useState(initialFavorited)
+  const [isReviewLater, setIsReviewLater] = useState(initialReviewLater)
+  const [isNotInterested, setIsNotInterested] = useState(initialNotInterested)
+  const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
+  const [isLoadingReviewLater, setIsLoadingReviewLater] = useState(false)
+  const [isLoadingNotInterested, setIsLoadingNotInterested] = useState(false)
+
   const formatEcoScore = (score) => {
     if (score == null || score == undefined || isNaN(Number(score)))
       return 'N/A';
@@ -17,6 +26,109 @@ const ProductCard = ({ product }) => {
 
   // Fallback image URL for when product images fail to load
   const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
+
+  const addToFavorites = async (productId) => {
+    try {
+      const response = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: productId
+        })
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add to favorites')
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Error adding to favorites:', error)
+      throw error
+    }
+  }
+
+  const removeFromFavorites = async (productId) => {
+    try {
+      const response = await fetch(`/api/favorites`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: productId
+        })
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to remove from favorites')
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Error removing from favorites:', error)
+      throw error
+    }
+  }
+
+  const addToReviewLater = async () => {
+  }
+
+  const removeFromReviewLater = async () => {
+  }
+
+  const addToNotInterested = async () => {
+  }
+
+
+  const handleFavoriteClick = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (isLoadingFavorite) return
+    
+    setIsLoadingFavorite(true)
+    
+    try {
+      if (isFavorited) {
+        await removeFromFavorites(product.product_id)
+        setIsFavorited(false)
+      } else {
+        await addToFavorites(product.product_id)
+        setIsFavorited(true)
+      }
+    } catch (error) {
+      // Revert state on error
+      console.error('Failed to update favorite status:', error)
+      // You might want to show a toast notification here
+    } finally {
+      setIsLoadingFavorite(false)
+    }
+  }
+
+  const handleNotInterestedClick = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (isLoadingNotInterested) return
+    
+    setIsLoadingNotInterested(true)
+    
+    try {
+      if (!isNotInterested) {
+        await addToNotInterested(product.product_id)
+        setIsNotInterested(true)
+      }
+    } catch (error) {
+      console.error('Failed to update not interested status:', error)
+    } finally {
+      setIsLoadingNotInterested(false)
+    }
+  }
 
   return (
     <Link to={`/product/${product.product_id}`} className="block group">
@@ -37,6 +149,62 @@ const ProductCard = ({ product }) => {
           >
             {formatEcoScore(product.ecoscore/10 || product.eco_score/10)}/10
           </div>
+
+          {/* Action Buttons */}
+          <div className="absolute top-3 right-3 flex flex-col gap-2">
+            {/* Favorite Button */}
+            <button
+              onClick={handleFavoriteClick}
+              disabled={isLoadingFavorite}
+              className={`p-2 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed ${
+                isFavorited 
+                  ? 'bg-red-500 text-white shadow-lg' 
+                  : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500 shadow-md'
+              }`}
+              title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              {isLoadingFavorite ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+              )}
+            </button>
+
+            {/* Review Later Button */}
+            <button
+              disabled={isLoadingReviewLater}
+              className={`p-2 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed ${
+                isReviewLater 
+                  ? 'bg-blue-500 text-white shadow-lg' 
+                  : 'bg-white/80 text-gray-600 hover:bg-white hover:text-blue-500 shadow-md'
+              }`}
+              title={isReviewLater ? 'Remove from review later' : 'Add to review later'}
+            >
+              {isLoadingReviewLater ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Clock className="w-4 h-4" />
+              )}
+            </button>
+
+            {/* Not Interested Button */}
+            <button
+              onClick={handleNotInterestedClick}
+              disabled={isLoadingNotInterested}
+              className={`p-2 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed ${
+                isNotInterested 
+                  ? 'bg-gray-500 text-white shadow-lg' 
+                  : 'bg-white/80 text-gray-600 hover:bg-white hover:text-gray-500 shadow-md'
+              }`}
+              title={isNotInterested ? 'Remove from not interested' : 'Mark as not interested'}
+            >
+              {isLoadingNotInterested ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <X className="w-4 h-4" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Product Info */}
@@ -56,11 +224,33 @@ const ProductCard = ({ product }) => {
             {product.description || 'No description available for this product.'}
           </p>
 
-          {/* Footer - Category */}
-          <div className="mt-auto">
+          {/* Footer - Category and Action Indicators */}
+          <div className="mt-auto flex items-center justify-between">
             <span className="inline-block bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-xs font-medium border border-green-200 dark:border-green-800">
               {product.category || 'Uncategorized'}
             </span>
+            
+            {/* Action Indicators */}
+            <div className="flex items-center gap-2">
+              {isFavorited && (
+                <div className="flex items-center gap-1 text-red-500">
+                  <Heart className="w-3 h-3 fill-current" />
+                  <span className="text-xs">Favorited</span>
+                </div>
+              )}
+              {isReviewLater && (
+                <div className="flex items-center gap-1 text-blue-500">
+                  <Clock className="w-3 h-3" />
+                  <span className="text-xs">Review Later</span>
+                </div>
+              )}
+              {isNotInterested && (
+                <div className="flex items-center gap-1 text-gray-500">
+                  <X className="w-3 h-3" />
+                  <span className="text-xs">Not Interested</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
