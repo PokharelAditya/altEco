@@ -2,14 +2,28 @@ import {Link} from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Heart, Clock, X } from 'lucide-react'
 
-const ProductCard = ({ product, userId, initialFavorited = false, initialReviewLater = false, initialNotInterested = false }) => {
+const ProductCard = ({ product, initialFavorited = false, initialReviewLater = false, initialNotInterested = false }) => {
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
   const [isReviewLater, setIsReviewLater] = useState(initialReviewLater)
   const [isNotInterested, setIsNotInterested] = useState(initialNotInterested)
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false)
   const [isLoadingReviewLater, setIsLoadingReviewLater] = useState(false)
   const [isLoadingNotInterested, setIsLoadingNotInterested] = useState(false)
-
+  
+  useEffect(()=>{
+    const getCharacteristics = async () => {
+      try{
+        const response = await fetch(`/api/check-characteristics?productId=${product.product_id}`)
+        const data = await response.json()
+        setIsReviewLater(data.reviewLater)
+        setIsFavorited(data.favorites)
+      }
+      catch(err){
+        console.error(err)
+      }
+    } 
+    getCharacteristics()
+  },[])
   const formatEcoScore = (score) => {
     if (score == null || score == undefined || isNaN(Number(score)))
       return 'N/A';
