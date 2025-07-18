@@ -144,3 +144,16 @@ export const deleteFromNotInterested = async(req:CustomRequest,res:Response):Pro
   }
   return 
 }
+
+export const checkCharacteristics = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const {productId} = req.query
+  try{
+    const result = await pool.query('SELECT EXISTS (SELECT 1 FROM favorites WHERE user_id = $1 AND product_id = $2) AS favorites,EXISTS (SELECT 1 FROM review_later WHERE user_id = $1 AND product_id = $2) AS review_later',[userId,productId])
+    const output = result.rows[0]
+    res.status(200).json({message:'success',favorites:output.favorites,reviewLater:output.review_later})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return
+}
