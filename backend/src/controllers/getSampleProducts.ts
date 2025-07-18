@@ -71,3 +71,76 @@ export const getSampleProducts = async (req:CustomRequest,res:Response):Promise<
     res.status(500).send('error')
   }
 }
+
+
+export const addToFavorites = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const {productId} = req.body
+  try{
+    await pool.query('insert into favorites values($1,$2) on conflict (user_id,product_id) do nothing',[userId,productId])
+    res.status(201).json({message:'success'})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+    return
+}
+
+export const deleteFromFavorites = async(req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const {productId} = req.body
+  try{
+    await pool.query('delete from favorites where user_id=$1 and product_id=$2',[userId,productId])
+    res.status(200).json({message:'success'})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return 
+}
+
+export const addToReviewLater = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const {productId} = req.body
+  try{
+    await pool.query('insert into review_later values($1,$2) on conflict (user_id,product_id) do nothing',[userId,productId])
+    res.status(201).json({message:'success'})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return
+}
+
+export const deleteFromReviewLater = async(req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const {productId} = req.body
+  try{
+    await pool.query('delete from review_later where user_id=$1 and product_id=$2',[userId,productId])
+    res.status(200).json({message:'success'})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return 
+}
+
+export const addToNotInterested = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const {productId} = req.body
+  try{
+    await pool.query('insert into exclusion_list values($1,$2) on conflict (user_id,product_id) do nothing ',[userId,productId])
+    res.status(201).json({message:'success'})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return
+}
+
+export const deleteFromNotInterested = async(req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const {productId} = req.body
+  try{
+    await pool.query('delete from exclusion_list where user_id=$1 and product_id=$2',[userId,productId])
+    res.status(200).json({message:'success'})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return 
+}
