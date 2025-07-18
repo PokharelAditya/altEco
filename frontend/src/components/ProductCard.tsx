@@ -165,9 +165,7 @@ const ProductCard = ({ product, userId, initialFavorited = false, initialReviewL
         setIsFavorited(true)
       }
     } catch (error) {
-      // Revert state on error
       console.error('Failed to update favorite status:', error)
-      // You might want to show a toast notification here
     } finally {
       setIsLoadingFavorite(false)
     }
@@ -187,9 +185,7 @@ const ProductCard = ({ product, userId, initialFavorited = false, initialReviewL
         setIsReviewLater(true)
       }
     } catch (error) {
-      // Revert state on error
       console.error('Failed to update review later status:', error)
-      // You might want to show a toast notification here
     } finally {
       setIsLoadingReviewLater(false)
     } 
