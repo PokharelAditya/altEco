@@ -21,6 +21,7 @@ const mainLinks: (MainLink & { requiresLogin?: boolean })[] = [
 
 const dropdownLinks: DropdownLink[] = [
   { to: "/dashboard", text: "Dashboard" },
+  { to: "/collections", text: "Collections"},
   { to: "/settings", text: "Settings" },
   { to: "/logout", text: "Logout", isRed: true },
 ];

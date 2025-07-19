@@ -85,6 +85,22 @@ export const addToFavorites = async (req:CustomRequest,res:Response):Promise<voi
     return
 }
 
+export const getFavorites = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  try{
+    const result = await pool.query( ` SELECT p.product_id, p.name, p.description, p.brand, 
+             p.clean_tags, p.image_url, p.ecoscore as rating, 
+             0 as review_count
+      FROM favorites f 
+      JOIN product p ON f.product_id = p.product_id 
+      WHERE f.user_id = $1`,[userId])
+    res.status(200).json(result.rows)
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+    return
+}
+
 export const deleteFromFavorites = async(req:CustomRequest,res:Response):Promise<void> => {
   const userId = req.findUser?.userId
   const {productId} = req.body
@@ -109,6 +125,23 @@ export const addToReviewLater = async (req:CustomRequest,res:Response):Promise<v
   return
 }
 
+export const getReviewLater = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  try{
+    const result = await pool.query(`SELECT p.product_id, p.name, p.description, p.brand, 
+             p.clean_tags, p.image_url, p.ecoscore as rating, 
+             0 as review_count
+      FROM review_later f 
+      JOIN product p ON f.product_id = p.product_id 
+      WHERE f.user_id = $1`,[userId])
+    res.status(200).json(result.rows)
+
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return
+}
+
 export const deleteFromReviewLater = async(req:CustomRequest,res:Response):Promise<void> => {
   const userId = req.findUser?.userId
   const {productId} = req.body
@@ -127,6 +160,22 @@ export const addToNotInterested = async (req:CustomRequest,res:Response):Promise
   try{
     await pool.query('insert into exclusion_list values($1,$2) on conflict (user_id,product_id) do nothing ',[userId,productId])
     res.status(201).json({message:'success'})
+  }catch(err){
+    res.status(500).json({message:'error'})
+  }
+  return
+}
+
+export const getNotInterested = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  try{
+    const result = await pool.query(`SELECT p.product_id, p.name, p.description, p.brand, 
+             p.clean_tags, p.image_url, p.ecoscore as rating, 
+             0 as review_count
+      FROM exclusion_list f 
+      JOIN product p ON f.product_id = p.product_id 
+      WHERE f.user_id = $1`,[userId])
+    res.status(200).json(result.rows)
   }catch(err){
     res.status(500).json({message:'error'})
   }

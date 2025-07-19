@@ -16,6 +16,7 @@ import Settings from "./components/Settings";
 import EcoScoreCalculator from "./components/EcoScoreCalculator";
 import ProductsPage from "./components/ProductsPage";
 import ProductPage from "./components/ProductPage";
+import Collections from "./components/Collections";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           />
           <Route path="/products" element={<ProductsPage />} />
           <Route path = "/product/:id" element ={<ProductPage/>} />
+          <Route path = "/collections" element ={<Collections/>} />
         </Routes>
       </Router>
     </AuthContextProvider>
