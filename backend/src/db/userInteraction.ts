@@ -18,7 +18,9 @@ export async function getRating(user_id:string, product_id:string) {
     `Select rating from user_interaction where user_id = $1 and product_id = $2
 `
   , [user_id, product_id]);
-  // console.log(result.rows[0].rating)
+  if (result.rows.length === 0) {
+    return null;
+  }
   return result.rows[0].rating
 }
 
@@ -27,3 +29,14 @@ export async function getRating(user_id:string, product_id:string) {
 // viewed is increased by 1
 // duration is increased cumulatively
 
+
+export async function getAverageViewedDuration(user_id:string){
+  const result = await pool.query(
+    `SELECT AVG(duration) as average_duration, viewed
+    FROM user_interaction
+    WHERE user_id = $1`
+    , [user_id]);
+    if (result.rows.length === 0) {
+      return {average_duration: 0, average_viewed: 0};
+      }
+}
