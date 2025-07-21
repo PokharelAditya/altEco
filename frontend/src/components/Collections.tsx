@@ -114,54 +114,60 @@ const CollectionsPage = () => {
     }
   };
 
-  // Add product to collection (without removing from current)
-  const addToCollection = async (productId, fromCollection, toCollection) => {
-    try {
-      // Find the product in the source collection
-      const product = collections[fromCollection]?.find(p => p.product_id === productId);
-      if (!product) {
-        console.error('Product not found in source collection');
-        return;
-      }
-
-      // Check if product already exists in target collection
-      const existsInTarget = collections[toCollection]?.some(p => p.product_id === productId);
-      if (existsInTarget) {
-        console.log('Product already exists in target collection');
-        return;
-      }
-
-      // Fixed endpoint mapping - ensure consistency
-      const endpointMap = {
-        'reviewLater': 'review-later',
-        'notInterested': 'not-interested', // Make sure this matches exactly
-        'favorites': 'favorites'
-      };
-
-      // Add to new collection
-      const addEndpoint = `/api/${endpointMap[toCollection]}`;
-      const addResponse = await fetch(addEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId })
-      });
-
-      if (addResponse.ok) {
-        // Update UI to add product to target collection
-        setCollections(prev => ({
-          ...prev,
-          [toCollection]: [...(prev[toCollection] || []), product]
-        }));
-      } else {
-        const errorText = await addResponse.text();
-        console.error('Failed to add product to collection:', errorText);
-      }
-    } catch (error) {
-      console.error('Error adding product to collection:', error);
+  // Add product to collection
+const addToCollection = async (productId, fromCollection, toCollection) => {
+  try {
+    const product = collections[fromCollection]?.find(p => p.product_id === productId);
+    if (!product) {
+      console.error('Product not found in source collection');
+      return;
     }
-  };
+
+    const existsInTarget = collections[toCollection]?.some(p => p.product_id === productId);
+    if (existsInTarget) {
+      console.log('Product already exists in target collection');
+      return;
+    }
+
+    const endpointMap = {
+      'reviewLater': 'review-later',
+      'notInterested': 'not-interested',
+      'favorites': 'favorites'
+    };
+
+    const addEndpoint = `/api/${endpointMap[toCollection]}`;
+    const addResponse = await fetch(addEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId })
+    });
+
+    if (addResponse.ok) {
+      setCollections(prev => ({
+        ...prev,
+        [toCollection]: [...(prev[toCollection] || []), product]
+      }));
+
+      // If adding to Not Interested, remove from Favorites and Review Later
+          if (toCollection === 'notInterested') {
+            const otherCollections = ['favorites', 'reviewLater'];
+            for (const col of otherCollections) {
+              if (collections[col]?.some(p => p.product_id === productId)) {
+                await removeProduct(productId, col);
+              }
+            }
+          }
+    } else {
+      const errorText = await addResponse.text();
+      console.error('Failed to add product to collection:', errorText);
+    }
+  } catch (error) {
+    console.error('Error adding product to collection:', error);
+  }
+};
+
 
   // Export function to be used from other components
   const addProductToCollection = async (productData, collectionName) => {
@@ -280,17 +286,19 @@ const CollectionsPage = () => {
           {/* Action Buttons */}
           <div className="flex gap-2 flex-wrap">
             {/* Add to Favorites Button */}
+            { collectionName !== 'notInterested' &&
+            <>
             {collectionName !== 'favorites' && !isInFavorites && (
               <button
                 onClick={() => addToCollection(product.product_id, collectionName, 'favorites')}
-                className="flex items-center px-3 py-2 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                className="flex items-center px-3 py-2 text-sm bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400 dark:hover:bg-red-700/50 rounded-lg hover:bg-red-100 transition-colors"
               >
                 <Heart className="w-4 h-4 mr-1" />
                 Add to Favorites
               </button>
             )}
             {collectionName !== 'favorites' && isInFavorites && (
-              <div className="flex items-center px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg">
+              <div className="flex items-center px-3 py-2 text-sm bg-red-100 dark:bg-red-900/40 dark:hover:bg-red-800/50 dark:text-red-500 text-red-700 rounded-lg">
                 <Heart className="w-4 h-4 mr-1 fill-current" />
                 In Favorites
               </div>
@@ -300,40 +308,36 @@ const CollectionsPage = () => {
             {collectionName !== 'reviewLater' && !isInReviewLater && (
               <button
                 onClick={() => addToCollection(product.product_id, collectionName, 'reviewLater')}
-                className="flex items-center px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                className="flex items-center px-3 py-2 text-sm bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:hover:bg-blue-700/50 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"
               >
                 <Clock className="w-4 h-4 mr-1" />
                 Review Later
               </button>
             )}
             {collectionName !== 'reviewLater' && isInReviewLater && (
-              <div className="flex items-center px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg">
+              <div className="flex items-center px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-800/50 dark:text-blue-500 text-blue-700 rounded-lg">
                 <Clock className="w-4 h-4 mr-1" />
                 In Review Later
               </div>
             )}
+            </>
+          }
 
             {/* Add to Not Interested Button */}
             {collectionName !== 'notInterested' && !isInNotInterested && (
               <button
                 onClick={() => addToCollection(product.product_id, collectionName, 'notInterested')}
-                className="flex items-center px-3 py-2 text-sm bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center px-3 py-2 text-sm bg-gray-50 text-gray-600 dark:bg-gray-800/60 dark:hover:bg-gray-700/50 rounded-lg dark:text-gray-400 hover:bg-gray-100 transition-colors"
               >
                 <X className="w-4 h-4 mr-1" />
                 Not Interested
               </button>
             )}
-            {collectionName !== 'notInterested' && isInNotInterested && (
-              <div className="flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg">
-                <X className="w-4 h-4 mr-1" />
-                In Not Interested
-              </div>
-            )}
 
             {/* Remove from Current Collection Button */}
             <button
               onClick={() => removeProduct(product.product_id, collectionName)}
-              className="flex items-center px-3 py-2 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+              className="flex items-center px-3 py-2 text-sm bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/40 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
             >
               <X className="w-4 h-4 mr-1" />
               Remove
