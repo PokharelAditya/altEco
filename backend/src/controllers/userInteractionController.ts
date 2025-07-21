@@ -7,7 +7,7 @@ import { setUserInteraction } from "../db/userInteraction";
 export const recordUserInteraction = async (req: CustomRequest, res: Response): Promise<void> => {
     const userId = req.findUser?.userId
     const userEmail = req.findUser?.email
-    const {duration} = req.body
+    const { duration, rating } = req.body
 
     try {
         if (!userId || !userEmail) {
@@ -22,7 +22,7 @@ export const recordUserInteraction = async (req: CustomRequest, res: Response): 
         const product = await fetchProduct(product_id)
         const user = await getUserByEmail(userEmail)
 
-        await setUserInteraction(userId, product_id, Math.floor(duration)) // DB QUERY
+        await setUserInteraction(userId, product_id, Math.floor(duration), rating) // DB QUERY
 
 
         //SEE IN NETWORK TAB FOR POST REQUEST
@@ -33,6 +33,7 @@ export const recordUserInteraction = async (req: CustomRequest, res: Response): 
             product_data: product,
             action: "viewed",
             duration,
+            rating
         })
         
     }
