@@ -319,7 +319,7 @@ function ProductPage() {
     clearInterval(intervalRef.current);
     
     // Navigate to home
-    navigate("/home");
+    // navigate("/home");
   };
 
   if (!product) {
@@ -510,9 +510,10 @@ function ProductPage() {
               <div className="flex space-x-4 pt-4">
                 <button
                   onClick={handleSubmit}
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                  className="cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6
+                  rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
                 >
-                  Submit Rating
+                  Rate 
                 </button>
               </div>
             </div>

@@ -310,7 +310,12 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
             {/* Add to Review Later Button */}
             {collectionName !== 'reviewLater' && !isInReviewLater && (
               <button
-                onClick={() => addToCollection(product.product_id, collectionName, 'reviewLater')}
+                onClick={(e) => {
+                          e.preventDefault()
+                        e.stopPropagation()
+                          addToCollection(product.product_id, collectionName, 'reviewLater')
+                        }
+                      }
                 className="flex items-center px-3 py-2 text-sm bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:hover:bg-blue-700/50 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"
               >
                 <Clock className="w-4 h-4 mr-1" />
@@ -329,7 +334,12 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
             {/* Add to Not Interested Button */}
             {collectionName !== 'notInterested' && !isInNotInterested && (
               <button
-                onClick={() => addToCollection(product.product_id, collectionName, 'notInterested')}
+                onClick={(e) =>{
+                      e.preventDefault()
+                      e.stopPropagation()
+                      addToCollection(product.product_id, collectionName, 'notInterested')
+                    }
+                  }
                 className="flex items-center px-3 py-2 text-sm bg-gray-50 text-gray-600 dark:bg-gray-800/60 dark:hover:bg-gray-700/50 rounded-lg dark:text-gray-400 hover:bg-gray-100 transition-colors"
               >
                 <X className="w-4 h-4 mr-1" />
@@ -339,7 +349,10 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
 
             {/* Remove from Current Collection Button */}
             <button
-              onClick={() => removeProduct(product.product_id, collectionName)}
+              onClick={(e) =>{
+                    e.preventDefault();e.stopPropagation();removeProduct(product.product_id, collectionName)
+                  }
+                }
               className="flex items-center px-3 py-2 text-sm bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/40 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
             >
               <X className="w-4 h-4 mr-1" />
