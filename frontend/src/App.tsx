@@ -15,7 +15,7 @@ import Dashboard from "./components/Dashboard";
 import Settings from "./components/Settings";
 import EcoScoreCalculator from "./components/EcoScoreCalculator";
 import ProductsPage from "./components/ProductsPage";
-import ProductPage from "./components/ProductPage";
+import ProductPage from "./components/subcomponents/ProductPage";
 import Collections from "./components/Collections";
 
 function App() {

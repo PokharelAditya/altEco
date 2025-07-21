@@ -7,9 +7,19 @@ VALUES ($1, $2, $3, 1, $4)
 ON CONFLICT (user_id, product_id) 
 DO UPDATE SET
   viewed = user_interaction.viewed + 1,
-  duration = user_interaction.duration + $3;
+  duration = user_interaction.duration + $3,
+    rating = EXCLUDED.rating;
 `
   , [user_id, product_id, duration, rating]);
+}
+
+export async function getRating(user_id:string, product_id:string) {
+  const result =  await pool.query(
+    `Select rating from user_interaction where user_id = $1 and product_id = $2
+`
+  , [user_id, product_id]);
+  // console.log(result.rows[0].rating)
+  return result.rows[0].rating
 }
 
 // if same user_id and product_id is sent,

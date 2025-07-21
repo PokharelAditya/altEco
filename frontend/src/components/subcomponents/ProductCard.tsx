@@ -226,7 +226,7 @@ const ProductCard = ({ product, initialFavorited = false, initialReviewLater = f
   }
 
   return (
-    <Link to={`/product/${product.product_id}`} className="block group">
+    <Link to={`/product/${product.product_id}`}  state={{ product }}  className="block group">
       <div className=" bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 h-full flex flex-col">
         {/* Product Image Container */}
         <div className="relative group h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">

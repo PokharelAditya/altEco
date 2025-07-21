@@ -5,7 +5,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../css/height.css";
 import "../css/grow.css";
-import ProductCard from "./ProductCard";
+import ProductCard from "./subcomponents/ProductCard";
 
 const SearchProduct: React.FC = () => {
   const navigate = useNavigate();

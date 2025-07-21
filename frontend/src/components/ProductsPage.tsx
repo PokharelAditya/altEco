@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ProductCard from '../components/ProductCard';
+import ProductCard from './subcomponents/ProductCard';
 import { useAuthContext } from '../context/AuthContext';
 
 const ProductsPage = () => {

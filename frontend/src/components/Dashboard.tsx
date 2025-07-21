@@ -1,198 +1,208 @@
-import { useState } from 'react';
-import { 
-  Leaf, 
-  Package, 
-  BarChart3,
-  PieChart,
-  Activity,
-  Globe,
-  TreePine,
-  Heart,
-  Eye,
-  Star,
-  TrendingUp,
-  Award,
-  Filter,
-  ArrowUp,
-  ArrowDown
-} from 'lucide-react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  PieChart as RechartsPieChart, 
-  Pie,
-  Cell,
-  ComposedChart
-} from 'recharts';
+import { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadialBarChart, RadialBar, AreaChart, Area } from 'recharts';
+import { Heart, Clock, X, TrendingUp, Leaf, Droplets, Recycle, Star, Eye, Calendar, Award, Target } from 'lucide-react';
+import { useAuthContext } from '../context/AuthContext'
 
 const Dashboard = () => {
-  // Sample data based on your database schema
-  const [dashboardData] = useState({
-    totalProducts: 1247,
-    sustainableProducts: 892,
-    carbonSaved: 2340,
-    treesEquivalent: 156,
-    userImpact: 73,
-    monthlyGrowth: 12.5,
-    totalFavorites: 45,
-    avgRating: 4.2,
-    totalViewed: 234
+  const {user} = useAuthContext();
+
+  const [userDashboardData] = useState({
+    // My Collections (favorites, review_later, exclusion_list tables)
+    myCollections: [
+      { name: 'Favorites', value: 23, color: '#ef4444', icon: Heart },
+      { name: 'Review Later', value: 15, color: '#3b82f6', icon: Clock },
+      { name: 'Not Interested', value: 8, color: '#6b7280', icon: X }
+    ],
+
+    // My Categories Interest (from user's product interactions)
+    myCategoryPreferences: [
+      { category: 'Personal Care', interacted: 28, favorited: 8, avgRating: 4.2 },
+      { category: 'Household', interacted: 22, favorited: 6, avgRating: 3.8 },
+      { category: 'Food & Beverages', interacted: 18, favorited: 5, avgRating: 4.0 },
+      { category: 'Clothing', interacted: 12, favorited: 3, avgRating: 3.5 },
+      { category: 'Beauty', interacted: 8, favorited: 1, avgRating: 3.2 }
+    ],
+
+    // My EcoScore Journey (products I've favorited by ecoscore)
+    myEcoScoreProfile: [
+      { range: '90-100', count: 8, label: 'Excellent', percentage: 35 },
+      { range: '80-89', count: 7, label: 'Very Good', percentage: 30 },
+      { range: '70-79', count: 5, label: 'Good', percentage: 22 },
+      { range: '60-69', count: 2, label: 'Fair', percentage: 9 },
+      { range: '<60', count: 1, label: 'Poor', percentage: 4 }
+    ],
+
+    // My Activity Timeline (user_interaction table - user's activity over time)
+    myActivityTimeline: [
+      { date: '2024-01', viewed: 12, favorited: 3, rated: 8, avgDuration: 120 },
+      { date: '2024-02', viewed: 18, favorited: 5, rated: 12, avgDuration: 150 },
+      { date: '2024-03', viewed: 25, favorited: 7, rated: 18, avgDuration: 180 },
+      { date: '2024-04', viewed: 32, favorited: 4, rated: 22, avgDuration: 160 },
+      { date: '2024-05', viewed: 28, favorited: 2, rated: 19, avgDuration: 140 },
+      { date: '2024-06', viewed: 41, favorited: 2, rated: 28, avgDuration: 200 }
+    ],
+
+    // My Ratings Pattern (from user_interaction table)
+    myRatingsDistribution: [
+      { rating: 5, count: 35, percentage: 38 },
+      { rating: 4, count: 28, percentage: 31 },
+      { rating: 3, count: 18, percentage: 20 },
+      { rating: 2, count: 7, percentage: 8 },
+      { rating: 1, count: 3, percentage: 3 }
+    ],
+
+    // My Sustainability Preferences (from user_preferences + attributes tables)
+    mySustainabilityFocus: [
+      { attribute: 'Recyclable', preference: true, productsFound: 18, priority: 'High' },
+      { attribute: 'Organic', preference: true, productsFound: 12, priority: 'High' },
+      { attribute: 'Cruelty Free', preference: true, productsFound: 15, priority: 'Medium' },
+      { attribute: 'Fair Trade', preference: true, productsFound: 8, priority: 'Medium' },
+      { attribute: 'Carbon Neutral', preference: false, productsFound: 5, priority: 'Low' },
+      { attribute: 'Biodegradable', preference: true, productsFound: 10, priority: 'High' }
+    ],
+
+    // My Interaction Patterns (duration vs rating correlation)
+    myEngagementPattern: [
+      { duration: 45, rating: 2.5, products: 3 },
+      { duration: 90, rating: 3.2, products: 8 },
+      { duration: 120, rating: 3.8, products: 12 },
+      { duration: 180, rating: 4.2, products: 15 },
+      { duration: 240, rating: 4.6, products: 8 },
+      { duration: 300, rating: 4.8, products: 5 }
+    ],
+
+    // My Discovery Journey (how I found products I liked)
+    myDiscoveryStats: {
+      totalProductsViewed: 156,
+      averageViewDuration: 167, // seconds
+      conversionToFavorites: 14.7, // percentage
+      averageRating: 3.8,
+      mostActiveHour: "7-8 PM",
+      favoriteDay: "Sunday"
+    }
   });
 
-  // User interaction data (from user_interaction table)
-  const userInteractionData = [
-    { day: 'Mon', viewed: 45, rated: 12, favorites: 8 },
-    { day: 'Tue', viewed: 52, rated: 15, favorites: 6 },
-    { day: 'Wed', viewed: 38, rated: 9, favorites: 12 },
-    { day: 'Thu', viewed: 61, rated: 18, favorites: 9 },
-    { day: 'Fri', viewed: 55, rated: 14, favorites: 11 },
-    { day: 'Sat', viewed: 42, rated: 11, favorites: 7 },
-    { day: 'Sun', viewed: 48, rated: 13, favorites: 5 }
-  ];
+  // Get user initials for avatar
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
 
-  // Sustainability attributes distribution (from attributes and product_sustainability tables)
-  const sustainabilityData = [
-    { name: 'Organic', value: 35, color: '#10B981' },
-    { name: 'Recyclable', value: 28, color: '#3B82F6' },
-    { name: 'Low Carbon', value: 22, color: '#8B5CF6' },
-    { name: 'Fair Trade', value: 15, color: '#F59E0B' }
-  ];
+  // Get first name for greeting
+  const getFirstName = (name) => {
+    if (!name) return 'User';
+    return name.split(' ')[0];
+  };
 
-  // EcoScore distribution (from product table ecoscore)
-  const ecoScoreData = [
-    { range: '90-100', count: 124, color: '#10B981' },
-    { range: '80-89', count: 198, color: '#84CC16' },
-    { range: '70-79', count: 245, color: '#EAB308' },
-    { range: '60-69', count: 156, color: '#F97316' },
-    { range: '<60', count: 89, color: '#EF4444' }
-  ];
+  // Format join date
+  const formatJoinDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
-  // User preference alignment data
-  const preferenceAlignment = [
-    { category: 'Organic Foods', alignment: 85, userPrefs: 12 },
-    { category: 'Eco Packaging', alignment: 72, userPrefs: 8 },
-    { category: 'Carbon Neutral', alignment: 68, userPrefs: 15 },
-    { category: 'Fair Trade', alignment: 91, userPrefs: 6 },
-    { category: 'Recyclable', alignment: 79, userPrefs: 10 }
-  ];
+  const COLORS = ['#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899'];
 
-  // User engagement metrics over time
-  const engagementData = [
-    { month: 'Jan', duration: 125, interactions: 45, ratings: 12 },
-    { month: 'Feb', duration: 145, interactions: 52, ratings: 18 },
-    { month: 'Mar', duration: 132, interactions: 48, ratings: 15 },
-    { month: 'Apr', duration: 167, interactions: 61, ratings: 22 },
-    { month: 'May', duration: 189, interactions: 58, ratings: 19 },
-    { month: 'Jun', duration: 201, interactions: 67, ratings: 25 }
-  ];
-
-  const StatCard = ({ title, value, subtitle, icon: Icon, color = "green" }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+  const PersonalMetricCard = ({ title, value, icon: Icon, subtitle, color = 'text-green-600' }) => (
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
+          <p className="text-gray-500 text-sm">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
           {subtitle && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{subtitle}</p>
           )}
         </div>
-        <div className={`p-3 bg-${color}-100 dark:bg-${color}-900/30 rounded-xl`}>
-          <Icon className={`w-6 h-6 text-${color}-600 dark:text-${color}-400`} />
-        </div>
+        <Icon className={`w-8 h-8 ${color}`} />
       </div>
     </div>
   );
 
-  const ChartCard = ({ title, children }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
-      {children}
-    </div>
-  );
+  // Show loading state if user data is not available
+  if (!user) {
+    return (
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Personal Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Sustainability Dashboard
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track your environmental impact and discover sustainable products
-          </p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+             {user.photoURL ? (                
+              <img 
+                  src={user.photoURL} 
+                  alt="Profile" 
+                  className="w-12 h-12 rounded-full border-4 border-green-600"
+                />) : (<span className="text-white font-bold text-lg">
+                {getUserInitials(user.displayName)}
+              </span>)}
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Welcome back, {getFirstName(user.displayName)}!
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Your personal eco-journey dashboard • Member since {formatJoinDate(user.createdAt)}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Enhanced Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <StatCard
-            title="Total Products"
-            value={dashboardData.totalProducts.toLocaleString()}
-            subtitle="Available items"
-            icon={Package}
+        {/* Personal Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <PersonalMetricCard 
+            title="Products Explored" 
+            value={userDashboardData.myDiscoveryStats.totalProductsViewed}
+            subtitle="lifetime views"
+            icon={Eye} 
           />
-          <StatCard
-            title="Favorites"
-            value={dashboardData.totalFavorites}
-            subtitle="Saved products"
-            icon={Heart}
-            color="red"
+          <PersonalMetricCard 
+            title="My Favorites" 
+            value={userDashboardData.myCollections[0].value}
+            subtitle="saved products"
+            icon={Heart} 
+            color="text-red-600"
           />
-          <StatCard
-            title="Products Viewed"
-            value={dashboardData.totalViewed}
-            subtitle="This month"
-            icon={Eye}
-            color="blue"
+          <PersonalMetricCard 
+            title="My Avg Rating" 
+            value={userDashboardData.myDiscoveryStats.averageRating}
+            subtitle="out of 5 stars"
+            icon={Star} 
+            color="text-yellow-600"
           />
-          <StatCard
-            title="Avg Rating"
-            value={dashboardData.avgRating}
-            subtitle="User ratings"
-            icon={Star}
-            color="yellow"
-          />
-          <StatCard
-            title="Carbon Saved"
-            value={`${dashboardData.carbonSaved} kg`}
-            subtitle="This month"
-            icon={Globe}
-            color="green"
+          <PersonalMetricCard 
+            title="Eco Commitment" 
+            value={`${userDashboardData.myDiscoveryStats.conversionToFavorites}%`}
+            subtitle="products favorited"
+            icon={Leaf} 
+            color="text-green-600"
           />
         </div>
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* User Interaction Trends */}
-          <ChartCard title="Weekly User Interactions">
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={userInteractionData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="viewed" stroke="#3B82F6" strokeWidth={2} />
-                <Line type="monotone" dataKey="rated" stroke="#10B981" strokeWidth={2} />
-                <Line type="monotone" dataKey="favorites" stroke="#EF4444" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartCard>
-
-          {/* Sustainability Attributes Distribution */}
-          <ChartCard title="Sustainability Categories">
-            <ResponsiveContainer width="100%" height={250}>
-              <RechartsPieChart>
+          {/* My Collections */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+              <Heart className="w-5 h-5 text-red-500" />
+              My Product Collections
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
                 <Pie
-                  data={sustainabilityData}
+                  data={userDashboardData.myCollections}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -200,111 +210,164 @@ const Dashboard = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {sustainabilityData.map((entry, index) => (
+                  {userDashboardData.myCollections.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend />
-              </RechartsPieChart>
+              </PieChart>
             </ResponsiveContainer>
-          </ChartCard>
+            <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+              {userDashboardData.myCollections.map((collection, index) => {
+                const Icon = collection.icon;
+                return (
+                  <div key={index} className="text-center">
+                    <Icon className={`w-5 h-5 mx-auto mb-1`} style={{color: collection.color}} />
+                    <p className="text-sm font-medium">{collection.value}</p>
+                    <p className="text-xs text-gray-500">{collection.name}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
-          {/* EcoScore Distribution */}
-          <ChartCard title="Product EcoScore Distribution">
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={ecoScoreData}>
+          {/* My Category Preferences */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+              <Target className="w-5 h-5 text-blue-500" />
+              My Category Interests
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={userDashboardData.myCategoryPreferences}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="range" />
+                <XAxis dataKey="category" angle={-45} textAnchor="end" height={80} />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="count" fill="#10B981" radius={[4, 4, 0, 0]}>
-                  {ecoScoreData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
+                <Bar dataKey="interacted" fill="#3b82f6" name="Viewed" />
+                <Bar dataKey="favorited" fill="#ef4444" name="Favorited" />
               </BarChart>
             </ResponsiveContainer>
-          </ChartCard>
-
-          {/* User Preference Alignment */}
-          <ChartCard title="Preference Alignment Score">
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={preferenceAlignment} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" domain={[0, 100]} />
-                <YAxis dataKey="category" type="category" width={80} />
-                <Tooltip />
-                <Bar dataKey="alignment" fill="#8B5CF6" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
+          </div>
         </div>
 
-        {/* Engagement Metrics Over Time */}
-        <div className="mb-8">
-          <ChartCard title="User Engagement Metrics Over Time">
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={engagementData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
-                <Legend />
-                <Bar yAxisId="left" dataKey="duration" fill="#3B82F6" name="Avg Duration (sec)" />
-                <Line yAxisId="right" type="monotone" dataKey="interactions" stroke="#10B981" strokeWidth={3} name="Total Interactions" />
-                <Line yAxisId="right" type="monotone" dataKey="ratings" stroke="#F59E0B" strokeWidth={3} name="Ratings Given" />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </div>
-
-        {/* Enhanced Environmental Impact Summary */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-2xl p-8 mb-8">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-2xl mb-4">
-              <Activity className="w-8 h-8 text-green-600 dark:text-green-400" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Your Environmental Impact
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* My EcoScore Profile */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+              <Award className="w-5 h-5 text-green-500" />
+              My EcoScore Profile
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
-              Based on your product interactions and preferences, here's your sustainability journey
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  {dashboardData.userImpact}%
+            <ResponsiveContainer width="100%" height={300}>
+              <RadialBarChart data={userDashboardData.myEcoScoreProfile} innerRadius="30%" outerRadius="80%">
+                <RadialBar dataKey="count" cornerRadius={10} fill="#10b981" />
+                <Tooltip />
+              </RadialBarChart>
+            </ResponsiveContainer>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {userDashboardData.myEcoScoreProfile[0].percentage}% of your favorites are excellent eco products!
+              </p>
+            </div>
+          </div>
+
+          {/* My Activity Timeline */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-purple-500" />
+              My Activity Journey
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={userDashboardData.myActivityTimeline}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Area type="monotone" dataKey="viewed" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
+                <Area type="monotone" dataKey="favorited" stackId="2" stroke="#ef4444" fill="#ef4444" fillOpacity={0.8} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* My Rating Patterns */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-500" />
+              My Rating Patterns
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={userDashboardData.myRatingsDistribution}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="rating" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#f59e0b" />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                You're quite positive! {userDashboardData.myRatingsDistribution[0].percentage + userDashboardData.myRatingsDistribution[1].percentage}% of your ratings are 4+ stars
+              </p>
+            </div>
+          </div>
+
+          {/* My Sustainability Focus */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+              <Leaf className="w-5 h-5 text-green-500" />
+              My Sustainability Priorities
+            </h3>
+            <div className="space-y-4">
+              {userDashboardData.mySustainabilityFocus
+                .filter(item => item.preference)
+                .sort((a, b) => b.productsFound - a.productsFound)
+                .map((item, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      item.priority === 'High' ? 'bg-green-500' :
+                      item.priority === 'Medium' ? 'bg-yellow-500' : 'bg-gray-400'
+                    }`}></div>
+                    <span className="font-medium text-gray-900 dark:text-white">{item.attribute}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-green-600">{item.productsFound} products</p>
+                    <p className="text-xs text-gray-500">{item.priority} priority</p>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Preference Match
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  {dashboardData.totalFavorites}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Eco Favorites
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                  {dashboardData.avgRating}★
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Avg Rating
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  +{dashboardData.monthlyGrowth}%
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Monthly Growth
-                </div>
-              </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Personal Insights Summary */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-indigo-500" />
+            Your Eco Journey Insights
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <Leaf className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <h4 className="font-semibold text-gray-900 dark:text-white">Eco Champion</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                You prefer high-quality eco products with 85% of favorites scoring 80+ on sustainability
+              </p>
+            </div>
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <Eye className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <h4 className="font-semibold text-gray-900 dark:text-white">Thoughtful Explorer</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                You spend {Math.round(userDashboardData.myDiscoveryStats.averageViewDuration / 60)} minutes on average exploring each product
+              </p>
+            </div>
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <h4 className="font-semibold text-gray-900 dark:text-white">Growing Interest</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                Most active on {userDashboardData.myDiscoveryStats.favoriteDay}s around {userDashboardData.myDiscoveryStats.mostActiveHour}
+              </p>
             </div>
           </div>
         </div>

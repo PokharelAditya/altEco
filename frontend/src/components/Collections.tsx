@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, Clock, X, Filter } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const CollectionsPage = () => {
   const { user } = useAuthContext();
@@ -250,6 +251,7 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
 
   const ProductCard = ({ product, collectionName }) => {
     
+    
     // Fallback image URL
     const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
     
@@ -259,6 +261,7 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
     const isInNotInterested = collections.notInterested?.some(p => p.product_id === product.product_id) || false;
     
     return (
+          <Link to={`/product/${product.product_id}`}  state={{ product }}  className="block group">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden flex">
         {/* Product Image */}
         <div className="w-48 h-40 flex-shrink-0">
@@ -345,6 +348,7 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
           </div>
         </div>
       </div>
+    </Link>
     );
   };
 

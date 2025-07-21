@@ -2,7 +2,7 @@ import {Response } from "express";
 import { CustomRequest } from "../@types/express";
 import { getUserByEmail } from "../db/users";
 import { fetchProduct } from "../db/products";
-import { setUserInteraction } from "../db/userInteraction";
+import { setUserInteraction, getRating } from "../db/userInteraction";
 
 export const recordUserInteraction = async (req: CustomRequest, res: Response): Promise<void> => {
     const userId = req.findUser?.userId
@@ -26,7 +26,7 @@ export const recordUserInteraction = async (req: CustomRequest, res: Response): 
 
 
         //SEE IN NETWORK TAB FOR POST REQUEST
-        res.json({
+        res.status(201).json({
             status: true,
             message: 'Product information retrieved successfully',
             user_data: user,
@@ -44,4 +44,20 @@ export const recordUserInteraction = async (req: CustomRequest, res: Response): 
             message: 'Internal server error while fetching product and/or information'
         })
     }
+}
+
+export const getUserInteraction = async (req: CustomRequest, res: Response): Promise<void> => {
+        const userId = req.findUser?.userId
+        const product_id = req.params.id
+        if(!userId)
+        {
+            return;
+        }
+        const rating = await getRating(userId, product_id)
+        res.status(200).json({
+            success: true,
+            rating: rating
+        })
+
+
 }
