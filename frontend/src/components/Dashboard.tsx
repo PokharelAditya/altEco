@@ -299,8 +299,8 @@ if (collectionCounts?.ratings?.rows) {
                     return (
                       <div key={index} className="text-center">
                         <Icon className={`w-5 h-5 mx-auto mb-1`} style={{color: collection.color}} />
-                        <p className="text-sm font-medium">{collection.value}</p>
-                        <p className="text-xs text-gray-500">{collection.name}</p>
+                        <p className="text-sm font-medium dark:text-gray-100">{collection.value}</p>
+                        <p className="text-xs dark:text-gray-400">{collection.name}</p>
                       </div>
                     );
                   })}
