@@ -22,7 +22,7 @@ def clean_tags(raw_tags: str) -> str:
 
 
 BASE_DIR = os.path.dirname(__file__)
-csv_path = os.path.join(BASE_DIR, "data_with_eco_score.csv")
+csv_path = os.path.join(BASE_DIR, "data_with_new_eco_score.csv")
 df = pd.read_csv(csv_path)
 
 df["tags"] = df["tags"].astype(str)
