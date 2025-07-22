@@ -563,7 +563,7 @@ function ProductPage() {
                 </div>
 
                 {/* Action Buttons on Image */}
-                <div className="absolute top-4 right-4 flex flex-col gap-3">
+                <div className="absolute group-hover:flex hidden top-4 right-4 flex-col gap-3">
                   {/* Favorite Button */}
                   <button
                     onClick={handleFavoriteClick}
@@ -726,7 +726,7 @@ function ProductPage() {
                       Submitting...
                     </div>
                   ) : (
-                    'Submit Rating'
+                    'Rate'
                   )}
                 </button>
               </div>
