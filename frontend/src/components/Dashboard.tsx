@@ -1,27 +1,36 @@
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadialBarChart, RadialBar, AreaChart, Area } from 'recharts';
-import { Heart, Clock, X, TrendingUp, Leaf, Droplets, Recycle, Star, Eye, Calendar, Award, Target } from 'lucide-react';
+import { Heart, Clock, X, TrendingUp, Leaf, Droplets, Recycle, Star, Eye, Calendar, Award } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext'
 
 const Dashboard = () => {
   const {user} = useAuthContext();
+  const [collectionCounts, setCollectionCounts] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [averageRating, setAverageRating] = useState(0);
+  const [viewedDuration, setViewedDuration] = useState(0);
+  const [totalViews, setTotalViews] = useState(0);
+  const [percentageFavorites, setPercentageFavorites] = useState(0);
+  const [ratingsDistribution, setRatingsDistribution] = useState([]);
+
+  useEffect(() => {
+    const getCount = async () => {
+      try{
+        const response = await fetch('/api/dashboard')
+        const fetchCount = await response.json()
+        // console.log(fetchCount)
+        setCollectionCounts(fetchCount);
+        setLoading(false);
+      }
+      catch(error){
+        console.error(error)
+        setLoading(false);
+      }
+    }
+    getCount();
+  }, [])
 
   const [userDashboardData] = useState({
-    // My Collections (favorites, review_later, exclusion_list tables)
-    myCollections: [
-      { name: 'Favorites', value: 23, color: '#ef4444', icon: Heart },
-      { name: 'Review Later', value: 15, color: '#3b82f6', icon: Clock },
-      { name: 'Not Interested', value: 8, color: '#6b7280', icon: X }
-    ],
-
-    // My Categories Interest (from user's product interactions)
-    myCategoryPreferences: [
-      { category: 'Personal Care', interacted: 28, favorited: 8, avgRating: 4.2 },
-      { category: 'Household', interacted: 22, favorited: 6, avgRating: 3.8 },
-      { category: 'Food & Beverages', interacted: 18, favorited: 5, avgRating: 4.0 },
-      { category: 'Clothing', interacted: 12, favorited: 3, avgRating: 3.5 },
-      { category: 'Beauty', interacted: 8, favorited: 1, avgRating: 3.2 }
-    ],
 
     // My EcoScore Journey (products I've favorited by ecoscore)
     myEcoScoreProfile: [
@@ -40,15 +49,6 @@ const Dashboard = () => {
       { date: '2024-04', viewed: 32, favorited: 4, rated: 22, avgDuration: 160 },
       { date: '2024-05', viewed: 28, favorited: 2, rated: 19, avgDuration: 140 },
       { date: '2024-06', viewed: 41, favorited: 2, rated: 28, avgDuration: 200 }
-    ],
-
-    // My Ratings Pattern (from user_interaction table)
-    myRatingsDistribution: [
-      { rating: 5, count: 35, percentage: 38 },
-      { rating: 4, count: 28, percentage: 31 },
-      { rating: 3, count: 18, percentage: 20 },
-      { rating: 2, count: 7, percentage: 8 },
-      { rating: 1, count: 3, percentage: 3 }
     ],
 
     // My Sustainability Preferences (from user_preferences + attributes tables)
@@ -70,17 +70,88 @@ const Dashboard = () => {
       { duration: 240, rating: 4.6, products: 8 },
       { duration: 300, rating: 4.8, products: 5 }
     ],
-
-    // My Discovery Journey (how I found products I liked)
-    myDiscoveryStats: {
-      totalProductsViewed: 156,
-      averageViewDuration: 167, // seconds
-      conversionToFavorites: 14.7, // percentage
-      averageRating: 3.8,
-      mostActiveHour: "7-8 PM",
-      favoriteDay: "Sunday"
-    }
   });
+
+  useEffect(() => {
+    if (collectionCounts?.ratings?.averageRating) {
+      setAverageRating(parseFloat(collectionCounts.ratings.averageRating).toFixed(2));
+    }
+    if (collectionCounts?.averageViewedDuration?.average_duration) {
+      setViewedDuration(collectionCounts.averageViewedDuration.average_duration);
+    }
+    if (collectionCounts?.averageViewedDuration?.viewed) {
+      setTotalViews(collectionCounts.averageViewedDuration.viewed);
+    }
+    if (collectionCounts?.favoritesCount && collectionCounts?.productCount) {
+      const temp = (collectionCounts.favoritesCount / collectionCounts.productCount * 100).toFixed(1);
+      setPercentageFavorites(temp);
+    }
+    
+if (collectionCounts?.ratings?.rows) {
+  const ratingsData = collectionCounts.ratings.rows
+    .filter(row => row.rating !== null && row.rating !== undefined) // Filter out null/undefined ratings
+    .map(row => ({
+      rating: `${row.rating} ${row.rating === 1 ? 'Star' : 'Stars'}`,
+      count: parseInt(row.count) || 0 // Ensure count is a number
+    }));
+  setRatingsDistribution(ratingsData);
+}
+
+if (collectionCounts?.ratings?.rows) {
+  const ratingsData = collectionCounts.ratings.rows
+    .filter(row => {
+      const rating = row.rating;
+      return rating !== null && 
+             rating !== undefined && 
+             !isNaN(rating) && 
+             rating >= 1 && 
+             rating <= 5;
+    })
+    .map(row => ({
+      rating: `${row.rating} ${row.rating === 1 ? 'Star' : 'Stars'}`,
+      count: parseInt(row.count) || 0
+    }));
+  setRatingsDistribution(ratingsData);
+}
+  }, [collectionCounts]);
+
+  // Calculate percentage of 4+ star ratings
+  const getHighRatingsPercentage = () => {
+    if (ratingsDistribution.length === 0) return 0;
+    
+    const totalRatings = ratingsDistribution.reduce((sum, item) => sum + item.count, 0);
+    const highRatings = ratingsDistribution
+      .filter(item => item.rating.startsWith('4') || item.rating.startsWith('5'))
+      .reduce((sum, item) => sum + item.count, 0);
+    
+    return totalRatings > 0 ? Math.round((highRatings / totalRatings) * 100) : 0;
+  };
+
+  // Create dynamic collections data based on API response
+  const getMyCollections = () => {
+    if (!collectionCounts) return [];
+    
+    return [
+      { 
+        name: 'Favorites', 
+        value: parseInt(collectionCounts.favoritesCount) || 0, 
+        color: '#ef4444', 
+        icon: Heart 
+      },
+      { 
+        name: 'Review Later', 
+        value: parseInt(collectionCounts.reviewLaterCount) || 0, 
+        color: '#3b82f6', 
+        icon: Clock 
+      },
+      { 
+        name: 'Not Interested', 
+        value: parseInt(collectionCounts.notInterestedCount) || 0, 
+        color: '#6b7280', 
+        icon: X 
+      }
+    ];
+  };
 
   // Get user initials for avatar
   const getUserInitials = (name) => {
@@ -121,8 +192,8 @@ const Dashboard = () => {
     </div>
   );
 
-  // Show loading state if user data is not available
-  if (!user) {
+  // Show loading state if user data is not available or data is still loading
+  if (!user || loading) {
     return (
       <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-6 flex items-center justify-center">
         <div className="text-center">
@@ -132,6 +203,9 @@ const Dashboard = () => {
       </div>
     );
   }
+
+  const myCollections = getMyCollections();
+  const favoritesCount = collectionCounts ? parseInt(collectionCounts.favoritesCount) || 0 : 0;
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
@@ -164,27 +238,27 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <PersonalMetricCard 
             title="Products Explored" 
-            value={userDashboardData.myDiscoveryStats.totalProductsViewed}
+            value={totalViews}
             subtitle="lifetime views"
             icon={Eye} 
           />
           <PersonalMetricCard 
             title="My Favorites" 
-            value={userDashboardData.myCollections[0].value}
+            value={favoritesCount}
             subtitle="saved products"
             icon={Heart} 
             color="text-red-600"
           />
           <PersonalMetricCard 
             title="My Avg Rating" 
-            value={userDashboardData.myDiscoveryStats.averageRating}
+            value={averageRating}
             subtitle="out of 5 stars"
             icon={Star} 
             color="text-yellow-600"
           />
           <PersonalMetricCard 
             title="Eco Commitment" 
-            value={`${userDashboardData.myDiscoveryStats.conversionToFavorites}%`}
+            value={`${percentageFavorites}%`}
             subtitle="products favorited"
             icon={Leaf} 
             color="text-green-600"
@@ -192,61 +266,54 @@ const Dashboard = () => {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 gap-6 mb-8">
           {/* My Collections */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
               <Heart className="w-5 h-5 text-red-500" />
               My Product Collections
             </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={userDashboardData.myCollections}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {userDashboardData.myCollections.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-              {userDashboardData.myCollections.map((collection, index) => {
-                const Icon = collection.icon;
-                return (
-                  <div key={index} className="text-center">
-                    <Icon className={`w-5 h-5 mx-auto mb-1`} style={{color: collection.color}} />
-                    <p className="text-sm font-medium">{collection.value}</p>
-                    <p className="text-xs text-gray-500">{collection.name}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* My Category Preferences */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
-              <Target className="w-5 h-5 text-blue-500" />
-              My Category Interests
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={userDashboardData.myCategoryPreferences}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="category" angle={-45} textAnchor="end" height={80} />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="interacted" fill="#3b82f6" name="Viewed" />
-                <Bar dataKey="favorited" fill="#ef4444" name="Favorited" />
-              </BarChart>
-            </ResponsiveContainer>
+            {myCollections.length > 0 && myCollections.some(item => item.value > 0) ? (
+              <>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={myCollections}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {myCollections.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+                  {myCollections.map((collection, index) => {
+                    const Icon = collection.icon;
+                    return (
+                      <div key={index} className="text-center">
+                        <Icon className={`w-5 h-5 mx-auto mb-1`} style={{color: collection.color}} />
+                        <p className="text-sm font-medium">{collection.value}</p>
+                        <p className="text-xs text-gray-500">{collection.name}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-500">
+                <div className="text-center">
+                  <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Start exploring products to build your collections!</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -296,20 +363,31 @@ const Dashboard = () => {
               <Star className="w-5 h-5 text-yellow-500" />
               My Rating Patterns
             </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={userDashboardData.myRatingsDistribution}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="rating" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#f59e0b" />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                You're quite positive! {userDashboardData.myRatingsDistribution[0].percentage + userDashboardData.myRatingsDistribution[1].percentage}% of your ratings are 4+ stars
-              </p>
-            </div>
+            {ratingsDistribution.length > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={ratingsDistribution}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="rating" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#f59e0b" />
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    You're quite positive! {getHighRatingsPercentage()}% of your ratings are 4+ stars
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-500">
+                <div className="text-center">
+                  <Star className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Start rating products to see your rating patterns!</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* My Sustainability Focus */}
@@ -347,7 +425,7 @@ const Dashboard = () => {
             <Calendar className="w-5 h-5 text-indigo-500" />
             Your Eco Journey Insights
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <Leaf className="w-8 h-8 text-green-600 mx-auto mb-2" />
               <h4 className="font-semibold text-gray-900 dark:text-white">Eco Champion</h4>
@@ -359,14 +437,7 @@ const Dashboard = () => {
               <Eye className="w-8 h-8 text-blue-600 mx-auto mb-2" />
               <h4 className="font-semibold text-gray-900 dark:text-white">Thoughtful Explorer</h4>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                You spend {Math.round(userDashboardData.myDiscoveryStats.averageViewDuration / 60)} minutes on average exploring each product
-              </p>
-            </div>
-            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-              <h4 className="font-semibold text-gray-900 dark:text-white">Growing Interest</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                Most active on {userDashboardData.myDiscoveryStats.favoriteDay}s around {userDashboardData.myDiscoveryStats.mostActiveHour}
+                You spend {Math.round(viewedDuration / 60)} minutes on average exploring each product
               </p>
             </div>
           </div>

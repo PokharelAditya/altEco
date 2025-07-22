@@ -2,20 +2,94 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
-import { Heart, Clock, X } from 'lucide-react';
+import { Heart, Clock, X, CheckCircle, AlertCircle } from 'lucide-react';
+
+// Custom Popup Component
+function Popup({ isOpen, onClose, type = 'success', title, message }) {
+  useEffect(() => {
+    if (isOpen) {
+      // Auto close after 3 seconds for success messages
+      if (type === 'success') {
+        const timer = setTimeout(() => {
+          onClose();
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isOpen, onClose, type]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 m-4 max-w-md w-full border border-gray-200 dark:border-gray-700">
+        <div className="flex items-start space-x-4">
+          {/* Icon */}
+          <div className={`flex-shrink-0 ${
+            type === 'success' ? 'text-green-500' : 'text-red-500'
+          }`}>
+            {type === 'success' ? (
+              <CheckCircle className="w-6 h-6" />
+            ) : (
+              <AlertCircle className="w-6 h-6" />
+            )}
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              {title}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              {message}
+            </p>
+          </div>
+          
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Action Button for error messages */}
+        {type === 'error' && (
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function ProductPage() {
   const { id } = useParams();
   const [count, setCount] = useState(0);
   const startTimeRef = useRef(0);
   const intervalRef = useRef(0);
+  const analyticsSentRef = useRef(false);
   const location = useLocation();
   const product = location.state?.product;
   const isFirstRender = useRef(true);
   const [rating, setRating] = useState(null);
   const [hover, setHover] = useState(null);
   const navigate = useNavigate();
-  const ratingRef = useRef(null); // Initialize with null
+  const ratingRef = useRef(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isReviewLater, setIsReviewLater] = useState(false);
   const [isNotInterested, setIsNotInterested] = useState(false);
@@ -24,6 +98,30 @@ function ProductPage() {
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(false);
   const [isLoadingReviewLater, setIsLoadingReviewLater] = useState(false);
   const [isLoadingNotInterested, setIsLoadingNotInterested] = useState(false);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
+
+  // Popup state
+  const [popup, setPopup] = useState({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
+
+  // Function to show popup
+  const showPopup = (type, title, message) => {
+    setPopup({
+      isOpen: true,
+      type,
+      title,
+      message
+    });
+  };
+
+  // Function to close popup
+  const closePopup = () => {
+    setPopup(prev => ({ ...prev, isOpen: false }));
+  };
 
   // Fallback image URL
   const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
@@ -58,8 +156,10 @@ function ProductPage() {
         console.error(err)
       }
     } 
-    getCharacteristics()
-  },[])
+    if (product?.product_id) {
+      getCharacteristics()
+    }
+  },[product])
 
   // API functions for favorites
   const addToFavorites = async (productId) => {
@@ -252,8 +352,48 @@ function ProductPage() {
     }
   }
 
-  // Send analytics data to server
-  const sendAnalytics = async (duration, currentRating) => {
+  // Send analytics data to server (for viewed action on unmount)
+  const sendViewedAnalytics = async () => {
+    // Prevent duplicate calls
+    if (analyticsSentRef.current || !startTimeRef.current || !id) {
+      return;
+    }
+
+    try {
+      const endTime = Date.now();
+      const duration = (endTime - startTimeRef.current) / 1000;
+      
+      // Only send if duration is meaningful (at least 1 second)
+      if (duration >= 1) {
+        console.log('Sending analytics:', { id, duration });
+        analyticsSentRef.current = true; // Mark as sent before the API call
+        
+        const response = await fetch(`/api/duration/${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            duration: duration
+          }),
+        });
+        
+        if (!response.ok) {
+          console.error(`Failed to send viewed analytics: ${response.status} ${response.statusText}`);
+        } else {
+          console.log('Analytics sent successfully');
+        }
+      } else {
+        console.log('Duration too short, not sending analytics');
+      }
+    } catch (error) {
+      console.error("Error sending viewed analytics:", error);
+    }
+  };
+
+  // Store rating on server
+  const storeRating = async (ratingValue) => {
     try {
       const response = await fetch(`/api/product/${id}`, {
         method: "POST",
@@ -262,25 +402,71 @@ function ProductPage() {
         },
         credentials: "include",
         body: JSON.stringify({
-          duration: duration,
-          action: "viewed",
-          rating: currentRating
+          rating: ratingValue
         }),
       });
-      const responseData = await response.text();
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to store rating');
+      }
+      
+      return await response.json();
     } catch (error) {
-      console.error("Error sending duration", error);
+      console.error("Error storing rating", error);
+      throw error;
     }
   };
 
-  // Initialize timer
+  // Initialize timer and setup cleanup - FIXED VERSION
   useEffect(() => {
+    if (!id) return;
+    
+    console.log('Setting up analytics for product:', id);
+    
+    // Reset analytics flag for new product
+    analyticsSentRef.current = false;
     startTimeRef.current = Date.now();
     intervalRef.current = setInterval(increaseCount, 1000);
+    
+    // Cleanup function - send viewed analytics when component unmounts or id changes
     return () => {
       clearInterval(intervalRef.current);
+      
+      // Send analytics immediately on cleanup
+      if (!analyticsSentRef.current && startTimeRef.current && id) {
+        const endTime = Date.now();
+        const duration = (endTime - startTimeRef.current) / 1000;
+        
+        if (duration >= 1) {
+          console.log('Sending analytics on cleanup:', { id, duration });
+          analyticsSentRef.current = true;
+            fetch(`/api/duration/${id}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({ duration }),
+              keepalive: true // Keep request alive even if page is closing
+            }).catch(console.error);
+        }
+      }
     };
-  }, []);
+  }, [id]); // Only depend on id
+
+  // Additional cleanup on window beforeunload (page refresh/close)
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      sendViewedAnalytics();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [id]);
 
   // Sync rating state with ref
   useEffect(() => {
@@ -289,37 +475,49 @@ function ProductPage() {
 
   // Fetch existing rating on component mount
   useEffect(() => {
+    if (!id) return;
+    
     const fetchRating = async () => {
       try {
         const response = await fetch(`/api/product/${id}`, {
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
+          credentials: "include"
         });
-        const data = await response.json();
-        if (data.rating) {
-          setRating(data.rating);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.rating) {
+            setRating(data.rating);
+          }
         }
       } catch (error) {
         console.error('Error fetching rating:', error);
       }
     };
+    
     fetchRating();
   }, [id]);
 
-  // Handle explicit submit
+  // Handle rating submission (without redirect)
   const handleSubmit = async () => {
-    const endTime = Date.now();
-    const duration = (endTime - startTimeRef.current) / 1000;
+    if (!rating) {
+      showPopup('error', 'Rating Required', 'Please select a rating before submitting');
+      return;
+    }
     
-    // Send analytics with current rating before navigating
-    await sendAnalytics(duration, rating);
+    setIsSubmittingRating(true);
     
-    // Clear interval
-    clearInterval(intervalRef.current);
-    
-    // Navigate to home
-    navigate("/home");
+    try {
+      await storeRating(rating);
+      showPopup('success', 'Success!', 'Rating submitted successfully!');
+    } catch (error) {
+      console.error('Failed to submit rating:', error);
+      showPopup('error', 'Error', 'Failed to submit rating. Please try again.');
+    } finally {
+      setIsSubmittingRating(false);
+    }
   };
 
   if (!product) {
@@ -332,6 +530,15 @@ function ProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Custom Popup */}
+      <Popup
+        isOpen={popup.isOpen}
+        onClose={closePopup}
+        type={popup.type}
+        title={popup.title}
+        message={popup.message}
+      />
+      
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
@@ -510,10 +717,17 @@ function ProductPage() {
               <div className="flex space-x-4 pt-4">
                 <button
                   onClick={handleSubmit}
-                  className="cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6
-                  rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                  disabled={!rating || isSubmittingRating}
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
                 >
-                  Rate 
+                  {isSubmittingRating ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Submitting...
+                    </div>
+                  ) : (
+                    'Rate'
+                  )}
                 </button>
               </div>
             </div>
