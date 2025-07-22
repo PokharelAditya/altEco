@@ -86,7 +86,7 @@ const SettingsPage = () => {
                 )}
             </div>
 
-              <div>
+              <div className='ml-4'>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                   {user.displayName || 'User'}
                 </h2>
