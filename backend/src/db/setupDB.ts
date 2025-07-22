@@ -88,7 +88,7 @@ const createUserInteractionTable = async () => {
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     product_id VARCHAR(30) NOT NULL REFERENCES product(product_id) ON DELETE CASCADE,
     duration INTEGER,
-    viewed BOOLEAN,
+    viewed INTEGER,
     rating INTEGER,
     PRIMARY KEY (user_id, product_id)
 );

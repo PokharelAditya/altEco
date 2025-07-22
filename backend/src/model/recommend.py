@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
 import cohere
 from functools import lru_cache
+import numpy as np
 
 COHERE_API_KEY = "92hecdax2u9Ix9cGjcpEYhrMaB6Tl3UfJKCS2Fxt" 
 co = cohere.ClientV2(COHERE_API_KEY)
@@ -35,8 +36,9 @@ def recommend(input_tag_str):
     cleaned_input = clean_tags(input_tag_str)
     query_vector = vectorizer.transform([cleaned_input])
     cos_sim = cosine_similarity(query_vector, tfidf_matrix).flatten()
-    top_indices = cos_sim.argsort()[-10:][::-1]
-    return df.iloc[top_indices][["code","product_name", "clean_tags", "brands", "image_url","eco_score"]].to_dict(orient="records")
+    top_indices = cos_sim.argsort()[-40:][::-1]
+    sample_indices = np.random.choice(top_indices,size=10,replace=False) 
+    return df.iloc[sample_indices][["code","product_name", "clean_tags", "brands", "image_url","eco_score"]].to_dict(orient="records")
 
 
 
