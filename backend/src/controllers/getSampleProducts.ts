@@ -89,7 +89,7 @@ export const getFavorites = async (req:CustomRequest,res:Response):Promise<void>
   const userId = req.findUser?.userId
   try{
     const result = await pool.query( ` SELECT p.product_id, p.name, p.description, p.brand, 
-             p.clean_tags, p.image_url, p.ecoscore as rating, 
+             p.clean_tags, p.image_url, p.ecoscore as eco_score, 
              0 as review_count
       FROM favorites f 
       JOIN product p ON f.product_id = p.product_id 

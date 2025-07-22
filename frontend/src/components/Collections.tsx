@@ -260,96 +260,97 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
     const isInReviewLater = collections.reviewLater?.some(p => p.product_id === product.product_id) || false;
     const isInNotInterested = collections.notInterested?.some(p => p.product_id === product.product_id) || false;
     
-    return (
-          <Link to={`/product/${product.product_id}`}  state={{ product }}  className="block group">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden flex">
-        {/* Product Image */}
-        <div className="w-48 h-40 flex-shrink-0">
-          <img 
-            src={product.image_url || fallbackImageUrl} 
-            alt={product.name || 'Product'}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.src = fallbackImageUrl;
-            }}
-          />
-        </div>
-        
-        {/* Product Info */}
-        <div className="flex-1 p-6 flex flex-col justify-between">
-          <div>
+return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden flex">
+      {/* Product Image - Clickable */}
+      <Link to={`/product/${product.product_id}`} state={{ product }} className="w-48 h-40 flex-shrink-0 group">
+        <img 
+          src={product.image_url || fallbackImageUrl} 
+          alt={product.name || 'Product'}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+          onError={(e) => {
+            e.target.src = fallbackImageUrl;
+          }}
+        />
+      </Link>
+      
+      {/* Product Info */}
+      <div className="flex-1 p-6 flex flex-col justify-between">
+        <div>
+          {/* Clickable Title and Description */}
+          <Link to={`/product/${product.product_id}`} state={{ product }} className="block hover:opacity-80 transition-opacity">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
               {product.name || 'Unnamed Product'}
             </h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
               {product.description || 'No description available'}
             </p>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex gap-2 flex-wrap">
-            {/* Add to Favorites Button */}
-            { collectionName !== 'notInterested' &&
-            <>
-            {collectionName !== 'favorites' && !isInFavorites && (
-              <button
-                onClick={() => addToCollection(product.product_id, collectionName, 'favorites')}
-                className="flex items-center px-3 py-2 text-sm bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400 dark:hover:bg-red-700/50 rounded-lg hover:bg-red-100 transition-colors"
-              >
-                <Heart className="w-4 h-4 mr-1" />
-                Add to Favorites
-              </button>
-            )}
-            {collectionName !== 'favorites' && isInFavorites && (
-              <div className="flex items-center px-3 py-2 text-sm bg-red-100 dark:bg-red-900/40 dark:hover:bg-red-800/50 dark:text-red-500 text-red-700 rounded-lg">
-                <Heart className="w-4 h-4 mr-1 fill-current" />
-                In Favorites
-              </div>
-            )}
-
-            {/* Add to Review Later Button */}
-            {collectionName !== 'reviewLater' && !isInReviewLater && (
-              <button
-                onClick={() => addToCollection(product.product_id, collectionName, 'reviewLater')}
-                className="flex items-center px-3 py-2 text-sm bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:hover:bg-blue-700/50 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"
-              >
-                <Clock className="w-4 h-4 mr-1" />
-                Review Later
-              </button>
-            )}
-            {collectionName !== 'reviewLater' && isInReviewLater && (
-              <div className="flex items-center px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-800/50 dark:text-blue-500 text-blue-700 rounded-lg">
-                <Clock className="w-4 h-4 mr-1" />
-                In Review Later
-              </div>
-            )}
-            </>
-          }
-
-            {/* Add to Not Interested Button */}
-            {collectionName !== 'notInterested' && !isInNotInterested && (
-              <button
-                onClick={() => addToCollection(product.product_id, collectionName, 'notInterested')}
-                className="flex items-center px-3 py-2 text-sm bg-gray-50 text-gray-600 dark:bg-gray-800/60 dark:hover:bg-gray-700/50 rounded-lg dark:text-gray-400 hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-4 h-4 mr-1" />
-                Not Interested
-              </button>
-            )}
-
-            {/* Remove from Current Collection Button */}
+          </Link>
+        </div>
+        
+        {/* Action Buttons - NOT wrapped in Link */}
+        <div className="flex gap-2 flex-wrap">
+          {/* Add to Favorites Button */}
+          {collectionName !== 'notInterested' &&
+          <>
+          {collectionName !== 'favorites' && !isInFavorites && (
             <button
-              onClick={() => removeProduct(product.product_id, collectionName)}
-              className="flex items-center px-3 py-2 text-sm bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/40 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+              onClick={() => addToCollection(product.product_id, collectionName, 'favorites')}
+              className="flex items-center px-3 py-2 text-sm bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400 dark:hover:bg-red-700/50 rounded-lg hover:bg-red-100 transition-colors"
+            >
+              <Heart className="w-4 h-4 mr-1" />
+              Add to Favorites
+            </button>
+          )}
+          {collectionName !== 'favorites' && isInFavorites && (
+            <div className="flex items-center px-3 py-2 text-sm bg-red-100 dark:bg-red-900/40 dark:hover:bg-red-800/50 dark:text-red-500 text-red-700 rounded-lg">
+              <Heart className="w-4 h-4 mr-1 fill-current" />
+              In Favorites
+            </div>
+          )}
+
+          {/* Add to Review Later Button */}
+          {collectionName !== 'reviewLater' && !isInReviewLater && (
+            <button
+              onClick={() => addToCollection(product.product_id, collectionName, 'reviewLater')}
+              className="flex items-center px-3 py-2 text-sm bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:hover:bg-blue-700/50 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <Clock className="w-4 h-4 mr-1" />
+              Review Later
+            </button>
+          )}
+          {collectionName !== 'reviewLater' && isInReviewLater && (
+            <div className="flex items-center px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-800/50 dark:text-blue-500 text-blue-700 rounded-lg">
+              <Clock className="w-4 h-4 mr-1" />
+              In Review Later
+            </div>
+          )}
+          </>
+        }
+
+          {/* Add to Not Interested Button */}
+          {collectionName !== 'notInterested' && !isInNotInterested && (
+            <button
+              onClick={() => addToCollection(product.product_id, collectionName, 'notInterested')}
+              className="flex items-center px-3 py-2 text-sm bg-gray-50 text-gray-600 dark:bg-gray-800/60 dark:hover:bg-gray-700/50 rounded-lg dark:text-gray-400 hover:bg-gray-100 transition-colors"
             >
               <X className="w-4 h-4 mr-1" />
-              Remove
+              Not Interested
             </button>
-          </div>
+          )}
+
+          {/* Remove from Current Collection Button */}
+          <button
+            onClick={() => removeProduct(product.product_id, collectionName)}
+            className="flex items-center px-3 py-2 text-sm bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/40 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+          >
+            <X className="w-4 h-4 mr-1" />
+            Remove
+          </button>
         </div>
       </div>
-    </Link>
-    );
+    </div>
+  );
   };
 
   const activeConfig = collectionConfig[activeCollection];
