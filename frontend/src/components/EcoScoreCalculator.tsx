@@ -1,157 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ScoreColor from "../utils/ScoreColor";
-
-const positiveTags = [
-  "en:green-dot",
-  "green",
-  "dot",
-  "plant-based",
-  "fresh",
-  "en:organic",
-  "en:eu-organic",
-  "bio",
-  "natural",
-  "naturel",
-  "organic",
-  "recyclable",
-  "sans",
-  "vert",
-  "water",
-  "usda",
-  "fruits",
-  "vegetables",
-  "agriculture",
-  "biologique",
-  "tournesol",
-  "colza",
-];
-
-const negativeTags = [
-  "plastique",
-  "plastic",
-  "acid",
-  "acide",
-  "citrique",
-  "e330",
-  "sodium",
-  "carton",
-  "arôme",
-  "arômes",
-  "additive",
-  "sachet",
-  "canned",
-  "cereals",
-  "beverages",
-  "gluten",
-  "sucre",
-  "sugary",
-  "snacks",
-  "huile",
-  "farine",
-  "diaries",
-  "meats",
-  "viande",
-  "poudre",
-  "cheeses",
-  "glucose",
-  "groceries",
-  "sirop",
-  "amidon",
-  "frozen",
-  "verre",
-  "lait",
-  "desserts",
-  "cacao",
-  "potassium",
-  "sauces",
-  "alcoholic",
-  "barquette",
-  "jus",
-  "chocolates",
-];
-
-const tagDisplayMap: Record<string, string> = {
-  // "en:green-dot": "Green Dot (Eco Symbol)",
-  // "plant-based": "Plant Based",
-  // "en:organic": "Organic ",
-  // "en:eu-organic": "EU Organic Certified",
-  // "bio": "Biodegradable", 
-  // "natural": "Natural",
-  // "organic": "Organic",
-  // "recyclable": "Recyclable",
-  // "plastic": "Plastic",
-  // "acid": "Acid",
-  // "citric": "Citric Acid",
-  // "sodium": "Sodium",
-  // "carton": "Cardboard",
-  // "arôme": "Aroma (Flavoring)",
-  // "additive": "Additive / Preservative",
-  // "sachet": "Sachet (Small Packet)",
-  "en:green-dot": "Green Dot (Eco Symbol)",
-  "green": "Green Dot (Eco Symbol)",
-  "dot": "Green Dot (Eco Symbol)",
-  "plant-based": "Plant Based",
-  "fresh": "Fresh",
-  "en:organic": "Organic",
-  "en:eu-organic": "EU Organic Certified",
-  "bio": "Biodegradable",
-  "natural": "Natural",
-  "naturel": "Natural",
-  "organic": "Organic",
-  "recyclable": "Recyclable",
-  "sans": "Without Additives",
-  "vert": "Green",
-  "water": "Water",
-  "usda": "USDA Certified",
-  "fruits": "Fruits",
-  "vegetables": "Vegetables",
-  "agriculture": "Agricultural Product",
-  "biologique": "Organic",
-  "tournesol": "Sunflower",
-  "colza": "Rapeseed",
-  "plastique": "Plastic",
-  "plastic": "Plastic",
-  "acid": "Acid",
-  "acide": "Acid",
-  "citrique": "Citric Acid",
-  "e330": "Citric Acid",
-  "sodium": "Sodium",
-  "carton": "Cardboard",
-  "arôme": "Aroma (Flavoring)",
-  "arômes": "Aroma (Flavoring)",
-  "additive": "Additive / Preservative",
-  "sachet": "Sachet (Small Packet)",
-  "canned": "Canned Food",
-  "cereals": "Cereals",
-  "beverages": "Beverages",
-  "gluten": "Gluten",
-  "sucre": "Sugar",
-  "sugary": "Sugar",
-  "snacks": "Snacks",
-  "huile": "Oil",
-  "farine": "Flour",
-  "diaries": "Dairy",
-  "meats": "Meat",
-  "viande": "Meat",
-  "poudre": "Powder",
-  "cheeses": "Cheese",
-  "glucose": "Glucose",
-  "groceries": "Groceries",
-  "sirop": "Syrup",
-  "amidon": "Starch",
-  "frozen": "Frozen",
-  "verre": "Glass",
-  "lait": "Milk",
-  "desserts": "Desserts",
-  "cacao": "Cocoa",
-  "potassium": "Potassium",
-  "sauces": "Sauces",
-  "alcoholic": "Beverages",
-  "barquette": "Barquette (Pastry Shell)",
-  "jus": "Juice",
-  "chocolates": "Chocolates"
-}
-
+import { positiveTags, tagDisplayMap, displayTags } from "../utils/tags";
 
 const formatTag = (tag: string) => {
   return tagDisplayMap[tag] || tag.replace(/^en:/, "").replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
@@ -164,31 +13,23 @@ const EcoScoreCalculator = () => {
   }
 
   const [productName, setProductName] = useState("");
+  const [productTag, setProductTag] = useState("")
   const [selectedTags, setSelectedTags] = useState<tag[]>([]);
-  const [displayTags, setDisplayTags] = useState<string[]>([])
   const [ecoScore, setEcoScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const readTags:string[] = []
-    const t = [...positiveTags, ...negativeTags]
-      .filter(tag => {
-        if (readTags.includes(tag)) {
-          return false
-        }
-        else {
-          readTags.push(tag)
-          return true
-        }
-      })
-      .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
-    setDisplayTags(() => t)
-  }, [selectedTags])
-
   const toggleTag = (tag: tag) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+    setSelectedTags((prev) => {
+      if (prev.includes(tag)) 
+      {
+        return prev.filter((t) => t !== tag)
+      }
+      else
+      {
+        setProductTag("")
+        return [...prev, tag]
+      }
+    });
   };
 
   const getEcoScore = async () => {
@@ -218,6 +59,14 @@ const EcoScoreCalculator = () => {
     }
   };
 
+  function clearInput() {
+    setProductName(() => "")
+    setProductTag(() => "")
+    setSelectedTags(() => [])
+    setEcoScore(() => null)
+  }
+
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 text-gray-900 dark:text-gray-100">
       <h1 className="text-3xl font-bold text-center mb-8">🌿 Eco Score Calculator</h1>
@@ -233,53 +82,58 @@ const EcoScoreCalculator = () => {
         />
       </div>
 
-      {displayTags.length > 0 &&
+      <div className="mb-6 space-y-2">
+        <label className="block text-base font-medium">Product Tags</label>
+        <input
+          type="text"
+          value={productTag}
+          onChange={(e) => setProductTag(e.target.value)}
+          placeholder="e.g., Sugar"
+          className={`
+            w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 transition
+            ${displayTags
+              .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
+              .filter(tag => tagDisplayMap[tag].toLowerCase().includes(productTag.toLowerCase()))
+              .length ?
+              "focus:ring-blue-500" : "focus:ring-red-500"
+            }
+          `}
+        />
+      </div>
+
+      {displayTags
+        .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
+        .filter(tag => tagDisplayMap[tag].toLowerCase().includes(productTag.toLowerCase()))
+        .length > 0 
+      &&
+      productTag.length > 0
+      &&
       <div className="mb-6">
-        <h2 className="text-base font-medium mb-3">Select Product Tags</h2>
+        <h2 className="text-base font-medium mb-3">Select Tags</h2>
         <div className="flex flex-wrap gap-2">
 
-          {/* {[...positiveTags, ...negativeTags].map((tag) => { */}
-          {/*   const selected = selectedTags.includes(tag); */}
-          {/*   const isPositive = positiveTags.includes(tag); */}
-          {/**/}
-          {/*   return ( */}
-          {/*     <button */}
-          {/*       key={tag} */}
-          {/*       type="button" */}
-          {/*       onClick={() => toggleTag(tag)} */}
-          {/*       className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium ${ */}
-          {/*         selected */}
-          {/*           ? isPositive */}
-          {/*             ? "bg-green-500 text-white border-green-600" */}
-          {/*             : "bg-red-500 text-white border-red-600" */}
-          {/*           : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700" */}
-          {/*       }`} */}
-          {/*     > */}
-          {/*       {formatTag(tag)} */}
-          {/*     </button> */}
-          {/*   ); */}
-          {/* })} */}
-        
-            {displayTags
-              .map((tag) => {
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTag({ name: tag, value: null })}
-                    className="text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
-                  >
-                    <span>{formatTag(tag)}</span>
-                  </button>
-              );
-            })}
+          {displayTags
+            .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
+            .filter(tag => tagDisplayMap[tag].toLowerCase().includes(productTag.toLowerCase()))
+            .map((tag) => {
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => toggleTag({ name: tag, value: null })}
+                  className="text-xs px-3 py-1.5 rounded-full border transition-all duration-150 font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                >
+                  <span>{formatTag(tag)}</span>
+                </button>
+            );
+          })}
 
         </div>
       </div>}
       
       {selectedTags.length > 0 &&
       <div className="mb-6">
-        <h2 className="text-base font-medium mb-3">Please specify tag contribution in terms of percentage for better results:</h2>
+        <h1 className="text-md mb-3">For accuracy, specify tag contribution in terms of percentage if available:</h1>
         <div className="flex flex-col gap-4">
             {selectedTags.map((tag, i) => {
              
@@ -335,14 +189,27 @@ const EcoScoreCalculator = () => {
       </div>
       }
 
-      <div className="text-center">
-        <button
-          onClick={getEcoScore}
-          disabled={loading || selectedTags.length === 0}
-          className="bg-blue-600 text-white text-sm font-semibold px-6 py-2 rounded-xl shadow hover:bg-blue-700 transition disabled:opacity-50"
-        >
-          {loading ? "Calculating..." : "Get Eco Score"}
-        </button>
+      <div className="mt-8 flex gap-4 justify-center items-center">
+        {(productName.length > 0 || productTag.length > 0 || selectedTags.length > 0 || ecoScore !== null) &&
+        <div className="text-center">
+          <button
+            onClick={() => clearInput()}
+            disabled={loading || (productName.length === 0 && productTag.length === 0 && selectedTags.length === 0 && ecoScore === null)}
+            className="bg-red-600 text-white text-sm font-semibold px-6 py-2 rounded-xl shadow hover:bg-red-700 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          >
+            Clear
+          </button>
+        </div>}
+
+        <div className="text-center">
+          <button
+            onClick={getEcoScore}
+            disabled={loading || selectedTags.length === 0}
+            className="bg-blue-600 text-white text-sm font-semibold px-6 py-2 rounded-xl shadow hover:bg-blue-700 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          >
+            {loading ? "Calculating..." : "Get Eco Score"}
+          </button>
+        </div>
       </div>
 
       {ecoScore !== null && (
