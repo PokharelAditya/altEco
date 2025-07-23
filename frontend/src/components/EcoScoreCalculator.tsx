@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ScoreColor from "../utils/ScoreColor";
-import { positiveTags, tagDisplayMap, displayTags } from "../utils/tags";
+import { positiveTags, tagDisplayMap, displayTags, tagsWithoutQuantity } from "../utils/tags";
 
 const formatTag = (tag: string) => {
   return tagDisplayMap[tag] || tag.replace(/^en:/, "").replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
@@ -143,10 +143,10 @@ const EcoScoreCalculator = () => {
               <div key={i} className="flex items-center gap-4">
                 <button
                   onClick={() => toggleTag(tag)}
-                  className={`flex justify-center items-center gap-2 text-sm px-3 py-1.5 rounded-full border transition-all duration-150 cursor-pointer
+                  className={`flex justify-center items-center gap-2 text-sm px-3 py-1.5 rounded-full transition-all duration-150 cursor-pointer
                     ${isPositive
-                    ? "bg-green-700 hover:bg-green-500 text-white border-green-800"
-                    : "bg-red-700 hover:bg-red-500 text-white border-red-800"}`}
+                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    : "bg-red-600 hover:bg-red-700 text-white"}`}
                 >
                   <span>
                     {formatTag(tag.name)}
@@ -157,30 +157,33 @@ const EcoScoreCalculator = () => {
                   </svg>
                 </button> 
 
-                {tag.value === null && 
-                <button
-                  className="ml-auto"
-                  onClick={() => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: 100 } : p))}
-                >
-                  Add
-                </button>}
-
-                {tag.value === null || 
+                {tagsWithoutQuantity.includes(tagDisplayMap[tag.name]) ||
                 <div className="ml-auto">
-                  <input
-                    className=""
-                    type = "number"
-                    min = {0}
-                    max = {100}
-                    value = {tag.value}
-                    onChange = {(e) => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: e.target.value } : p))}
-                  />
+                  {tag.value === null && 
                   <button
-                    className=""
-                    onClick={() => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: null } : p))}
+                    className="ml-auto text-sm px-3 py-1.5 rounded-full transition-all duration-150 cursor-pointer hover:shadow-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-800"
+                    onClick={() => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: 100 } : p))}
                   >
-                    Remove
-                  </button>
+                    Add Percentage
+                  </button>}
+
+                  {tag.value === null || 
+                  <div className="flex gap-4 ml-auto">
+                    <input
+                      className="ml-auto max-w-12 text-sm px-3 py-1.5 rounded-full transition-all duration-150 hover:shadow-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-800"
+                      type = "text"
+                      min = {0}
+                      max = {100}
+                      value = {tag.value}
+                      onChange = {(e) => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: Number(e.target.value) } : p))}
+                    />
+                    <button
+                      className="ml-auto text-sm px-3 py-1.5 rounded-full transition-all duration-150 cursor-pointer hover:shadow-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-800"
+                      onClick={() => setSelectedTags(prev => prev.map(p => p === tag? { ...p, value: null } : p))}
+                    >
+                      Remove Percentage
+                    </button>
+                  </div>}
                 </div>}
 
               </div>)

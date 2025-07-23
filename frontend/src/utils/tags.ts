@@ -148,3 +148,9 @@ export const displayTags = [...positiveTags, ...negativeTags]
       return true
     }
 })
+
+export const tagsWithoutQuantity = [
+  "Green Dot (Eco Symbol)",
+  "EU Organic Certified",
+  "USDA Certified",
+]
