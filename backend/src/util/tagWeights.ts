@@ -57,7 +57,7 @@ export const negativeTagWeights: Record<string, number> = {
     "amidon":0.1,
     "frozen":0.3,
     "verre":0.15,
-    "milk":0.3,
+    "lait":0.3,
     "desserts": 0.4,
     "cacao": 0.4,
     "potassium": 0.1,
