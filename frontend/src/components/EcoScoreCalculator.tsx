@@ -1,46 +1,157 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ScoreColor from "../utils/ScoreColor";
 
 const positiveTags = [
   "en:green-dot",
+  "green",
+  "dot",
   "plant-based",
+  "fresh",
   "en:organic",
   "en:eu-organic",
   "bio",
   "natural",
+  "naturel",
   "organic",
   "recyclable",
+  "sans",
+  "vert",
+  "water",
+  "usda",
+  "fruits",
+  "vegetables",
+  "agriculture",
+  "biologique",
+  "tournesol",
+  "colza",
 ];
 
 const negativeTags = [
+  "plastique",
   "plastic",
   "acid",
-  "citric",
+  "acide",
+  "citrique",
+  "e330",
   "sodium",
   "carton",
   "arôme",
+  "arômes",
   "additive",
   "sachet",
+  "canned",
+  "cereals",
+  "beverages",
+  "gluten",
+  "sucre",
+  "sugary",
+  "snacks",
+  "huile",
+  "farine",
+  "diaries",
+  "meats",
+  "viande",
+  "poudre",
+  "cheeses",
+  "glucose",
+  "groceries",
+  "sirop",
+  "amidon",
+  "frozen",
+  "verre",
+  "lait",
+  "desserts",
+  "cacao",
+  "potassium",
+  "sauces",
+  "alcoholic",
+  "barquette",
+  "jus",
+  "chocolates",
 ];
 
 const tagDisplayMap: Record<string, string> = {
+  // "en:green-dot": "Green Dot (Eco Symbol)",
+  // "plant-based": "Plant Based",
+  // "en:organic": "Organic ",
+  // "en:eu-organic": "EU Organic Certified",
+  // "bio": "Biodegradable", 
+  // "natural": "Natural",
+  // "organic": "Organic",
+  // "recyclable": "Recyclable",
+  // "plastic": "Plastic",
+  // "acid": "Acid",
+  // "citric": "Citric Acid",
+  // "sodium": "Sodium",
+  // "carton": "Cardboard",
+  // "arôme": "Aroma (Flavoring)",
+  // "additive": "Additive / Preservative",
+  // "sachet": "Sachet (Small Packet)",
   "en:green-dot": "Green Dot (Eco Symbol)",
+  "green": "Green Dot (Eco Symbol)",
+  "dot": "Green Dot (Eco Symbol)",
   "plant-based": "Plant Based",
-  "en:organic": "Organic ",
+  "fresh": "Fresh",
+  "en:organic": "Organic",
   "en:eu-organic": "EU Organic Certified",
-  "bio": "Biodegradable", 
+  "bio": "Biodegradable",
   "natural": "Natural",
+  "naturel": "Natural",
   "organic": "Organic",
   "recyclable": "Recyclable",
+  "sans": "Without Additives",
+  "vert": "Green",
+  "water": "Water",
+  "usda": "USDA Certified",
+  "fruits": "Fruits",
+  "vegetables": "Vegetables",
+  "agriculture": "Agricultural Product",
+  "biologique": "Organic",
+  "tournesol": "Sunflower",
+  "colza": "Rapeseed",
+  "plastique": "Plastic",
   "plastic": "Plastic",
   "acid": "Acid",
-  "citric": "Citric Acid",
+  "acide": "Acid",
+  "citrique": "Citric Acid",
+  "e330": "Citric Acid",
   "sodium": "Sodium",
   "carton": "Cardboard",
   "arôme": "Aroma (Flavoring)",
+  "arômes": "Aroma (Flavoring)",
   "additive": "Additive / Preservative",
   "sachet": "Sachet (Small Packet)",
-};
+  "canned": "Canned Food",
+  "cereals": "Cereals",
+  "beverages": "Beverages",
+  "gluten": "Gluten",
+  "sucre": "Sugar",
+  "sugary": "Sugar",
+  "snacks": "Snacks",
+  "huile": "Oil",
+  "farine": "Flour",
+  "diaries": "Dairy",
+  "meats": "Meat",
+  "viande": "Meat",
+  "poudre": "Powder",
+  "cheeses": "Cheese",
+  "glucose": "Glucose",
+  "groceries": "Groceries",
+  "sirop": "Syrup",
+  "amidon": "Starch",
+  "frozen": "Frozen",
+  "verre": "Glass",
+  "lait": "Milk",
+  "desserts": "Desserts",
+  "cacao": "Cocoa",
+  "potassium": "Potassium",
+  "sauces": "Sauces",
+  "alcoholic": "Beverages",
+  "barquette": "Barquette (Pastry Shell)",
+  "jus": "Juice",
+  "chocolates": "Chocolates"
+}
+
 
 const formatTag = (tag: string) => {
   return tagDisplayMap[tag] || tag.replace(/^en:/, "").replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
@@ -54,8 +165,25 @@ const EcoScoreCalculator = () => {
 
   const [productName, setProductName] = useState("");
   const [selectedTags, setSelectedTags] = useState<tag[]>([]);
+  const [displayTags, setDisplayTags] = useState<string[]>([])
   const [ecoScore, setEcoScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const readTags:string[] = []
+    const t = [...positiveTags, ...negativeTags]
+      .filter(tag => {
+        if (readTags.includes(tag)) {
+          return false
+        }
+        else {
+          readTags.push(tag)
+          return true
+        }
+      })
+      .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
+    setDisplayTags(() => t)
+  }, [selectedTags])
 
   const toggleTag = (tag: tag) => {
     setSelectedTags((prev) =>
@@ -105,7 +233,7 @@ const EcoScoreCalculator = () => {
         />
       </div>
 
-      {[...positiveTags, ...negativeTags].filter(tag => !selectedTags.map(tag => tag.name).includes(tag)).length > 0 &&
+      {displayTags.length > 0 &&
       <div className="mb-6">
         <h2 className="text-base font-medium mb-3">Select Product Tags</h2>
         <div className="flex flex-wrap gap-2">
@@ -132,8 +260,7 @@ const EcoScoreCalculator = () => {
           {/*   ); */}
           {/* })} */}
         
-            {[...positiveTags, ...negativeTags]
-              .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
+            {displayTags
               .map((tag) => {
                 return (
                   <button
