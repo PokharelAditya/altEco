@@ -29,7 +29,7 @@ def generateEcoScore(tagArray):
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 clean_csv_path = os.path.join(dir_path, "cleaned_data.csv")
-score_csv_path = os.path.join(dir_path, "data_with_eco_score.csv")
+score_csv_path = os.path.join(dir_path, "data_with_new_eco_score.csv")
 
 df = pd.read_csv(clean_csv_path, dtype = str)
 

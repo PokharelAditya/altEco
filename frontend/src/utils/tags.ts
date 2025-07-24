@@ -128,7 +128,7 @@ export const tagDisplayMap: Record<string, string> = {
   "potassium": "Potassium",
   "sauces": "Sauces",
   "alcoholic": "Beverages",
-  "barquette": "Barquette (Pastry Shell)",
+  "barquette": "Barquette (Tray)",
   "jus": "Juice",
   "chocolates": "Chocolates"
 }
