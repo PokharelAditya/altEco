@@ -6,7 +6,7 @@ import { CustomRequest } from "../@types/express";
 
 const searchProductController = async (
   req: CustomRequest,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   try {
     const userId = req.findUser?.userId;
@@ -17,7 +17,7 @@ const searchProductController = async (
     if (type === "barcode") {
       const product = await pool.query(
         "Select * FROM product WHERE product_id = $1",
-        [data],
+        [data]
       );
       if (product.rows.length > 0) {
         tags = product.rows[0].clean_tags;
@@ -25,7 +25,7 @@ const searchProductController = async (
         const scriptPath = path.join(__dirname, "../model/barcodeSearch.py");
         const csvPath = path.join(
           __dirname,
-          "../model/data_with_eco_score.csv",
+          "../model/data_with_eco_score.csv"
         );
         execFile(
           "python3",
@@ -47,7 +47,7 @@ const searchProductController = async (
                 .status(200)
                 .json({ message: "Product not found", products: [] });
             }
-          },
+          }
         );
       }
     } else if (type === "prompt") {
@@ -65,13 +65,30 @@ const searchProductController = async (
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({ tags }),
-      },
+      }
     );
 
     const { recommendations } = await response.json();
 
+    // Insert recommended products into DB
+    for (const recommendation of recommendations) {
+      await pool.query(
+        `INSERT INTO product VALUES ($1, $2, $3, $4, $5, $6, $7)
+    ON CONFLICT (product_id) DO NOTHING`,
+        [
+          recommendation.code,
+          recommendation.product_name,
+          recommendation.description,
+          recommendation.brands,
+          recommendation.clean_tags,
+          recommendation.image_url,
+          recommendation.eco_score,
+        ]
+      );
+    }
+
     res.status(200).json({
-      message: "Products fetched sucessfully",
+      message: "Products fetched successfully",
       products: recommendations,
     });
   } catch (error) {
