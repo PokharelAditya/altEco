@@ -21,6 +21,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
+    "@types/natural": "^5.1.5",
     "@types/node": "^24.0.13",
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.15.2",
@@ -44,6 +45,7 @@
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "natural": "^8.1.0",
     "nodemailer": "^7.0.4",
     "pg": "^8.16.0",
     "uuid": "^11.1.0"
