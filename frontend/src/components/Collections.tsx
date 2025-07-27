@@ -449,7 +449,7 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
                   {activeConfig.title}
                 </h2>
                 <span className="ml-auto text-gray-500 dark:text-gray-400">
-                  {currentProducts?.length || 0} items
+                  {currentProducts?.length || 0} {currentProducts?.length==1 ? `item`:`items`}
                 </span>
               </div>
             </div>
