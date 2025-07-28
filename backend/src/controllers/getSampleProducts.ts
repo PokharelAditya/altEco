@@ -54,7 +54,7 @@ export const getSampleProducts = async (
     products.forEach((product) => {
       tokenizer
         .tokenize(product.clean_tags?.toLowerCase() || "")
-        .forEach((tag) => vocabSet.add(tag));
+        .forEach((tag:any) => vocabSet.add(tag));
     });
     userTags.forEach((tag) => vocabSet.add(tag));
     const vocab = Array.from(vocabSet);
@@ -68,7 +68,7 @@ export const getSampleProducts = async (
         product.clean_tags?.toLowerCase() || ""
       );
       const productVec = vocab.map(
-        (word) => productTags.filter((tag) => tag === word).length
+        (word) => productTags.filter((tag:any) => tag === word).length
       );
       const similarity = cosineSimilarity(userVec, productVec);
       return { ...product, similarity };
