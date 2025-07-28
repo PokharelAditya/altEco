@@ -1,7 +1,7 @@
 import {Link} from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Heart, Clock, X } from 'lucide-react'
-
+import ScoreColor from '../../utils/ScoreColor'
 const ProductCard = ({ product, initialFavorited = false, initialReviewLater = false, initialNotInterested = false }) => {
   const [isFavorited, setIsFavorited] = useState(initialFavorited)
   const [isReviewLater, setIsReviewLater] = useState(initialReviewLater)
@@ -240,7 +240,7 @@ const ProductCard = ({ product, initialFavorited = false, initialReviewLater = f
           {/* Eco Score Badge */}
           <div 
             className="absolute top-3 left-3 text-white px-2.5 py-1.5 rounded-lg font-bold text-sm shadow-md backdrop-blur-sm"
-            style={{ backgroundColor: getEcoScoreColor(product.ecoscore/10 || product.eco_score/10) }}
+            style={{ backgroundColor: ScoreColor(product.ecoscore || product.eco_score) }}
           >
             {formatEcoScore(product.ecoscore/10 || product.eco_score/10)}/10
           </div>
