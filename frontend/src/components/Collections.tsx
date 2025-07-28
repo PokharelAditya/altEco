@@ -253,7 +253,7 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
     
     
     // Fallback image URL
-    const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
+    const fallbackImageUrl = "https://res.cloudinary.com/dvtipjp4u/image/upload/v1753449675/logo_qwx4aj.png";
     
     // Check if product exists in other collections - with null safety
     const isInFavorites = collections.favorites?.some(p => p.product_id === product.product_id) || false;

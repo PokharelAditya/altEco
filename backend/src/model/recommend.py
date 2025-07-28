@@ -9,11 +9,10 @@ import cohere
 from functools import lru_cache
 import numpy as np
 from dotenv import load_dotenv
-
 load_dotenv()
-api_key = os.getenv("cohere_api_key")
-
-co = cohere.ClientV2(api_key)
+api_key = os.getenv("cohere_api_key") 
+COHERE_API_KEY = api_key
+co = cohere.ClientV2(COHERE_API_KEY)
 
 
 def clean_tags(raw_tags: str) -> str:

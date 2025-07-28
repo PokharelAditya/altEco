@@ -124,7 +124,7 @@ function ProductPage() {
   };
 
   // Fallback image URL
-  const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
+  const fallbackImageUrl = "https://res.cloudinary.com/dvtipjp4u/image/upload/v1753449675/logo_qwx4aj.png";
 
   const formatEcoScore = (score) => {
     if (score == null || score == undefined || isNaN(Number(score)))
