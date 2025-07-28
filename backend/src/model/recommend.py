@@ -8,8 +8,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
 import cohere
 from functools import lru_cache
 import numpy as np
-
-COHERE_API_KEY = "92hecdax2u9Ix9cGjcpEYhrMaB6Tl3UfJKCS2Fxt" 
+from dotenv import load_dotenv
+load_dotenv()
+api_key = os.getenv("cohere_api_key") 
+COHERE_API_KEY = api_key
 co = cohere.ClientV2(COHERE_API_KEY)
 
 

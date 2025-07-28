@@ -253,7 +253,7 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
     
     
     // Fallback image URL
-    const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
+    const fallbackImageUrl = "https://res.cloudinary.com/dvtipjp4u/image/upload/v1753449675/logo_qwx4aj.png";
     
     // Check if product exists in other collections - with null safety
     const isInFavorites = collections.favorites?.some(p => p.product_id === product.product_id) || false;
@@ -261,9 +261,9 @@ const addToCollection = async (productId, fromCollection, toCollection) => {
     const isInNotInterested = collections.notInterested?.some(p => p.product_id === product.product_id) || false;
     
 return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden flex">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden flex flex-col md:flex-row">
       {/* Product Image - Clickable */}
-      <Link to={`/product/${product.product_id}`} state={{ product }} className="w-48 h-40 flex-shrink-0 group">
+      <Link to={`/product/${product.product_id}`} state={{ product }} className="w-full md:w-48 h-48 md:h-40 flex-shrink-0 group">
         <img 
           src={product.image_url || fallbackImageUrl} 
           alt={product.name || 'Product'}
@@ -275,7 +275,7 @@ return (
       </Link>
       
       {/* Product Info */}
-      <div className="flex-1 p-6 flex flex-col justify-between">
+      <div className="flex-1 p-4 md:p-6 flex flex-col justify-between">
         <div>
           {/* Clickable Title and Description */}
           <Link to={`/product/${product.product_id}`} state={{ product }} className="block hover:opacity-80 transition-opacity">
@@ -296,16 +296,16 @@ return (
           {collectionName !== 'favorites' && !isInFavorites && (
             <button
               onClick={() => addToCollection(product.product_id, collectionName, 'favorites')}
-              className="flex items-center px-3 py-2 text-sm bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400 dark:hover:bg-red-700/50 rounded-lg hover:bg-red-100 transition-colors"
+              className="flex items-center px-2 md:px-3 py-2 text-xs md:text-sm bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-400 dark:hover:bg-red-700/50 rounded-lg hover:bg-red-100 transition-colors"
             >
-              <Heart className="w-4 h-4 mr-1" />
-              Add to Favorites
+              <Heart className="w-3 md:w-4 h-3 md:h-4 mr-1" />
+              <span className="hidden sm:inline">Add to </span>Favorites
             </button>
           )}
           {collectionName !== 'favorites' && isInFavorites && (
-            <div className="flex items-center px-3 py-2 text-sm bg-red-100 dark:bg-red-900/40 dark:hover:bg-red-800/50 dark:text-red-500 text-red-700 rounded-lg">
-              <Heart className="w-4 h-4 mr-1 fill-current" />
-              In Favorites
+            <div className="flex items-center px-2 md:px-3 py-2 text-xs md:text-sm bg-red-100 dark:bg-red-900/40 dark:hover:bg-red-800/50 dark:text-red-500 text-red-700 rounded-lg">
+              <Heart className="w-3 md:w-4 h-3 md:h-4 mr-1 fill-current" />
+              <span className="hidden sm:inline">In </span>Favorites
             </div>
           )}
 
@@ -313,16 +313,16 @@ return (
           {collectionName !== 'reviewLater' && !isInReviewLater && (
             <button
               onClick={() => addToCollection(product.product_id, collectionName, 'reviewLater')}
-              className="flex items-center px-3 py-2 text-sm bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:hover:bg-blue-700/50 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"
+              className="flex items-center px-2 md:px-3 py-2 text-xs md:text-sm bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:hover:bg-blue-700/50 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"
             >
-              <Clock className="w-4 h-4 mr-1" />
+              <Clock className="w-3 md:w-4 h-3 md:h-4 mr-1" />
               Review Later
             </button>
           )}
           {collectionName !== 'reviewLater' && isInReviewLater && (
-            <div className="flex items-center px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-800/50 dark:text-blue-500 text-blue-700 rounded-lg">
-              <Clock className="w-4 h-4 mr-1" />
-              In Review Later
+            <div className="flex items-center px-2 md:px-3 py-2 text-xs md:text-sm bg-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-800/50 dark:text-blue-500 text-blue-700 rounded-lg">
+              <Clock className="w-3 md:w-4 h-3 md:h-4 mr-1" />
+              <span className="hidden sm:inline">In </span>Review Later
             </div>
           )}
           </>
@@ -332,9 +332,9 @@ return (
           {collectionName !== 'notInterested' && !isInNotInterested && (
             <button
               onClick={() => addToCollection(product.product_id, collectionName, 'notInterested')}
-              className="flex items-center px-3 py-2 text-sm bg-gray-50 text-gray-600 dark:bg-gray-800/60 dark:hover:bg-gray-700/50 rounded-lg dark:text-gray-400 hover:bg-gray-100 transition-colors"
+              className="flex items-center px-2 md:px-3 py-2 text-xs md:text-sm bg-gray-50 text-gray-600 dark:bg-gray-800/60 dark:hover:bg-gray-700/50 rounded-lg dark:text-gray-400 hover:bg-gray-100 transition-colors"
             >
-              <X className="w-4 h-4 mr-1" />
+              <X className="w-3 md:w-4 h-3 md:h-4 mr-1" />
               Not Interested
             </button>
           )}
@@ -342,9 +342,9 @@ return (
           {/* Remove from Current Collection Button */}
           <button
             onClick={() => removeProduct(product.product_id, collectionName)}
-            className="flex items-center px-3 py-2 text-sm bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/40 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+            className="flex items-center px-2 md:px-3 py-2 text-xs md:text-sm bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/40 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
           >
-            <X className="w-4 h-4 mr-1" />
+            <X className="w-3 md:w-4 h-3 md:h-4 mr-1" />
             Remove
           </button>
         </div>
@@ -357,26 +357,54 @@ return (
   const currentProducts = collections[activeCollection] || [];
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <div className="max-w-7xl mx-auto px-5 py-5">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-4 md:p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-green-500 text-4xl md:text-5xl font-bold mb-2.5">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-green-500 text-3xl md:text-4xl lg:text-5xl font-bold mb-2.5">
             My Collections
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
+          <p className="text-gray-600 dark:text-gray-300 text-base md:text-lg">
             Organize your sustainable product discoveries
           </p>
         </div>
 
-        <div className="flex gap-6">
-          {/* Sidebar */}
-          <div className={`${sidebarOpen ? 'w-80' : 'w-20'} transition-all duration-300 flex-shrink-0`}>
+        {/* Mobile Collection Tabs - Show on small screens */}
+        <div className="md:hidden mb-6">
+          <div className="flex overflow-x-auto gap-2 pb-2">
+            {Object.entries(collectionConfig).map(([key, config]) => {
+              const Icon = config.icon;
+              const isActive = activeCollection === key;
+              
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveCollection(key)}
+                  className={`flex items-center px-4 py-3 rounded-lg transition-colors whitespace-nowrap flex-shrink-0 ${
+                    isActive 
+                      ? `${config.bgColor} ${config.color}` 
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 mr-2" />
+                  <span className="font-medium text-sm">{config.title}</span>
+                  <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+                    {config.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex gap-4 md:gap-6">
+          {/* Desktop Sidebar - Hidden on mobile */}
+          <div className={`hidden md:block ${sidebarOpen ? 'w-64 lg:w-80' : 'w-20'} transition-all duration-300 flex-shrink-0`}>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md sticky top-6 overflow-hidden">
               {/* Sidebar Toggle */}
-              <div className={`flex items-center ${sidebarOpen ? 'justify-between p-6 pb-4' : 'justify-center p-4'}`}>
+              <div className={`flex items-center ${sidebarOpen ? 'justify-between p-4 lg:p-6 pb-4' : 'justify-center p-4'}`}>
                 {sidebarOpen && (
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
                     Collections
                   </h2>
                 )}
@@ -389,7 +417,7 @@ return (
               </div>
 
               {/* Collection Items */}
-              <div className={`${sidebarOpen ? 'px-6 pb-6 space-y-2' : 'px-2 pb-4 space-y-3'}`}>
+              <div className={`${sidebarOpen ? 'px-4 lg:px-6 pb-4 lg:pb-6 space-y-2' : 'px-2 pb-4 space-y-3'}`}>
                 {Object.entries(collectionConfig).map(([key, config]) => {
                   const Icon = config.icon;
                   const isActive = activeCollection === key;
@@ -412,10 +440,10 @@ return (
                       <Icon className={`w-5 h-5 ${sidebarOpen ? 'mr-3' : ''} flex-shrink-0`} />
                       {sidebarOpen && (
                         <>
-                          <span className="flex-1 text-left font-medium">
+                          <span className="flex-1 text-left font-medium text-sm lg:text-base">
                             {config.title}
                           </span>
-                          <span className="text-sm bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full flex-shrink-0">
+                          <span className="text-xs lg:text-sm bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full flex-shrink-0">
                             {config.count}
                           </span>
                         </>
@@ -428,25 +456,38 @@ return (
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
-            {/* Collection Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+          <div className="flex-1 min-w-0">
+            {/* Collection Header - Hidden on mobile since we have tabs */}
+            <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 lg:p-6 mb-4 lg:mb-6">
               <div className="flex items-center">
-                <activeConfig.icon className={`w-6 h-6 ${activeConfig.color} mr-3`} />
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <activeConfig.icon className={`w-5 lg:w-6 h-5 lg:h-6 ${activeConfig.color} mr-3`} />
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
                   {activeConfig.title}
                 </h2>
-                <span className="ml-auto text-gray-500 dark:text-gray-400">
+                <span className="ml-auto text-gray-500 dark:text-gray-400 text-sm lg:text-base">
                   {currentProducts?.length || 0} items
+                </span>
+              </div>
+            </div>
+
+            {/* Mobile Collection Header */}
+            <div className="md:hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
+              <div className="flex items-center">
+                <activeConfig.icon className={`w-5 h-5 ${activeConfig.color} mr-3`} />
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {activeConfig.title}
+                </h2>
+                <span className="ml-auto text-gray-500 dark:text-gray-400 text-sm">
+                  {currentProducts?.length || 0} {currentProducts?.length ==1 ? `item` : `items`}
                 </span>
               </div>
             </div>
 
             {/* Products */}
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-96 text-gray-600 dark:text-gray-400">
-                <div className="w-10 h-10 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin mb-4"></div>
-                <p>Loading your collections...</p>
+              <div className="flex flex-col items-center justify-center h-64 lg:h-96 text-gray-600 dark:text-gray-400">
+                <div className="w-8 lg:w-10 h-8 lg:h-10 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin mb-4"></div>
+                <p className="text-sm lg:text-base">Loading your collections...</p>
               </div>
             ) : (
               <>
@@ -461,12 +502,12 @@ return (
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
-                    <activeConfig.icon className={`w-16 h-16 ${activeConfig.color} mx-auto mb-4 opacity-50`} />
-                    <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 lg:p-12 text-center">
+                    <activeConfig.icon className={`w-12 lg:w-16 h-12 lg:h-16 ${activeConfig.color} mx-auto mb-4 opacity-50`} />
+                    <h3 className="text-lg lg:text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       No items in {activeConfig.title.toLowerCase()}
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-400">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm lg:text-base">
                       Start exploring products to build your collection!
                     </p>
                   </div>

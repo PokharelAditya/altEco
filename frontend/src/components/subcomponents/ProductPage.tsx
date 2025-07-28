@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import { Heart, Clock, X, CheckCircle, AlertCircle } from 'lucide-react';
-
+import ScoreColor from "../../utils/ScoreColor"
 // Custom Popup Component
 function Popup({ isOpen, onClose, type = 'success', title, message }) {
   useEffect(() => {
@@ -124,7 +124,7 @@ function ProductPage() {
   };
 
   // Fallback image URL
-  const fallbackImageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop";
+  const fallbackImageUrl = "https://res.cloudinary.com/dvtipjp4u/image/upload/v1753449675/logo_qwx4aj.png";
 
   const formatEcoScore = (score) => {
     if (score == null || score == undefined || isNaN(Number(score)))
@@ -557,7 +557,7 @@ function ProductPage() {
                 {/* Eco Score Badge on Image */}
                 <div 
                   className="absolute top-4 left-4 text-white px-3 py-2 rounded-lg font-bold text-lg shadow-lg backdrop-blur-sm"
-                  style={{ backgroundColor: getEcoScoreColor((product.ecoscore || product.eco_score)/10) }}
+                  style={{ backgroundColor: ScoreColor(product.ecoscore || product.eco_score) }}
                 >
                   Eco Score: {formatEcoScore((product.ecoscore || product.eco_score)/10)}/10
                 </div>
@@ -639,7 +639,7 @@ function ProductPage() {
                   <span className="text-gray-600 dark:text-gray-400 font-medium">Eco Score:</span>
                   <div 
                     className="px-3 py-1 rounded-full text-white font-bold text-sm"
-                    style={{ backgroundColor: getEcoScoreColor((product.ecoscore || product.eco_score)/10) }}
+                    style={{ backgroundColor: ScoreColor(product.ecoscore || product.eco_score) }}
                   >
                     {formatEcoScore((product.ecoscore || product.eco_score)/10)}/10
                   </div>

@@ -1,35 +1,59 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import ProductCard from './subcomponents/ProductCard';
-import { useAuthContext } from '../context/AuthContext';
+// import { useAuthContext } from '../context/AuthContext';
 
-const ProductsPage = () => {
-  const { user } = useAuthContext();
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface props {
+  products: object[],
+  isLoading: boolean
+}
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (!user) return; // Wait for user to be available
-      
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/get-sample-products', {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-        const data = await response.json();
-        setProducts(data);
-        
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchProducts();
-  }, [user?.isLoggedin]);
+const ProductsPage:React.FC<props> = ({ products, isLoading }) => {
+//   const { user } = useAuthContext();
+//   const [products, setProducts] = useState([]);
+//   const [isLoading, setIsLoading] = useState(true);
+//
+//   useEffect(() => {
+//   const fetchProducts = async () => {
+//     if (!user) return;
+//
+//     setIsLoading(true);
+//     try {
+//       const response = await fetch('/api/get-sample-products', {
+//         headers: {
+//           'Content-Type': 'application/json',
+//         }
+//       });
+//       const data = await response.json();
+//
+//       const shuffle = (arr: any[]) => {
+//         const copy = [...arr];
+//         for (let i = copy.length - 1; i > 0; i--) {
+//           const j = Math.floor(Math.random() * (i + 1));
+//           [copy[i], copy[j]] = [copy[j], copy[i]];
+//         }
+//         return copy;
+//       };
+//
+//       const high = data.filter((p: any) => p.similarity > 0.5);
+//       const medium = data.filter((p: any) => p.similarity > 0.09 && p.similarity <= 0.5);
+//       const low = data.filter((p: any) => p.similarity <= 0.09);
+//
+//       const shuffledHigh = shuffle(high);
+//       const shuffledMedium = shuffle(medium);
+//       const shuffledLow = shuffle(low);
+//       const finalList = [...shuffledHigh, ...shuffledMedium, ...shuffledLow];
+//       setProducts(finalList);
+//     } catch (error) {
+//       console.error('Error fetching products:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+//
+//   fetchProducts();
+// }, [user?.isLoggedin]);
+
+
 
   return (
     <div className="bg-white dark:bg-gray-900 min-h-screen">
@@ -63,8 +87,8 @@ const ProductsPage = () => {
           ) : (
             /* Products Grid */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
-              {products.map(product => (
-                <ProductCard key={product.product_id} product={product} />
+              {products.map((product, i) => (
+                <ProductCard key={i} product={product} />
               ))}
             </div>
           )}
