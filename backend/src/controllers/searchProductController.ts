@@ -25,7 +25,7 @@ const searchProductController = async (
         const scriptPath = path.join(__dirname, "../model/barcodeSearch.py");
         const csvPath = path.join(
           __dirname,
-          "../model/data_with_eco_score.csv"
+          "../model/data_with_new_eco_score.csv"
         );
         execFile(
           "python3",
