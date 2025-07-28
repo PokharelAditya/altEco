@@ -5,7 +5,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../css/height.css";
 import "../css/grow.css";
-import ProductCard from "./subcomponents/ProductCard";
+import ProductsPage from "./ProductsPage";
 
 const SearchProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -131,36 +131,14 @@ const SearchProduct: React.FC = () => {
             ))}
           </div>
         ) : searchStatus ? (
-          <div>
-            <div className="products-page">
-              <div className="products-header">
-                <h1>Sustainable Products</h1>
-                <p>
-                  Discover eco-friendly alternatives that make a positive impact
-                </p>
-              </div>
-
-              <div className="products-main">
-                <div className="products-info">
-                  <span className="results-count">
-                    {products.length} sustainable products available
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="products-grid">
-              {products.map((product, i) => (
-                <ProductCard key={i} product={product} />
-              ))}
-            </div>
-
-            {products.length === 0 && (
-              <div className="no-results">
-                <h3>No products available</h3>
-                <p>Check back soon for new sustainable products!</p>
-              </div>
-            )}
+          <div className="flex flex-col items-center">
+              <ProductsPage products={products} isLoading={false}/>
+              <button
+                onClick={() => setSearchStatus(() => false)}
+                className="mb-10 bg-red-600 text-white text-sm font-semibold px-6 py-2 rounded-xl shadow hover:bg-red-700 transition cursor-pointer" 
+              >
+                Back 
+              </button>
           </div>
         ) : (
           <div className="flex-col mx-4 my-8">
