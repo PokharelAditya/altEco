@@ -9,7 +9,7 @@ import cohere
 from functools import lru_cache
 import numpy as np
 
-COHERE_API_KEY = "92hecdax2u9Ix9cGjcpEYhrMaB6Tl3UfJKCS2Fxt" 
+COHERE_API_KEY = "PTdXDGfeTkESLOuFj2w6JUTnIlOiJE42FuEtooHx" 
 co = cohere.ClientV2(COHERE_API_KEY)
 
 
