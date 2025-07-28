@@ -8,9 +8,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
 import cohere
 from functools import lru_cache
 import numpy as np
+from dotenv import load_dotenv
 
-COHERE_API_KEY = "92hecdax2u9Ix9cGjcpEYhrMaB6Tl3UfJKCS2Fxt" 
-co = cohere.ClientV2(COHERE_API_KEY)
+load_dotenv()
+api_key = os.getenv("cohere_api_key")
+
+co = cohere.ClientV2(api_key)
 
 
 def clean_tags(raw_tags: str) -> str:
