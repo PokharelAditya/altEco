@@ -159,7 +159,7 @@ function ProductPage() {
     if (product?.product_id) {
       getCharacteristics()
     }
-  },[product])
+  },[])
 
   // API functions for favorites
   const addToFavorites = async (productId) => {
