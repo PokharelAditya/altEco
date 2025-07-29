@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef,useState } from 'react'
 import ProductCard from './subcomponents/ProductCard';
-
+import { useAuthContext } from '../context/AuthContext'
 interface props {
   products: object[],
   isLoading: boolean,
@@ -17,6 +17,14 @@ const ProductsPage: React.FC<props> = ({
   onLoadMore 
 }) => {
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const {user} = useAuthContext()
+
+const [collections, setCollections] = useState({
+    favorites: [],
+    reviewLater: [],
+    notInterested: []
+  });
+
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -47,6 +55,66 @@ const ProductsPage: React.FC<props> = ({
       }
     };
   }, [hasMore, isLoadingMore, onLoadMore, isLoading, products.length]);
+ 
+useEffect(() => {
+    const fetchCollections = async () => {      
+      try {
+        // Fixed API endpoint mapping - ensure consistency
+        const [favoritesRes, reviewLaterRes, notInterestedRes] = await Promise.all([
+          fetch('/api/favorites'),
+          fetch('/api/review-later'),
+          fetch('/api/not-interested') 
+        ]);
+
+        if (!favoritesRes.ok || !reviewLaterRes.ok || !notInterestedRes.ok) {
+          // More specific error handling
+          const errorDetails = await Promise.all([
+            favoritesRes.ok ? null : favoritesRes.text().catch(() => 'Unknown error'),
+            reviewLaterRes.ok ? null : reviewLaterRes.text().catch(() => 'Unknown error'),
+            notInterestedRes.ok ? null : notInterestedRes.text().catch(() => 'Unknown error')
+          ]);
+          
+          console.error('API Errors:', {
+            favorites: errorDetails[0],
+            reviewLater: errorDetails[1],
+            notInterested: errorDetails[2]
+          });
+          
+          throw new Error('Failed to fetch collections from server');
+        }
+
+        const [favoritesData, reviewLaterData, notInterestedData] = await Promise.all([
+          favoritesRes.json(),
+          reviewLaterRes.json(),
+          notInterestedRes.json()
+        ]);
+
+        // Ensure data is always an array and handle the response structure
+        const processData = (data) => {
+           return data.map(eachData => eachData.product_id)
+       };
+
+        const processedCollections = {
+          favorites: processData(favoritesData),
+          reviewLater: processData(reviewLaterData),
+          notInterested: processData(notInterestedData)
+        };
+
+        setCollections(processedCollections);
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+        setCollections({
+          favorites: [],
+          reviewLater: [],
+          notInterested: []
+        });
+      }
+    };
+
+      fetchCollections();
+  }, [user?.isLoggedin]);
+
+
 
   return (
     <div className="bg-white dark:bg-gray-900 min-h-screen">
@@ -77,9 +145,16 @@ const ProductsPage: React.FC<props> = ({
             <>
               {/* Products Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
-                {products.map((product, i) => (
-                  <ProductCard key={i} product={product} />
-                ))}
+                {products.map((product, i) => {
+                    
+                    const favExists = collections.favorites.includes(product.product_id)
+                    const revLaterExists = collections.reviewLater.includes(product.product_id)
+                    return (
+                      <ProductCard key={i} product={product}
+                        initialFavorited={favExists} initialReviewLater={revLaterExists} />
+                    )
+                  }
+                  )}
               </div>
 
               {/* Load More Trigger - This element triggers infinite scroll */}

@@ -10,20 +10,20 @@ const ProductCard = ({ product, initialFavorited = false, initialReviewLater = f
   const [isLoadingReviewLater, setIsLoadingReviewLater] = useState(false)
   const [isLoadingNotInterested, setIsLoadingNotInterested] = useState(false)
   
-  useEffect(()=>{
-    const getCharacteristics = async () => {
-      try{
-        const response = await fetch(`/api/check-characteristics?productId=${product.product_id}`)
-        const data = await response.json()
-        setIsReviewLater(data.reviewLater)
-        setIsFavorited(data.favorites)
-      }
-      catch(err){
-        console.error(err)
-      }
-    } 
-    getCharacteristics()
-  },[])
+  // useEffect(()=>{
+  //   const getCharacteristics = async () => {
+  //     try{
+  //       const response = await fetch(`/api/check-characteristics?productId=${product.product_id}`)
+  //       const data = await response.json()
+  //       setIsReviewLater(data.reviewLater)
+  //       setIsFavorited(data.favorites)
+  //     }
+  //     catch(err){
+  //       console.error(err)
+  //     }
+  //   } 
+  //   getCharacteristics()
+  // },[])
   const formatEcoScore = (score) => {
     if (score == null || score == undefined || isNaN(Number(score)))
       return 'N/A';
