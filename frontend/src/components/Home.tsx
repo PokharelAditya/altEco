@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import ProductsPage from './ProductsPage'
+import { Link } from 'react-router-dom'
 
 const Home = () => {
   const { user, loading } = useAuthContext()
@@ -163,7 +164,8 @@ const Home = () => {
     )
   }
   
-  return <div className="dark:text-white m-2">Login first</div>
+  return <div className="my-6 text-yellow-800 dark:text-amber-600 rounded-lg shadow-md
+    py-2 px-3 bg-green-600/10 mx-8">Please <Link to={'/login'} className="text-green-600">Sign In</Link> to continue.</div>
 }
 
 export default Home
