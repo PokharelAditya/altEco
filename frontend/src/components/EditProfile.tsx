@@ -127,7 +127,7 @@ const EditProfile = () => {
                 <p className="text-lg text-gray-900 dark:text-white">{user?.email}</p>
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500 px-2 py-1">
-                Cannot be changed
+                Can not be changed
               </div>
             </div>
           </div>
@@ -176,13 +176,16 @@ const EditProfile = () => {
                   {formatDate(user?.dob || '')}
                 </p>
               </div>
-              <button
+              {/*<button
                 onClick={() => openEditMode('dob')}
                 className="flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
               >
                 <Edit3 className="h-4 w-4 mr-1" />
                 Edit
-              </button>
+              </button>*/}
+              <div className="text-xs text-gray-400 dark:text-gray-500 px-2 py-1">
+                Can not be changed
+              </div>
             </div>
 
             {/* Password */}
