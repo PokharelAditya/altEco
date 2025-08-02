@@ -157,7 +157,7 @@ const EcoScoreCalculator = () => {
                   </svg>
                 </button> 
 
-                {tagsWithoutQuantity.includes(tagDisplayMap[tag.name]) ||
+                  {/*{tagsWithoutQuantity.includes(tagDisplayMap[tag.name]) ||
                 <div className="ml-auto">
                   {tag.value === null && 
                   <button
@@ -184,7 +184,7 @@ const EcoScoreCalculator = () => {
                       Remove Percentage
                     </button>
                   </div>}
-                </div>}
+                </div>}*/}
 
               </div>)
             })}

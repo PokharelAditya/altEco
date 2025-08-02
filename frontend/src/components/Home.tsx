@@ -165,7 +165,7 @@ const Home = () => {
   }
   
   return <div className="my-6 text-yellow-800 dark:text-amber-600 rounded-lg shadow-md
-    py-2 px-1 bg-green-600/10 mx-8">Please <Link to={'/login'} className="text-green-600">Sign In</Link> to continue.</div>
+    py-2 px-3 bg-green-600/10 mx-8">Please <Link to={'/login'} className="text-green-600">Sign In</Link> to continue.</div>
 }
 
 export default Home
