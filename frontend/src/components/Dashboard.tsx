@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadialBarChart, RadialBar, AreaChart, Area } from 'recharts';
 import { Heart, Clock, X, TrendingUp, Leaf, Star, Eye, Calendar, Award } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
+import { convertDateToString } from '../utils/EditProfile'
 
 const Dashboard = () => {
   const { user } = useAuthContext();
@@ -100,14 +101,14 @@ const Dashboard = () => {
   };
 
   // Format join date
-  const formatJoinDate = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  // const formatJoinDate = (dateString) => {
+  //   if (!dateString) return '';
+  //   return new Date(dateString).toLocaleDateString('en-US', {
+  //     year: 'numeric',
+  //     month: 'long',
+  //     day: 'numeric'
+  //   });
+  // };
 
   const COLORS = ['#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899'];
 
@@ -178,7 +179,7 @@ const Dashboard = () => {
                 Welcome back, {getFirstName(user.displayName)}!
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Your personal eco-journey dashboard • Member since {formatJoinDate(user.createdAt)}
+                Your personal eco-journey dashboard • Member since {convertDateToString(new Date(user.createdAt).toLocaleDateString())}
               </p>
             </div>
           </div>

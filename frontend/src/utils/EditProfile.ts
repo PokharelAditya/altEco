@@ -31,37 +31,35 @@ export const formatGender = (gender: string) => {
   }
 
   export const convertDateToString = (date: string) => {
-    const month = date.split('/')[0];
+    const month = date.split('/')[1];
     const year = date.split('/')[2];
     let monthInString : string;
-    // console.log(month)
-    // console.log(year)
     switch (month) {
-        case "1":
+        case "01":
             monthInString = "January";
             break;
-        case "2":
+        case "02":
             monthInString = "February";
             break;
-        case "3":
+        case "03":
             monthInString = "March";
             break;        
-        case "4":
+        case "04":
             monthInString = "April";
             break;
-        case "5":
+        case "05":
             monthInString = "May";
             break;
-        case "6":
+        case "06":
             monthInString = "June";
             break;
-        case "7":
+        case "07":
             monthInString = "July";
             break;
-        case "8":
+        case "08":
             monthInString = "August";
             break;        
-        case "9":
+        case "09":
             monthInString = "September";
             break;
         case "10":
