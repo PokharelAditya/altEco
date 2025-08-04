@@ -1,23 +1,27 @@
 import json
 import os
 import sys
+from functools import lru_cache
+
 import cohere
 from dotenv import load_dotenv
 
 load_dotenv()
-api_key = os.getenv("cohere_api_key") 
-COHERE_API_KEY = api_key
+COHERE_API_KEY = os.getenv("cohere_api_key")
 co = cohere.ClientV2(COHERE_API_KEY)
+
 
 def extract_text_from_content(content_list):
     texts = []
     for item in content_list:
-        text = getattr(item, 'text', '')
+        text = getattr(item, "text", "")
         if text:
             texts.append(text)
     return " ".join(texts).strip()
 
-def generate_description(tags: str):
+
+@lru_cache(maxsize=512)
+def generate_description(tags: str) -> str:
     system_message = "You are a helpful assistant that writes natural and engaging product descriptions."
     user_message = (
         f"Write a detailed, natural, and factful 100-word product description in English "
@@ -27,23 +31,30 @@ def generate_description(tags: str):
         response = co.chat(
             model="command-xlarge-nightly",
             messages=[
+        #type: ignore
                 {"role": "system", "content": system_message},
-
                 {"role": "user", "content": user_message},
             ],
             max_tokens=150,
             temperature=0.75,
             stop_sequences=["--"],
         )
-
         content = response.message.content
 
-        description = content.strip() if isinstance(content, str) else str(content)
-        print(json.dumps({"description": description}))
+        if isinstance(content, list):
+            description = extract_text_from_content(content)
+        elif isinstance(content, str):
+            description = content.strip()
+        else:
+            description = str(content)
+
+        return description
+
     except Exception as e:
-        print(json.dumps({"error": str(e)}))
+        return f"Description generation failed: {str(e)}"
 
 
 if __name__ == "__main__":
-    input_data = sys.argv[1] if len(sys.argv) > 1 else ""
-    generate_description(input_data)
+    input_tags = sys.argv[1] if len(sys.argv) > 1 else ""
+    description = generate_description(input_tags)
+    print(json.dumps({"description": description}))

@@ -109,11 +109,11 @@ const searchProductController = async (
               console.log("...storing scanned product from openfoodfacts to dataset in background...")
               await productIntoDataset(product)
 
-              // console.log("...generating description of scanned product in background...")
-              // const description = await generateDescription(tags)
+              console.log("...generating description of scanned product in background...")
+              const description = await generateDescription(tags)
 
               console.log("...storing scanned product from openfoodfacts to database in background...")
-              await productIntoDatabase({ ...product, description: "aditya pokharel" })
+              await productIntoDatabase({ ...product, description })
             })();
           }
           else {
@@ -132,6 +132,7 @@ const searchProductController = async (
         products: [],
       });
     }
+
     tags = ""
     if(tags.trim())
     {
