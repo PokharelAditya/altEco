@@ -62,7 +62,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
             <div className="relative rounded-2xl">
               <video
                 ref={videoRef}
-                className="w-full max-w-2xl max-h-[70svh] rounded-2xl object-cover"
+                className="w-full max-w-2xl max-h-[20svh] rounded-2xl object-cover opacity-100"
               />
               <div className="absolute inset-0 border-4 dark:border-2 border-green-600 dark:border-green-600 pointer-events-none rounded-2xl" />
               <div className="absolute inset-4 h-1 bg-red-600 opacity-80 pointer-events-none scanline-animation rounded-full" />
