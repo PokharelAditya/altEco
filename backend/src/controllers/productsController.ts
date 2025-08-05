@@ -85,6 +85,27 @@ export const getDashboardData = async (req: CustomRequest, res: Response): Promi
   }
 };
 
+export const getUserEcoScore = async (req:CustomRequest,res:Response):Promise<void> => {
+  const userId = req.findUser?.userId
+  const data = await pool.query(" select ecoscore,duration,viewed from user_interaction join product on user_interaction.product_id = product.product_id where user_interaction.user_id = $1",[userId])
+  
+  const array = data.rows
+  let sumView = 0
+  let sumDuration = 0
+  let productView = 0
+  let productDuration = 0
+  array.forEach((product)=>{
+    productDuration += product.ecoscore*product.duration
+    productView += product.ecoscore*product.viewed
+    sumView+=product.viewed
+    sumDuration +=product.duration
+  })
+  const userScore = (0.6*productView/(sumView*100) + 0.4*productDuration/(sumDuration*100)).toFixed(2)
+  res.status(200).json({userScore})
+
+
+}
+
 
 
 export const getAverageRating = async (req:Request,res:Response):Promise<void> => {

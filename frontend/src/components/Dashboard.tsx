@@ -8,6 +8,12 @@ const Dashboard = () => {
   const { user } = useAuthContext();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  type Score = {
+    name:string,
+    value:number
+  }
+  const [scorepie,setScorepie] = useState<Score[]>([])
+  const piecolors = ['#16a34a', 'transparent']
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -25,10 +31,23 @@ const Dashboard = () => {
         console.error('Error fetching dashboard data:', error);
         setLoading(false);
       }
-    };
-
-    fetchDashboardData();
+    }
+    const getUserEcoScore = async () => {
+      try{
+        const response = await fetch('/api/get-user-score')
+        const data = await response.json()
+        if(data.userScore){
+          const userEcoScore = Math.round(data.userScore*100)/10
+          setScorepie([ { name: 'Score', value: userEcoScore },
+    { name: '', value: 10 - userEcoScore }])
+        } 
+      }catch(err){
+        console.error(err)
+      }
+    }
+    Promise.all([fetchDashboardData(),getUserEcoScore()])
   }, []);
+  
 
   // Create dynamic collections data based on API response
   const getMyCollections = () => {
@@ -180,6 +199,7 @@ const Dashboard = () => {
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Your personal eco-journey dashboard • Member since {convertDateToString(new Date(user.createdAt).toLocaleDateString())}
+              
               </p>
             </div>
           </div>
@@ -378,41 +398,45 @@ const Dashboard = () => {
           </div>
 
           {/* My Sustainability Focus */}
-          {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
               <Leaf className="w-5 h-5 text-green-500" />
-              My Sustainability Priorities
+              My Score
             </h3>
-            {dashboardData.sustainabilityFocus && dashboardData.sustainabilityFocus.length > 0 ? (
-              <div className="space-y-4">
-                {dashboardData.sustainabilityFocus
-                  .filter(item => item.preference)
-                  .sort((a, b) => b.productsFound - a.productsFound)
-                  .map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        item.priority === 'High' ? 'bg-green-500' :
-                        item.priority === 'Medium' ? 'bg-yellow-500' : 'bg-gray-400'
-                      }`}></div>
-                      <span className="font-medium text-gray-900 dark:text-white">{item.attribute}</span>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-green-600">{item.productsFound} products</p>
-                      <p className="text-xs text-gray-500">{item.priority} priority</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {scorepie[0].value > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={scorepie}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={1}
+                      stroke="none"
+                      cornerRadius={19}
+                      dataKey="value"
+                      startAngle={0}
+                    >
+                      {scorepie.map((_entry, index) =>{ 
+                      return (
+
+                        <Cell key={`cell-${index}`} fill={piecolors[index]} />
+                      )})}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+
             ) : (
               <div className="flex items-center justify-center h-64 text-gray-500">
                 <div className="text-center">
                   <Leaf className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Set your sustainability preferences to see your priorities!</p>
+                  <p>Your Score will appear here.</p>
                 </div>
               </div>
             )}
-          </div> */}
+          </div> 
         </div>
 
         {/* Personal Insights Summary */}

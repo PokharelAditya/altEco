@@ -145,10 +145,14 @@ useEffect(() => {
             <>
               {/* Products Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
-                {products.map((product, i) => {
+                {products
+                    .filter(product => !collections.notInterested.includes(product.product_id))
+
+                    .map((product, i) => {
                     
                     const favExists = collections.favorites.includes(product.product_id)
                     const revLaterExists = collections.reviewLater.includes(product.product_id)
+                    console.log(collections.notInterested)
                     return (
                       <ProductCard key={i} product={product}
                         initialFavorited={favExists} initialReviewLater={revLaterExists} />
