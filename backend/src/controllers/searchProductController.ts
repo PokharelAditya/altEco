@@ -133,7 +133,6 @@ const searchProductController = async (
       });
     }
 
-    tags = ""
     if(tags.trim())
     {
       // const response = await fetch(

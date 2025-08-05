@@ -20,24 +20,26 @@ const cosineSimilarity = async (tags: string):Promise<any> => {
 
     if(products.length)
     {
-      await Promise.all([
-        products = products.map(async(product: any) => {
+      products = await Promise.all(
+        products.map(async(product: any) => {
           const productInDB = await pool.query(
             "Select * from product where product_id = $1",
             [product.code]
           )
 
+          productInDB.rows.length > 0 ? console.log("Description found in database") : console.log("Description not found in database")
+
           const description = productInDB.rows.length > 0 ? productInDB.rows[0].description : await generateDescription(product.tags);
           return {...product, description: description}
         })
-      ]);
+      );
 
       (async () => {
         console.log("...inserting recommended products into database in background...")
         products.forEach(async(product: any) => 
           await productIntoDatabase(product)  
         )
-      });
+      })();
 
       return products.map((product: any) => {
         return {

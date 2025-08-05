@@ -11,7 +11,7 @@ export default defineConfig({
     },
     allowedHosts: [
       // Change this using ngrok for https
-      "8a8a0faaa002.ngrok-free.app"
+      "527e34bbdfa2.ngrok-free.app"
     ],
   },
   plugins: [react(), tailwindcss()],
