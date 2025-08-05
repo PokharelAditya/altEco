@@ -8,6 +8,7 @@ import productIntoDatabase from "../util/productIntoDatabase";
 import generateDescription from "../util/generateDescription";
 import productIntoDataset from "../util/productIntoDataset";
 import cosineSimilarity from "../util/cosineSimilarity";
+import searchIntoDatabase from "../util/searchIntoDatabase";
 
 const execFileAsync = promisify(execFile);
 
@@ -169,6 +170,15 @@ const searchProductController = async (
       //     return b.eco_score - a.eco_score
       //   }),
       // });
+
+      console.log("...storing search input into database in background...");
+      (async() => {
+        await searchIntoDatabase({ 
+          user_id: userId,
+          type: type,
+          input: tags.trim() 
+        })
+      })();
      
       console.log("...implementing cosine similarity to get searched products...")
       const recommendations = await cosineSimilarity(tags.trim()) 
