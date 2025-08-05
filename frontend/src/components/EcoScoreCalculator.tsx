@@ -84,21 +84,24 @@ const EcoScoreCalculator = () => {
 
       <div className="mb-6 space-y-2">
         <label className="block text-base font-medium">Product Tags</label>
-        <input
-          type="text"
-          value={productTag}
-          onChange={(e) => setProductTag(e.target.value)}
-          placeholder="e.g., Sugar"
-          className={`
-            w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 transition
-            ${displayTags
-              .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
-              .filter(tag => tagDisplayMap[tag].toLowerCase().includes(productTag.toLowerCase()))
-              .length ?
-              "focus:ring-blue-500" : "focus:ring-red-500"
-            }
-          `}
-        />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={productTag}
+            onChange={(e) => setProductTag(e.target.value)}
+            placeholder="e.g., Sugar"
+            className={`
+              w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 transition
+              ${displayTags
+                .filter(tag => !selectedTags.map(tag => tag.name).includes(tag))
+                .filter(tag => tagDisplayMap[tag].toLowerCase().includes(productTag.toLowerCase()))
+                .length ?
+                "focus:ring-blue-500" : "focus:ring-red-500"
+              }
+            `}
+          />
+ 
+        </div>
       </div>
 
       {displayTags
@@ -157,7 +160,7 @@ const EcoScoreCalculator = () => {
                   </svg>
                 </button> 
 
-                {tagsWithoutQuantity.includes(tagDisplayMap[tag.name]) ||
+                  {/*{tagsWithoutQuantity.includes(tagDisplayMap[tag.name]) ||
                 <div className="ml-auto">
                   {tag.value === null && 
                   <button
@@ -184,7 +187,7 @@ const EcoScoreCalculator = () => {
                       Remove Percentage
                     </button>
                   </div>}
-                </div>}
+                </div>}*/}
 
               </div>)
             })}
