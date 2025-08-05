@@ -17,8 +17,8 @@ export async function setUserViewed(user_id: string, product_id: string, duratio
      VALUES ($1, $2, $3, 1)
      ON CONFLICT (user_id, product_id) 
      DO UPDATE SET
-       viewed = user_interaction.viewed + 1,
-       duration = user_interaction.duration + $3`,
+       viewed = COALESCE(user_interaction.viewed, 0) + 1,
+       duration = COALESCE(user_interaction.duration, 0) + $3`,
     [user_id, product_id, duration]
   );
 }

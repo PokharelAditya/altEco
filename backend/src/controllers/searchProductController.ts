@@ -89,7 +89,9 @@ const searchProductController = async (
 
     res.status(200).json({
       message: "Products fetched successfully",
-      products: recommendations,
+      products: recommendations.sort((a: any, b: any) => {
+        return b.eco_score - a.eco_score
+      }),
     });
   } catch (error) {
     console.error("Error in searching products: ", error);
