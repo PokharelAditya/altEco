@@ -1,3 +1,4 @@
+import pool from "../db/setupDB";
 import { CustomRequest } from "../@types/express";
 import { Response } from "express";
 import cosineSimilarity from "../util/cosineSimilarity";
@@ -7,6 +8,18 @@ const getRecentProducts = async (
   res: Response
 ):Promise<any> => {
   try {
+    const userId = req.findUser?.userId;
+    
+    const input = await pool.query(`
+      SELECT input FROM input
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+      LIMIT 3
+    `, [userId]);
+    const inputTags = input.rows.map((i:any) => i.input).join(" ")
+
+    console.log(inputTags)
+
     const tags = ""
 
     if(tags.trim())

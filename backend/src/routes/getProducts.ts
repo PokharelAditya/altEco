@@ -21,6 +21,6 @@ router.get('/review-later',authorizeJWT, getReviewLater)
 router.get('/not-interested',authorizeJWT, getNotInterested)
 
 router.get('/get-trending-products', getTrendingProducts)
-router.get('/get-recent-products', getRecentProducts)
+router.get('/get-recent-products', authorizeJWT, getRecentProducts)
 
 export default router

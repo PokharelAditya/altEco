@@ -5,22 +5,24 @@ import Trending from "./Trending"
 import Recent from "./Recent"
 
 const Home = () => {
-  const { user } = useAuthContext()
+  const { user, loading } = useAuthContext()
   const [selection, setSelection] = useState('For You')
   const [forYouProducts, setForYouProducts] = useState([])
   const [trendingProducts, setTrendingProducts] = useState([])
   const [recentProducts, setRecentProducts] = useState([])
 
   useEffect(() => {
-    if(user.isLoggedIn)
-    {
-      setSelection('For You')  
+    if(!loading) {
+      if(user.isLoggedIn)
+      {
+        setSelection('For You')  
+      }
+      else
+      {
+        setSelection('Trending')  
+      }
     }
-    else
-    {
-      setSelection('Trending')  
-    }
-  }, [user])
+  }, [user, loading])
 
   return (
     <>
