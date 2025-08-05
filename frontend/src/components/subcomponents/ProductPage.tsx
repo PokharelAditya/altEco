@@ -99,6 +99,7 @@ function ProductPage() {
   const [isLoadingReviewLater, setIsLoadingReviewLater] = useState(false);
   const [isLoadingNotInterested, setIsLoadingNotInterested] = useState(false);
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
+  const [averageRating,setAverageRating] = useState<number>(0)
 
   // Popup state
   const [popup, setPopup] = useState({
@@ -392,6 +393,21 @@ function ProductPage() {
     }
   };
 
+  
+  useEffect(()=>{
+    const getAverageRating = async ():Promise<void> => {
+      try{
+        const response = await fetch(`/api/average-rating?productId=${product.product_id}`)
+        const data = await response.json()
+        setAverageRating(data.averageRating)
+      }
+      catch(err){
+        console.error(err)
+      }
+    }
+    getAverageRating()
+  },[popup.isOpen])
+
   // Store rating on server
   const storeRating = async (ratingValue) => {
     try {
@@ -661,7 +677,28 @@ function ProductPage() {
                   </div>
                 )}
               </div>
+              <div className="flex gap-1">
+                {
+                  [...Array(5)].map((_,index) => {
+                    const fill = averageRating-index-1 
+                    let fillPercent=0
+                    if(fill>=0){
+                      fillPercent=100
+                    }else if(fill<0 && fill>-1){
+                      fillPercent = 100-Math.abs(fill)*100
+                    }
+                    const colorFill = `inset(0 ${100-fillPercent}% 0 0)`
+                    return (
+                      <div className="relative">
 
+                        <FaStar className="absolute text-gray-300" size={18} />
+                        <FaStar style = {{clipPath:colorFill}} color={"#fbbf24"} size={18}/>
+                        
+                      </div>
+                    )
+                  }) 
+                }
+              </div>
               {/* Product Description */}
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Product Description</h3>
