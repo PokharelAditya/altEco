@@ -1,4 +1,4 @@
-import { Response } from 'express'
+import { Response,Request } from 'express'
 import { fetchProducts, getFavoritesCount, getNotInterestedCount, getRatingsCount, getProductCount, getReviewLaterCount } from "../db/products";
 import { CustomRequest } from '../@types/express'
 import { getAverageViewedDuration } from '../db/userInteraction';
@@ -7,6 +7,7 @@ import {
   getActivity, 
   getSustainability 
 } from "../db/dashboard";
+import pool from '../db/setupDB';
 
 export const getProducts = async (req: CustomRequest, res: Response) => {
   try {
@@ -83,3 +84,18 @@ export const getDashboardData = async (req: CustomRequest, res: Response): Promi
     });
   }
 };
+
+
+
+export const getAverageRating = async (req:Request,res:Response):Promise<void> => {
+  const {productId} = req.query
+  const data = await pool.query('select sum(rating),count(rating) from user_interaction where product_id = $1',[productId])
+  const {sum,count} = data.rows[0]
+  if (count == 0){
+    res.status(404).json({averageRating:0})
+    return
+  }
+  const averageRating = (sum/count).toFixed(3)
+  res.status(200).json({averageRating})
+  return
+}
