@@ -8,6 +8,7 @@ interface BarcodeScannerProps {
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
   const [code, setCode] = useState<string>("");
+  const [text, setText] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -40,6 +41,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
             // }
             // promise.then((controlPromise) => {controlPromise.stop()})
           }
+          if(code)
+          {
+            controls.stop();
+          }
         },
       );
     }
@@ -66,6 +71,28 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
               />
               <div className="absolute inset-0 border-4 dark:border-2 border-green-600 dark:border-green-600 pointer-events-none rounded-2xl" />
               <div className="absolute inset-4 h-1 bg-red-600 opacity-80 pointer-events-none scanline-animation rounded-full" />
+            </div>
+            <div className="text-gray-600 dark:text-gray-400 my-8">
+              OR
+            </div>
+            <div className="flex gap-2 justify-center max-w-2xl text-gray-900 dark:text-gray-100">
+              <input
+                type="text"
+                value={text}
+                onChange={(e) => {
+                  setText(e.target.value)
+                }}
+                placeholder="Barcode text here"
+                className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              />
+              <button
+                onClick = {() => setCode(() => text)}
+                className="px-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 rounded-xl"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" className="fill-none stroke-3 stroke-gray-400 dark:stroke-gray-500">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
             </div>
           </div>
         ) : (
