@@ -10,17 +10,65 @@ const getRecentProducts = async (
   try {
     const userId = req.findUser?.userId;
     
-    const input = await pool.query(`
+    const recentInput = await pool.query(`
       SELECT input FROM input
       WHERE user_id = $1
       ORDER BY created_at DESC
       LIMIT 3
     `, [userId]);
-    const inputTags = input.rows.map((i:any) => i.input).join(" ")
 
-    console.log(inputTags)
+    const inputTags = recentInput.rows.map((i:any) => i.input).join(" ")
 
-    const tags = ""
+    console.log("\nInput tags: ", inputTags)
+
+    const recentInteraction = await pool.query(`
+      SELECT p.clean_tags
+      FROM (
+        SELECT product_id
+        FROM user_interaction
+        where user_id = $1
+        ORDER BY created_at DESC
+        LIMIT 3
+      ) AS top_products
+      JOIN product p ON p.product_id = top_products.product_id;
+    `, [userId])
+
+    const recentInteractionTags = recentInteraction.rows.map((i:any) => i.clean_tags).join(" ")
+
+    console.log("\nRecent Interaction Tags: ", recentInteractionTags)
+
+    const topInteraction = await pool.query(`
+      SELECT p.clean_tags
+      FROM (
+        SELECT product_id
+        FROM user_interaction
+        where user_id = $1
+        ORDER BY duration DESC
+        LIMIT 3
+      ) AS top_products
+      JOIN product p ON p.product_id = top_products.product_id;
+    `, [userId])
+
+    const topInteractionTags = topInteraction.rows.map((i:any) => i.clean_tags).join(" ")
+
+    console.log("\nTop Interaction Tags: ", topInteractionTags)
+
+    const combinedTags = [inputTags, recentInteractionTags, topInteractionTags].join(" ")
+
+    console.log("\nCombined Tags: ", combinedTags)
+
+    const tags = combinedTags.trim().split(" ").reduce((arr: any, tag: any) => {
+      const existing = arr.find((a: any) => a===tag)
+
+      if(!existing)
+      {
+        arr.push(tag)
+      }
+
+      return arr
+    }, []).join(" ")
+
+    console.log("\nTags: ", tags)
 
     if(tags.trim())
     {
