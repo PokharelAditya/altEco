@@ -170,7 +170,7 @@ const searchProductController = async (
       //   }),
       // });
      
-      console.log("...implementing cosine similarity to get products...")
+      console.log("...implementing cosine similarity to get searched products...")
       const recommendations = await cosineSimilarity(tags.trim()) 
       return res.status(200).json({
         message: "Products fetched successfully",
