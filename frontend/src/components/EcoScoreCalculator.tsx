@@ -133,7 +133,7 @@ const EcoScoreCalculator = () => {
       
       {selectedTags.length > 0 &&
       <div className="mb-6">
-        <h1 className="text-md mb-3">For accuracy, specify tag contribution in terms of percentage if available:</h1>
+          {/*}<h1 className="text-md mb-3">For accuracy, specify tag contribution in terms of percentage if available:</h1>*/}
         <div className="flex flex-col gap-4">
             {selectedTags.map((tag, i) => {
              
