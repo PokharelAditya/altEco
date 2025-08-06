@@ -14,6 +14,7 @@ const EcoScoreCalculator = () => {
 
   const [productName, setProductName] = useState("");
   const [productTag, setProductTag] = useState("")
+  const [showTags, setShowTags] = useState(false)
   const [selectedTags, setSelectedTags] = useState<tag[]>([]);
   const [ecoScore, setEcoScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,10 @@ const EcoScoreCalculator = () => {
       }
       else
       {
+        if(productTag)
+        {
+          setShowTags(() => false)
+        }
         setProductTag("")
         return [...prev, tag]
       }
@@ -76,7 +81,9 @@ const EcoScoreCalculator = () => {
         <input
           type="text"
           value={productName}
-          onChange={(e) => setProductName(e.target.value)}
+          onChange={(e) => {
+            setProductName(e.target.value)
+          }}
           placeholder="e.g., Organic Juice"
           className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
@@ -88,7 +95,10 @@ const EcoScoreCalculator = () => {
           <input
             type="text"
             value={productTag}
-            onChange={(e) => setProductTag(e.target.value)}
+            onChange={(e) => {
+              setProductTag(e.target.value)
+              e.target.value ? setShowTags(() => true) : setShowTags(() => false)  
+            }}
             placeholder="e.g., Sugar"
             className={`
               w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 transition
@@ -100,7 +110,20 @@ const EcoScoreCalculator = () => {
               }
             `}
           />
- 
+          <button
+            onClick = {() => setShowTags((prev) => !prev)}
+            className="px-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 rounded-xl"
+          >
+            {showTags ?
+            (<svg width="24" height="24" viewBox="0 0 24 24" className="fill-none stroke-3 stroke-gray-400 dark:stroke-gray-500">
+              <path d="m18 15-6-6-6 6"/>
+            </svg>)
+            :
+            (<svg width="24" height="24" viewBox="0 0 24 24" className="fill-none stroke-3 stroke-gray-400 dark:stroke-gray-500">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>)
+            }
+          </button> 
         </div>
       </div>
 
@@ -109,7 +132,7 @@ const EcoScoreCalculator = () => {
         .filter(tag => tagDisplayMap[tag].toLowerCase().includes(productTag.toLowerCase()))
         .length > 0 
       &&
-      productTag.length > 0
+      showTags
       &&
       <div className="mb-6">
         <h2 className="text-base font-medium mb-3">Select Tags</h2>
@@ -136,7 +159,7 @@ const EcoScoreCalculator = () => {
       
       {selectedTags.length > 0 &&
       <div className="mb-6">
-          {/*}<h1 className="text-md mb-3">For accuracy, specify tag contribution in terms of percentage if available:</h1>*/}
+        {/* <h1 className="text-md mb-3">For accuracy, specify tag contribution in terms of percentage if available:</h1> */}
         <div className="flex flex-col gap-4">
             {selectedTags.map((tag, i) => {
              

@@ -90,6 +90,7 @@ const createUserInteractionTable = async () => {
     duration INTEGER,
     viewed INTEGER,
     rating INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, product_id)
 );
  `;
@@ -206,6 +207,25 @@ const createProductTagsTable = async () => {
   }
 };
 
+const createInputTable = async() => {
+  const query = `
+    CREATE TABLE IF NOT EXISTS input (
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      type TEXT NOT NULL,
+      input TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user_id, type, input)
+    );
+  `;
+
+  try {
+    await pool.query(query);
+    console.log("input table exists")
+  } catch (err) {
+    console.error("Error creating input table", err)
+  }
+}
+
 async function createAllTables() {
   await createUsersTable();
   await createAttributesTable();
@@ -218,6 +238,7 @@ async function createAllTables() {
   await createExclusionListTable();
   await createProductCertificationTable();
   await createProductTagsTable();
+  await createInputTable();
 }
 
 createAllTables();
