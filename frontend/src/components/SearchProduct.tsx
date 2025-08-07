@@ -132,7 +132,7 @@ const SearchProduct: React.FC = () => {
           </div>
         ) : searchStatus ? (
           <div className="flex flex-col items-center">
-              <ProductsPage products={products} isLoading={false}/>
+              <ProductsPage products={products.map((p:any) => { return {...p, product_id: p.code}})} isLoading={false}/>
               <button
                 onClick={() => setSearchStatus(() => false)}
                 className="mb-10 bg-red-600 text-white text-sm font-semibold px-6 py-2 rounded-xl shadow hover:bg-red-700 transition cursor-pointer" 

@@ -41,7 +41,7 @@ const Trending: React.FC<props> = ({ products, setProducts }) => {
 
   return (
     <>
-      <ProductsPage products={products} isLoading={isLoading}/>
+      <ProductsPage products={products.map((p:any) => { return {...p, product_id: p.code}})} isLoading={isLoading}/>
     </>
   );
 }

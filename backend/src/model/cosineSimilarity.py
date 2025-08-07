@@ -26,7 +26,7 @@ def cosineSimilarity(inputTags, csvPath):
         query_vector = vectorizer.transform([cleanedInputTags])
 
         cos_sim = cosine_similarity(query_vector, tfidf_matrix).flatten()
-        top_indices = cos_sim.argsort()[-40:][::-1]
+        top_indices = cos_sim.argsort()[-10:][::-1]
         sample_indices = np.random.choice(top_indices, size=10, replace=False) 
         
         df = df.rename(columns={"clean_tags": "tags"})
